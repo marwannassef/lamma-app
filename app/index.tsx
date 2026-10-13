@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 
@@ -13,17 +13,16 @@ export default function Home() {
   return (
     <Screen>
       <View style={styles.topBar}>
-        <Link href="/settings" asChild>
-          <Pressable
-            testID="open-settings"
-            accessibilityLabel={t('home.openSettings')}
-            style={[styles.settingsBtn, { backgroundColor: colors.surface }]}
-          >
-            <Text variant="label" tone="secondary">
-              {t('home.openSettings')}
-            </Text>
-          </Pressable>
-        </Link>
+        <Pressable
+          testID="open-settings"
+          accessibilityLabel={t('home.openSettings')}
+          onPress={() => router.push('/settings')}
+          style={[styles.settingsBtn, { backgroundColor: colors.surface }]}
+        >
+          <Text variant="label" tone="secondary">
+            {t('home.openSettings')}
+          </Text>
+        </Pressable>
       </View>
 
       <View style={styles.hero}>
@@ -41,39 +40,39 @@ export default function Home() {
         const title = t(game.titleKey);
         const players = t('home.playersRange', { min: game.minPlayers, max: game.maxPlayers });
         return (
-          <Link key={game.id} href={game.entryRoute} asChild>
-            <Pressable
-              testID={`game-${game.id}`}
-              accessibilityLabel={[title, players, !game.ready && t('home.comingSoon')]
-                .filter(Boolean)
-                .join(', ')}
-              style={({ pressed }) => [
-                styles.tile,
-                { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
-                pressed && { opacity: 0.85 },
-              ]}
-            >
-              <Image source={game.icon} style={styles.icon} accessibilityIgnoresInvertColors />
-              <View style={styles.tileText}>
-                <Text variant="heading">{title}</Text>
-                <Text variant="caption" tone="muted">
-                  {t(game.blurbKey)}
+          <Pressable
+            key={game.id}
+            onPress={() => router.push(game.entryRoute)}
+            testID={`game-${game.id}`}
+            accessibilityLabel={[title, players, !game.ready && t('home.comingSoon')]
+              .filter(Boolean)
+              .join(', ')}
+            style={({ pressed }) => [
+              styles.tile,
+              { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+              pressed && { opacity: 0.85 },
+            ]}
+          >
+            <Image source={game.icon} style={styles.icon} accessibilityIgnoresInvertColors />
+            <View style={styles.tileText}>
+              <Text variant="heading">{title}</Text>
+              <Text variant="caption" tone="muted">
+                {t(game.blurbKey)}
+              </Text>
+              <View style={styles.meta}>
+                <Text variant="caption" tone="secondary">
+                  {players}
                 </Text>
-                <View style={styles.meta}>
-                  <Text variant="caption" tone="secondary">
-                    {players}
-                  </Text>
-                  {!game.ready && (
-                    <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                      <Text variant="caption" tone="onPrimary">
-                        {t('home.comingSoon')}
-                      </Text>
-                    </View>
-                  )}
-                </View>
+                {!game.ready && (
+                  <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+                    <Text variant="caption" tone="onPrimary">
+                      {t('home.comingSoon')}
+                    </Text>
+                  </View>
+                )}
               </View>
-            </Pressable>
-          </Link>
+            </View>
+          </Pressable>
         );
       })}
 

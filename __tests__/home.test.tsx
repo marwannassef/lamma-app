@@ -3,9 +3,7 @@ import { render, screen } from '@testing-library/react-native';
 import Home from '../app/index';
 import { i18n, initI18n } from '../src/core/i18n';
 
-jest.mock('expo-router', () => ({
-  Link: ({ children }: { children: React.ReactNode }) => children,
-}));
+jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 
 describe('Home', () => {
   beforeAll(() => initI18n('en'));

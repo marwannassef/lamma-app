@@ -1,0 +1,23 @@
+# Switching to Arabic restarts into RTL and the home screen renders in Arabic.
+appId: com.anventureslabs.lamma
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: open-settings
+- tapOn:
+    id: lang-ar
+- extendedWaitUntil:
+    visible: 'الإعدادات'
+    timeout: 15000
+- tapOn:
+    id: back
+- assertVisible: 'لمّة'
+- assertVisible: 'الجاسوس'
+- tapOn:
+    id: open-settings
+- tapOn:
+    id: lang-en
+- extendedWaitUntil:
+    visible: 'Settings'
+    timeout: 15000

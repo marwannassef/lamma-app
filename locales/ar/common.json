@@ -1,0 +1,39 @@
+{
+  "appName": "لمّة",
+  "tagline": "موبايل واحد. والكل بيلعب.",
+  "publisher": "من AN Ventures Labs",
+  "home": {
+    "pickGame": "اختار لعبة",
+    "playersRange": "من {{min}} لـ {{max}} لاعبين",
+    "comingSoon": "قريبًا",
+    "openSettings": "الإعدادات"
+  },
+  "players": {
+    "defaultName": "لاعب {{n}}",
+    "count_zero": "مفيش لاعبين",
+    "count_one": "لاعب واحد",
+    "count_two": "لاعبين اتنين",
+    "count_few": "{{count}} لاعبين",
+    "count_many": "{{count}} لاعب",
+    "count_other": "{{count}} لاعب"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "language": "اللغة",
+    "languageSystem": "لغة الموبايل",
+    "directionNote": "التطبيق هيعيد التشغيل لما اتجاه الكتابة يتغير.",
+    "appearance": "الشكل",
+    "appearanceSystem": "زي الموبايل",
+    "appearanceLight": "فاتح",
+    "appearanceDark": "سهرة",
+    "haptics": "الاهتزاز",
+    "sound": "المؤثرات الصوتية",
+    "about": "عن التطبيق",
+    "version": "الإصدار {{version}}",
+    "privacy": "لمّة شغالة من غير إنترنت خالص. مش بنجمع ولا بنحفظ ولا بنشارك أي بيانات عنك."
+  },
+  "a11y": {
+    "back": "رجوع",
+    "selected": "متختار"
+  }
+}

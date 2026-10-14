@@ -1,17 +1,36 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { space, useTheme } from '@/core/theme';
 
 /** Full-screen themed background with a centered, scrollable column (max 520dp wide). */
-export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
+export function Screen({
+  children,
+  scroll = true,
+  scrollRef,
+  center = false,
+}: {
+  children: ReactNode;
+  scroll?: boolean;
+  scrollRef?: RefObject<ScrollView | null>;
+  /** Vertically center short content (pass and card screens). */
+  center?: boolean;
+}) {
   const { colors } = useTheme();
-  const body = <View style={styles.column}>{children}</View>;
+  const body = (
+    <View style={[styles.column, center && styles.center]} collapsable={false}>
+      {children}
+    </View>
+  );
   return (
     <SafeAreaView style={[styles.fill, { backgroundColor: colors.bg }]} edges={['top', 'bottom']}>
       {scroll ? (
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
           {body}
         </ScrollView>
       ) : (
@@ -33,4 +52,5 @@ const styles = StyleSheet.create({
     paddingVertical: space.xl,
     gap: space.lg,
   },
+  center: { justifyContent: 'center' },
 });

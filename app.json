@@ -24,7 +24,7 @@
     "android": {
       "package": "com.anventureslabs.lamma",
       "adaptiveIcon": {
-        "backgroundColor": "#6B3FC6",
+        "backgroundColor": "#38146C",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -47,9 +47,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#6B3FC6",
+          "backgroundColor": "#38146C",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 180
+          "imageWidth": 200
         }
       ]
     ],

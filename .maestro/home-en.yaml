@@ -17,5 +17,4 @@ appId: com.anventureslabs.lamma
 - assertVisible: 'Spy'
 - tapOn:
     id: game-spy
-- assertVisible:
-    id: coming-soon
+- assertVisible: 'Start round 1'

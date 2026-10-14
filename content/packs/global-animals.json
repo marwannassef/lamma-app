@@ -1,0 +1,185 @@
+{
+  "id": "global-animals",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🦁",
+  "name": {
+    "en": "Animals",
+    "ar": "حيوانات"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "lion",
+      "text": {
+        "en": "Lion",
+        "ar": "أسد"
+      }
+    },
+    {
+      "id": "elephant",
+      "text": {
+        "en": "Elephant",
+        "ar": "فيل"
+      }
+    },
+    {
+      "id": "giraffe",
+      "text": {
+        "en": "Giraffe",
+        "ar": "زرافة"
+      }
+    },
+    {
+      "id": "monkey",
+      "text": {
+        "en": "Monkey",
+        "ar": "قرد"
+      }
+    },
+    {
+      "id": "tiger",
+      "text": {
+        "en": "Tiger",
+        "ar": "نمر"
+      }
+    },
+    {
+      "id": "bear",
+      "text": {
+        "en": "Bear",
+        "ar": "دب"
+      }
+    },
+    {
+      "id": "zebra",
+      "text": {
+        "en": "Zebra",
+        "ar": "حمار وحشي"
+      }
+    },
+    {
+      "id": "kangaroo",
+      "text": {
+        "en": "Kangaroo",
+        "ar": "كنغر"
+      }
+    },
+    {
+      "id": "penguin",
+      "text": {
+        "en": "Penguin",
+        "ar": "بطريق"
+      }
+    },
+    {
+      "id": "dolphin",
+      "text": {
+        "en": "Dolphin",
+        "ar": "دلفين"
+      }
+    },
+    {
+      "id": "shark",
+      "text": {
+        "en": "Shark",
+        "ar": "قرش"
+      }
+    },
+    {
+      "id": "whale",
+      "text": {
+        "en": "Whale",
+        "ar": "حوت"
+      }
+    },
+    {
+      "id": "owl",
+      "text": {
+        "en": "Owl",
+        "ar": "بومة"
+      }
+    },
+    {
+      "id": "parrot",
+      "text": {
+        "en": "Parrot",
+        "ar": "ببغاء"
+      }
+    },
+    {
+      "id": "snake",
+      "text": {
+        "en": "Snake",
+        "ar": "ثعبان"
+      }
+    },
+    {
+      "id": "frog",
+      "text": {
+        "en": "Frog",
+        "ar": "ضفدع"
+      }
+    },
+    {
+      "id": "butterfly",
+      "text": {
+        "en": "Butterfly",
+        "ar": "فراشة"
+      }
+    },
+    {
+      "id": "bee",
+      "text": {
+        "en": "Bee",
+        "ar": "نحلة"
+      }
+    },
+    {
+      "id": "camel",
+      "text": {
+        "en": "Camel",
+        "ar": "جمل"
+      }
+    },
+    {
+      "id": "horse",
+      "text": {
+        "en": "Horse",
+        "ar": "حصان"
+      }
+    },
+    {
+      "id": "rabbit",
+      "text": {
+        "en": "Rabbit",
+        "ar": "أرنب"
+      }
+    },
+    {
+      "id": "turtle",
+      "text": {
+        "en": "Turtle",
+        "ar": "سلحفاة"
+      }
+    },
+    {
+      "id": "panda",
+      "text": {
+        "en": "Panda",
+        "ar": "باندا"
+      }
+    },
+    {
+      "id": "crocodile",
+      "text": {
+        "en": "Crocodile",
+        "ar": "تمساح"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# The same two-round game in Arabic (RTL).
+appId: com.anventureslabs.lamma
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: open-settings
+- tapOn:
+    id: lang-ar
+- extendedWaitUntil:
+    visible: 'الإعدادات'
+    timeout: 15000
+- tapOn:
+    id: back
+- runFlow:
+    file: spy-two-rounds.yaml
+    env:
+      START_ROUND_3: 'ابدأ الجولة 3'

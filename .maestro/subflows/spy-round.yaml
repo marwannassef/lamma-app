@@ -1,0 +1,26 @@
+# Plays one round from Setup or the previous round screen (5 players, 1 spy).
+appId: com.anventureslabs.lamma
+---
+- tapOn:
+    id: start
+    optional: true
+- tapOn:
+    id: next-round
+    optional: true
+- repeat:
+    times: 5
+    commands:
+      - tapOn:
+          id: show-card
+      - tapOn:
+          id: hide-card
+- tapOn:
+    id: reveal
+- tapOn:
+    id: caught-0-yes
+- tapOn:
+    id: guessed-0-no
+- tapOn:
+    id: add-points
+- assertVisible:
+    id: result-title

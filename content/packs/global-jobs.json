@@ -1,0 +1,185 @@
+{
+  "id": "global-jobs",
+  "region": "global",
+  "game": "spy",
+  "emoji": "👩‍🚒",
+  "name": {
+    "en": "Jobs",
+    "ar": "مهن"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "doctor",
+      "text": {
+        "en": "Doctor",
+        "ar": "طبيب"
+      }
+    },
+    {
+      "id": "teacher",
+      "text": {
+        "en": "Teacher",
+        "ar": "معلم"
+      }
+    },
+    {
+      "id": "police-officer",
+      "text": {
+        "en": "Police officer",
+        "ar": "شرطي"
+      }
+    },
+    {
+      "id": "firefighter",
+      "text": {
+        "en": "Firefighter",
+        "ar": "رجل إطفاء"
+      }
+    },
+    {
+      "id": "pilot",
+      "text": {
+        "en": "Pilot",
+        "ar": "طيار"
+      }
+    },
+    {
+      "id": "chef",
+      "text": {
+        "en": "Chef",
+        "ar": "طباخ"
+      }
+    },
+    {
+      "id": "farmer",
+      "text": {
+        "en": "Farmer",
+        "ar": "مزارع"
+      }
+    },
+    {
+      "id": "engineer",
+      "text": {
+        "en": "Engineer",
+        "ar": "مهندس"
+      }
+    },
+    {
+      "id": "nurse",
+      "text": {
+        "en": "Nurse",
+        "ar": "ممرض"
+      }
+    },
+    {
+      "id": "dentist",
+      "text": {
+        "en": "Dentist",
+        "ar": "طبيب أسنان"
+      }
+    },
+    {
+      "id": "astronaut",
+      "text": {
+        "en": "Astronaut",
+        "ar": "رائد فضاء"
+      }
+    },
+    {
+      "id": "painter",
+      "text": {
+        "en": "Painter",
+        "ar": "رسام"
+      }
+    },
+    {
+      "id": "singer",
+      "text": {
+        "en": "Singer",
+        "ar": "مغني"
+      }
+    },
+    {
+      "id": "football-player",
+      "text": {
+        "en": "Football player",
+        "ar": "لاعب كرة قدم"
+      }
+    },
+    {
+      "id": "baker",
+      "text": {
+        "en": "Baker",
+        "ar": "خباز"
+      }
+    },
+    {
+      "id": "barber",
+      "text": {
+        "en": "Barber",
+        "ar": "حلاق"
+      }
+    },
+    {
+      "id": "mechanic",
+      "text": {
+        "en": "Mechanic",
+        "ar": "ميكانيكي"
+      }
+    },
+    {
+      "id": "carpenter",
+      "text": {
+        "en": "Carpenter",
+        "ar": "نجار"
+      }
+    },
+    {
+      "id": "plumber",
+      "text": {
+        "en": "Plumber",
+        "ar": "سباك"
+      }
+    },
+    {
+      "id": "photographer",
+      "text": {
+        "en": "Photographer",
+        "ar": "مصور"
+      }
+    },
+    {
+      "id": "vet",
+      "text": {
+        "en": "Vet",
+        "ar": "طبيب بيطري"
+      }
+    },
+    {
+      "id": "scientist",
+      "text": {
+        "en": "Scientist",
+        "ar": "عالم"
+      }
+    },
+    {
+      "id": "postman",
+      "text": {
+        "en": "Postman",
+        "ar": "ساعي البريد"
+      }
+    },
+    {
+      "id": "lifeguard",
+      "text": {
+        "en": "Lifeguard",
+        "ar": "منقذ"
+      }
+    }
+  ]
+}

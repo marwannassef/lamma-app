@@ -1,0 +1,185 @@
+{
+  "id": "global-home",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🛋️",
+  "name": {
+    "en": "Things at home",
+    "ar": "حاجات في البيت"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "fridge",
+      "text": {
+        "en": "Fridge",
+        "ar": "ثلاجة"
+      }
+    },
+    {
+      "id": "washing-machine",
+      "text": {
+        "en": "Washing machine",
+        "ar": "غسالة"
+      }
+    },
+    {
+      "id": "oven",
+      "text": {
+        "en": "Oven",
+        "ar": "فرن"
+      }
+    },
+    {
+      "id": "sofa",
+      "text": {
+        "en": "Sofa",
+        "ar": "كنبة"
+      }
+    },
+    {
+      "id": "bed",
+      "text": {
+        "en": "Bed",
+        "ar": "سرير"
+      }
+    },
+    {
+      "id": "pillow",
+      "text": {
+        "en": "Pillow",
+        "ar": "مخدة"
+      }
+    },
+    {
+      "id": "blanket",
+      "text": {
+        "en": "Blanket",
+        "ar": "بطانية"
+      }
+    },
+    {
+      "id": "lamp",
+      "text": {
+        "en": "Lamp",
+        "ar": "مصباح"
+      }
+    },
+    {
+      "id": "mirror",
+      "text": {
+        "en": "Mirror",
+        "ar": "مرآة"
+      }
+    },
+    {
+      "id": "curtain",
+      "text": {
+        "en": "Curtain",
+        "ar": "ستارة"
+      }
+    },
+    {
+      "id": "carpet",
+      "text": {
+        "en": "Carpet",
+        "ar": "سجادة"
+      }
+    },
+    {
+      "id": "television",
+      "text": {
+        "en": "Television",
+        "ar": "تلفزيون"
+      }
+    },
+    {
+      "id": "remote-control",
+      "text": {
+        "en": "Remote control",
+        "ar": "ريموت"
+      }
+    },
+    {
+      "id": "wall-clock",
+      "text": {
+        "en": "Wall clock",
+        "ar": "ساعة حائط"
+      }
+    },
+    {
+      "id": "fan",
+      "text": {
+        "en": "Fan",
+        "ar": "مروحة"
+      }
+    },
+    {
+      "id": "chair",
+      "text": {
+        "en": "Chair",
+        "ar": "كرسي"
+      }
+    },
+    {
+      "id": "table",
+      "text": {
+        "en": "Table",
+        "ar": "طاولة"
+      }
+    },
+    {
+      "id": "door",
+      "text": {
+        "en": "Door",
+        "ar": "باب"
+      }
+    },
+    {
+      "id": "window",
+      "text": {
+        "en": "Window",
+        "ar": "شباك"
+      }
+    },
+    {
+      "id": "toothbrush",
+      "text": {
+        "en": "Toothbrush",
+        "ar": "فرشاة أسنان"
+      }
+    },
+    {
+      "id": "towel",
+      "text": {
+        "en": "Towel",
+        "ar": "منشفة"
+      }
+    },
+    {
+      "id": "broom",
+      "text": {
+        "en": "Broom",
+        "ar": "مكنسة"
+      }
+    },
+    {
+      "id": "key",
+      "text": {
+        "en": "Key",
+        "ar": "مفتاح"
+      }
+    },
+    {
+      "id": "cup",
+      "text": {
+        "en": "Cup",
+        "ar": "كوب"
+      }
+    }
+  ]
+}

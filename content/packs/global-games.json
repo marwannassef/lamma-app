@@ -1,0 +1,178 @@
+{
+  "id": "global-games",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🧸",
+  "name": {
+    "en": "Games & toys",
+    "ar": "ألعاب"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "ball",
+      "text": {
+        "en": "Ball",
+        "ar": "كرة"
+      }
+    },
+    {
+      "id": "doll",
+      "text": {
+        "en": "Doll",
+        "ar": "دمية"
+      }
+    },
+    {
+      "id": "teddy-bear",
+      "text": {
+        "en": "Teddy bear",
+        "ar": "دبدوب"
+      }
+    },
+    {
+      "id": "kite",
+      "text": {
+        "en": "Kite",
+        "ar": "طائرة ورقية"
+      }
+    },
+    {
+      "id": "puzzle",
+      "text": {
+        "en": "Puzzle",
+        "ar": "بازل"
+      }
+    },
+    {
+      "id": "chess",
+      "text": {
+        "en": "Chess",
+        "ar": "شطرنج"
+      }
+    },
+    {
+      "id": "dominoes",
+      "text": {
+        "en": "Dominoes",
+        "ar": "دومينو"
+      }
+    },
+    {
+      "id": "playing-cards",
+      "text": {
+        "en": "Playing cards",
+        "ar": "ورق اللعب"
+      }
+    },
+    {
+      "id": "hide-and-seek",
+      "text": {
+        "en": "Hide and seek",
+        "ar": "الغميضة"
+      }
+    },
+    {
+      "id": "jump-rope",
+      "text": {
+        "en": "Jump rope",
+        "ar": "نط الحبل"
+      }
+    },
+    {
+      "id": "swing",
+      "text": {
+        "en": "Swing",
+        "ar": "أرجوحة"
+      }
+    },
+    {
+      "id": "slide",
+      "text": {
+        "en": "Slide",
+        "ar": "زحليقة"
+      }
+    },
+    {
+      "id": "marbles",
+      "text": {
+        "en": "Marbles",
+        "ar": "بلي"
+      }
+    },
+    {
+      "id": "video-game",
+      "text": {
+        "en": "Video game",
+        "ar": "لعبة فيديو"
+      }
+    },
+    {
+      "id": "building-blocks",
+      "text": {
+        "en": "Building blocks",
+        "ar": "مكعبات"
+      }
+    },
+    {
+      "id": "yo-yo",
+      "text": {
+        "en": "Yo-yo",
+        "ar": "يويو"
+      }
+    },
+    {
+      "id": "spinning-top",
+      "text": {
+        "en": "Spinning top",
+        "ar": "نحلة"
+      }
+    },
+    {
+      "id": "balloon",
+      "text": {
+        "en": "Balloon",
+        "ar": "بالونة"
+      }
+    },
+    {
+      "id": "toy-car",
+      "text": {
+        "en": "Toy car",
+        "ar": "سيارة لعبة"
+      }
+    },
+    {
+      "id": "robot",
+      "text": {
+        "en": "Robot",
+        "ar": "روبوت"
+      }
+    },
+    {
+      "id": "board-game",
+      "text": {
+        "en": "Board game",
+        "ar": "لعبة لوحية"
+      }
+    },
+    {
+      "id": "rubik-s-cube",
+      "text": {
+        "en": "Rubik's cube",
+        "ar": "مكعب روبيك"
+      }
+    },
+    {
+      "id": "water-gun",
+      "text": {
+        "en": "Water gun",
+        "ar": "مسدس مياه"
+      }
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "id": "global-food",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🍕",
+  "name": {
+    "en": "Food",
+    "ar": "أكل"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "pizza",
+      "text": {
+        "en": "Pizza",
+        "ar": "بيتزا"
+      }
+    },
+    {
+      "id": "burger",
+      "text": {
+        "en": "Burger",
+        "ar": "برجر"
+      }
+    },
+    {
+      "id": "pasta",
+      "text": {
+        "en": "Pasta",
+        "ar": "مكرونة"
+      }
+    },
+    {
+      "id": "rice",
+      "text": {
+        "en": "Rice",
+        "ar": "أرز"
+      }
+    },
+    {
+      "id": "bread",
+      "text": {
+        "en": "Bread",
+        "ar": "خبز"
+      }
+    },
+    {
+      "id": "soup",
+      "text": {
+        "en": "Soup",
+        "ar": "شوربة"
+      }
+    },
+    {
+      "id": "salad",
+      "text": {
+        "en": "Salad",
+        "ar": "سلطة"
+      }
+    },
+    {
+      "id": "sandwich",
+      "text": {
+        "en": "Sandwich",
+        "ar": "ساندويتش"
+      }
+    },
+    {
+      "id": "chicken",
+      "text": {
+        "en": "Chicken",
+        "ar": "دجاج"
+      }
+    },
+    {
+      "id": "fish",
+      "text": {
+        "en": "Fish",
+        "ar": "سمك"
+      }
+    },
+    {
+      "id": "eggs",
+      "text": {
+        "en": "Eggs",
+        "ar": "بيض"
+      }
+    },
+    {
+      "id": "cheese",
+      "text": {
+        "en": "Cheese",
+        "ar": "جبنة"
+      }
+    },
+    {
+      "id": "chocolate",
+      "text": {
+        "en": "Chocolate",
+        "ar": "شوكولاتة"
+      }
+    },
+    {
+      "id": "cake",
+      "text": {
+        "en": "Cake",
+        "ar": "كيك"
+      }
+    },
+    {
+      "id": "ice-cream",
+      "text": {
+        "en": "Ice cream",
+        "ar": "آيس كريم"
+      }
+    },
+    {
+      "id": "cookies",
+      "text": {
+        "en": "Cookies",
+        "ar": "بسكويت"
+      }
+    },
+    {
+      "id": "pancakes",
+      "text": {
+        "en": "Pancakes",
+        "ar": "بان كيك"
+      }
+    },
+    {
+      "id": "honey",
+      "text": {
+        "en": "Honey",
+        "ar": "عسل"
+      }
+    },
+    {
+      "id": "popcorn",
+      "text": {
+        "en": "Popcorn",
+        "ar": "فشار"
+      }
+    },
+    {
+      "id": "french-fries",
+      "text": {
+        "en": "French fries",
+        "ar": "بطاطس مقلية"
+      }
+    },
+    {
+      "id": "yogurt",
+      "text": {
+        "en": "Yogurt",
+        "ar": "زبادي"
+      }
+    },
+    {
+      "id": "sushi",
+      "text": {
+        "en": "Sushi",
+        "ar": "سوشي"
+      }
+    },
+    {
+      "id": "hot-dog",
+      "text": {
+        "en": "Hot dog",
+        "ar": "هوت دوج"
+      }
+    },
+    {
+      "id": "juice",
+      "text": {
+        "en": "Juice",
+        "ar": "عصير"
+      }
+    }
+  ]
+}

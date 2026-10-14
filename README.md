@@ -22,21 +22,23 @@ After the first native build, `npm start` is enough for JS changes.
 
 ## Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run typecheck` | TypeScript, no emit |
-| `npm run lint` | ESLint (Expo config, strict TS, RTL-safe style rule, game isolation) + Prettier |
-| `npm run i18n:check` | Every shipped locale has every key and every plural form |
-| `npm test` | Jest unit tests |
-| `npm run e2e` | Maestro flows in `.maestro/` against a running dev build |
+| Command                 | What it does                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `npm run typecheck`     | TypeScript, no emit                                                             |
+| `npm run lint`          | ESLint (Expo config, strict TS, RTL-safe style rule, game isolation) + Prettier |
+| `npm run i18n:check`    | Every shipped locale has every key and every plural form                        |
+| `npm run content:check` | Word packs and punishments are complete and valid                               |
+| `npm test`              | Jest unit tests                                                                 |
+| `npm run e2e`           | Maestro flows in `.maestro/` against a running dev build                        |
 
 ## Layout
 
 ```
 app/              Expo Router routes (thin)
-src/core/         shared core: theme, i18n, settings, storage, ui (players, session, punishments, content in M2)
+src/core/         shared core: theme, i18n, settings, storage, ui, players, session, punishments, content, rng
 src/games/        game modules + registry
 locales/<code>/   meta.json, native.json (app name), common.json, spy.json
+content/          word packs (packs/, adult packs in packs/adult/) and punishments/<locale>.json
 assets/           fonts (SIL OFL), images; assets/source has the icon SVGs
 docs/             brief, prototype, brand
 ```

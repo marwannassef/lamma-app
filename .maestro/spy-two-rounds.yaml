@@ -1,0 +1,30 @@
+# 5 players play two Spy rounds; scores survive an app restart.
+appId: com.anventureslabs.lamma
+env:
+  START_ROUND_3: ${START_ROUND_3 || 'Start round 3'}
+---
+- runFlow:
+    when:
+      true: ${!START_ROUND_3.startsWith('ابدأ')}
+    commands:
+      - launchApp:
+          clearState: true
+- tapOn:
+    id: game-spy
+- tapOn:
+    id: level-off
+- runFlow:
+    file: subflows/spy-round.yaml
+- runFlow:
+    file: subflows/spy-round.yaml
+- tapOn:
+    id: change-settings
+- assertVisible:
+    id: setup-scores
+- stopApp
+- launchApp
+- tapOn:
+    id: game-spy
+- assertVisible:
+    id: setup-scores
+- assertVisible: ${START_ROUND_3}

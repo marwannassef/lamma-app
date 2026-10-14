@@ -1,5 +1,12 @@
-// M1 primitives. The full kit (Button, Card, Stepper, Toggle, Chip, Panel, ConfirmInline,
-// Scoreboard) lands in M2.
+export { BackHeader } from './BackHeader';
+export { Button, type ButtonProps } from './Button';
+export { Chip } from './Chip';
+export { ConfirmInline } from './ConfirmInline';
+export { Hint } from './Hint';
+export { Panel } from './Panel';
 export { Pressable } from './Pressable';
+export { Scoreboard } from './Scoreboard';
 export { Screen } from './Screen';
+export { Stepper, type StepperProps } from './Stepper';
 export { Text, type AppTextProps } from './Text';
+export { Toggle } from './Toggle';

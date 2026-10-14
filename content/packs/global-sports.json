@@ -1,0 +1,171 @@
+{
+  "id": "global-sports",
+  "region": "global",
+  "game": "spy",
+  "emoji": "⚽",
+  "name": {
+    "en": "Sports",
+    "ar": "رياضة"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "football",
+      "text": {
+        "en": "Football",
+        "ar": "كرة القدم"
+      }
+    },
+    {
+      "id": "basketball",
+      "text": {
+        "en": "Basketball",
+        "ar": "كرة السلة"
+      }
+    },
+    {
+      "id": "tennis",
+      "text": {
+        "en": "Tennis",
+        "ar": "تنس"
+      }
+    },
+    {
+      "id": "swimming",
+      "text": {
+        "en": "Swimming",
+        "ar": "سباحة"
+      }
+    },
+    {
+      "id": "running",
+      "text": {
+        "en": "Running",
+        "ar": "جري"
+      }
+    },
+    {
+      "id": "volleyball",
+      "text": {
+        "en": "Volleyball",
+        "ar": "كرة الطائرة"
+      }
+    },
+    {
+      "id": "boxing",
+      "text": {
+        "en": "Boxing",
+        "ar": "ملاكمة"
+      }
+    },
+    {
+      "id": "karate",
+      "text": {
+        "en": "Karate",
+        "ar": "كاراتيه"
+      }
+    },
+    {
+      "id": "cycling",
+      "text": {
+        "en": "Cycling",
+        "ar": "ركوب الدراجات"
+      }
+    },
+    {
+      "id": "gymnastics",
+      "text": {
+        "en": "Gymnastics",
+        "ar": "جمباز"
+      }
+    },
+    {
+      "id": "skiing",
+      "text": {
+        "en": "Skiing",
+        "ar": "تزلج على الثلج"
+      }
+    },
+    {
+      "id": "ice-skating",
+      "text": {
+        "en": "Ice skating",
+        "ar": "تزلج على الجليد"
+      }
+    },
+    {
+      "id": "surfing",
+      "text": {
+        "en": "Surfing",
+        "ar": "ركوب الأمواج"
+      }
+    },
+    {
+      "id": "golf",
+      "text": {
+        "en": "Golf",
+        "ar": "جولف"
+      }
+    },
+    {
+      "id": "horse-riding",
+      "text": {
+        "en": "Horse riding",
+        "ar": "ركوب الخيل"
+      }
+    },
+    {
+      "id": "table-tennis",
+      "text": {
+        "en": "Table tennis",
+        "ar": "تنس الطاولة"
+      }
+    },
+    {
+      "id": "handball",
+      "text": {
+        "en": "Handball",
+        "ar": "كرة اليد"
+      }
+    },
+    {
+      "id": "wrestling",
+      "text": {
+        "en": "Wrestling",
+        "ar": "مصارعة"
+      }
+    },
+    {
+      "id": "fencing",
+      "text": {
+        "en": "Fencing",
+        "ar": "مبارزة"
+      }
+    },
+    {
+      "id": "diving",
+      "text": {
+        "en": "Diving",
+        "ar": "غوص"
+      }
+    },
+    {
+      "id": "archery",
+      "text": {
+        "en": "Archery",
+        "ar": "رماية بالسهام"
+      }
+    },
+    {
+      "id": "rowing",
+      "text": {
+        "en": "Rowing",
+        "ar": "تجديف"
+      }
+    }
+  ]
+}

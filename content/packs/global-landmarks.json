@@ -1,0 +1,171 @@
+{
+  "id": "global-landmarks",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🗽",
+  "name": {
+    "en": "World landmarks",
+    "ar": "معالم العالم"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "eiffel-tower",
+      "text": {
+        "en": "Eiffel Tower",
+        "ar": "برج إيفل"
+      }
+    },
+    {
+      "id": "pyramids-of-giza",
+      "text": {
+        "en": "Pyramids of Giza",
+        "ar": "أهرامات الجيزة"
+      }
+    },
+    {
+      "id": "great-wall-of-china",
+      "text": {
+        "en": "Great Wall of China",
+        "ar": "سور الصين العظيم"
+      }
+    },
+    {
+      "id": "statue-of-liberty",
+      "text": {
+        "en": "Statue of Liberty",
+        "ar": "تمثال الحرية"
+      }
+    },
+    {
+      "id": "big-ben",
+      "text": {
+        "en": "Big Ben",
+        "ar": "ساعة بيج بن"
+      }
+    },
+    {
+      "id": "taj-mahal",
+      "text": {
+        "en": "Taj Mahal",
+        "ar": "تاج محل"
+      }
+    },
+    {
+      "id": "colosseum",
+      "text": {
+        "en": "Colosseum",
+        "ar": "الكولوسيوم"
+      }
+    },
+    {
+      "id": "burj-khalifa",
+      "text": {
+        "en": "Burj Khalifa",
+        "ar": "برج خليفة"
+      }
+    },
+    {
+      "id": "leaning-tower-of-pisa",
+      "text": {
+        "en": "Leaning Tower of Pisa",
+        "ar": "برج بيزا المائل"
+      }
+    },
+    {
+      "id": "niagara-falls",
+      "text": {
+        "en": "Niagara Falls",
+        "ar": "شلالات نياجرا"
+      }
+    },
+    {
+      "id": "mount-everest",
+      "text": {
+        "en": "Mount Everest",
+        "ar": "جبل إيفرست"
+      }
+    },
+    {
+      "id": "sydney-opera-house",
+      "text": {
+        "en": "Sydney Opera House",
+        "ar": "دار أوبرا سيدني"
+      }
+    },
+    {
+      "id": "petra",
+      "text": {
+        "en": "Petra",
+        "ar": "البتراء"
+      }
+    },
+    {
+      "id": "grand-canyon",
+      "text": {
+        "en": "Grand Canyon",
+        "ar": "جراند كانيون"
+      }
+    },
+    {
+      "id": "machu-picchu",
+      "text": {
+        "en": "Machu Picchu",
+        "ar": "ماتشو بيتشو"
+      }
+    },
+    {
+      "id": "stonehenge",
+      "text": {
+        "en": "Stonehenge",
+        "ar": "ستونهنج"
+      }
+    },
+    {
+      "id": "golden-gate-bridge",
+      "text": {
+        "en": "Golden Gate Bridge",
+        "ar": "جسر البوابة الذهبية"
+      }
+    },
+    {
+      "id": "mount-fuji",
+      "text": {
+        "en": "Mount Fuji",
+        "ar": "جبل فوجي"
+      }
+    },
+    {
+      "id": "amazon-rainforest",
+      "text": {
+        "en": "Amazon rainforest",
+        "ar": "غابات الأمازون"
+      }
+    },
+    {
+      "id": "sahara-desert",
+      "text": {
+        "en": "Sahara Desert",
+        "ar": "الصحراء الكبرى"
+      }
+    },
+    {
+      "id": "disneyland",
+      "text": {
+        "en": "Disneyland",
+        "ar": "ديزني لاند"
+      }
+    },
+    {
+      "id": "louvre-museum",
+      "text": {
+        "en": "Louvre Museum",
+        "ar": "متحف اللوفر"
+      }
+    }
+  ]
+}

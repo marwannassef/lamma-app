@@ -1,0 +1,221 @@
+{
+  "id": "egypt-home",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🏠",
+  "name": {
+    "en": "Things at home",
+    "ar": "حاجات في البيت"
+  },
+  "subtitle": {
+    "en": "7agat fel beit",
+    "ar": "7agat fel beit"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "fridge",
+      "text": {
+        "en": "Fridge",
+        "ar": "تلاجة"
+      },
+      "translit": "tallaga"
+    },
+    {
+      "id": "washing-machine",
+      "text": {
+        "en": "Washing machine",
+        "ar": "غسالة"
+      },
+      "translit": "ghassala"
+    },
+    {
+      "id": "stove",
+      "text": {
+        "en": "Stove",
+        "ar": "بوتاجاز"
+      },
+      "translit": "botagaz"
+    },
+    {
+      "id": "fan",
+      "text": {
+        "en": "Fan",
+        "ar": "مروحة"
+      },
+      "translit": "marwa7a"
+    },
+    {
+      "id": "air-conditioner",
+      "text": {
+        "en": "Air conditioner",
+        "ar": "تكييف"
+      },
+      "translit": "takyeef"
+    },
+    {
+      "id": "sofa",
+      "text": {
+        "en": "Sofa",
+        "ar": "كنبة"
+      },
+      "translit": "kanaba"
+    },
+    {
+      "id": "carpet",
+      "text": {
+        "en": "Carpet",
+        "ar": "سجادة"
+      },
+      "translit": "seggada"
+    },
+    {
+      "id": "pillow",
+      "text": {
+        "en": "Pillow",
+        "ar": "مخدة"
+      },
+      "translit": "makhadda"
+    },
+    {
+      "id": "blanket",
+      "text": {
+        "en": "Blanket",
+        "ar": "بطانية"
+      },
+      "translit": "battaneya"
+    },
+    {
+      "id": "curtain",
+      "text": {
+        "en": "Curtain",
+        "ar": "ستارة"
+      },
+      "translit": "setara"
+    },
+    {
+      "id": "mirror",
+      "text": {
+        "en": "Mirror",
+        "ar": "مراية"
+      },
+      "translit": "mraya"
+    },
+    {
+      "id": "wardrobe",
+      "text": {
+        "en": "Wardrobe",
+        "ar": "دولاب"
+      },
+      "translit": "dolab"
+    },
+    {
+      "id": "slippers",
+      "text": {
+        "en": "Slippers",
+        "ar": "شبشب"
+      },
+      "translit": "shebshef"
+    },
+    {
+      "id": "broom",
+      "text": {
+        "en": "Broom",
+        "ar": "مكنسة"
+      },
+      "translit": "makansa"
+    },
+    {
+      "id": "low-round-table",
+      "text": {
+        "en": "Low round table",
+        "ar": "طبلية"
+      },
+      "translit": "tableya"
+    },
+    {
+      "id": "cup",
+      "text": {
+        "en": "Cup",
+        "ar": "كوباية"
+      },
+      "translit": "kobbaya"
+    },
+    {
+      "id": "cooking-pot",
+      "text": {
+        "en": "Cooking pot",
+        "ar": "حلة"
+      },
+      "translit": "7alla"
+    },
+    {
+      "id": "remote-control",
+      "text": {
+        "en": "Remote control",
+        "ar": "ريموت"
+      },
+      "translit": "remote"
+    },
+    {
+      "id": "wall-clock",
+      "text": {
+        "en": "Wall clock",
+        "ar": "ساعة حيطة"
+      },
+      "translit": "sa3et 7eita"
+    },
+    {
+      "id": "chandelier",
+      "text": {
+        "en": "Chandelier",
+        "ar": "نجفة"
+      },
+      "translit": "nagafa"
+    },
+    {
+      "id": "water-heater",
+      "text": {
+        "en": "Water heater",
+        "ar": "سخان"
+      },
+      "translit": "sakhan"
+    },
+    {
+      "id": "hanger",
+      "text": {
+        "en": "Hanger",
+        "ar": "شماعة"
+      },
+      "translit": "shamma3a"
+    },
+    {
+      "id": "key",
+      "text": {
+        "en": "Key",
+        "ar": "مفتاح"
+      },
+      "translit": "moftah"
+    },
+    {
+      "id": "tv",
+      "text": {
+        "en": "TV",
+        "ar": "تليفزيون"
+      },
+      "translit": "televizyon"
+    },
+    {
+      "id": "bed",
+      "text": {
+        "en": "Bed",
+        "ar": "سرير"
+      },
+      "translit": "sereer"
+    }
+  ]
+}

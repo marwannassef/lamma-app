@@ -1,4 +1,70 @@
 {
   "title": "Spy",
-  "blurb": "Everyone gets the same word except the spy. Ask questions and catch them."
+  "blurb": "Everyone gets the same word except the spy. Ask questions and catch them.",
+  "setup": {
+    "lead": "Everyone gets the same word except the spy. Pass the phone, ask questions, catch the spy.",
+    "players": "Players",
+    "fewerPlayers": "Fewer players",
+    "morePlayers": "More players",
+    "minPlayers": "You need at least 3 players.",
+    "maxPlayers": "12 players is the most.",
+    "spies": "Spies",
+    "spiesSub": "2 spies from 7 players",
+    "fewerSpies": "Fewer spies",
+    "moreSpies": "More spies",
+    "minSpies": "There's always at least 1 spy.",
+    "needMorePlayers": "Add players (7 or more) to play with 2 spies.",
+    "maxSpies": "2 spies is the most.",
+    "names": "Names (optional)",
+    "nameLabel": "Name for player {{n}}",
+    "random": "🎲 Random mode",
+    "randomSub": "New category every round",
+    "orPick": "Or pick a category",
+    "spySees": "Spy sees category",
+    "spySeesSub": "The spy's card shows the category",
+    "start": "Start round {{n}}",
+    "noPacks": "No word packs are on. Turn on a region in Settings."
+  },
+  "pass": {
+    "label": "Pass the phone to",
+    "player": "Player",
+    "hint": "Make sure nobody else is looking 👀",
+    "show": "Show my card",
+    "progress": "Player {{n}} of {{total}}"
+  },
+  "card": {
+    "spyTitle": "You're the spy!",
+    "spyCategory": "Category: {{emoji}} {{name}}",
+    "spyNoCategory": "Listen to their questions and guess the word",
+    "hide": "Got it, hide",
+    "cover": "Card hidden"
+  },
+  "round": {
+    "started": "Round {{n}} started!",
+    "firstAsk": "{{name}} asks the first question.",
+    "rules": "Take turns asking each other questions. When you're ready, vote on who the spy is.",
+    "reveal": "Reveal the answer",
+    "wordWas": "The word was",
+    "spyIs": "Spy: {{names}}",
+    "spiesAre": "Spies: {{names}}",
+    "whoWon": "Who won?",
+    "caughtQ": "Did you catch {{name}}?",
+    "caughtQSingle": "Did you catch the spy ({{name}})?",
+    "caughtYes": "Yes, caught 🎯",
+    "caughtNo": "No, escaped",
+    "guessQ": "Did {{name}} guess the word right?",
+    "guessYes": "Yes ✅",
+    "guessNo": "No ❌",
+    "scoring": "Spy not caught: spy +2. Caught but guessed the word: spy +1. Caught and guessed wrong: everyone else +1.",
+    "answerFirst": "Answer the questions above first 👆",
+    "addPoints": "Add points",
+    "result": {
+      "players": "Players win! 🎉",
+      "spy": "Spy wins! 🕵️",
+      "spies": "Spies win! 🕵️",
+      "split": "Split round! 🤝"
+    },
+    "next": "Next round",
+    "settings": "Change settings"
+  }
 }

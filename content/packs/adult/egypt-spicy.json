@@ -1,0 +1,262 @@
+{
+  "id": "egypt-spicy",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🔥",
+  "name": {
+    "en": "Spicy",
+    "ar": "كلام خارج"
+  },
+  "subtitle": {
+    "en": "Kalam kharg",
+    "ar": "Kalam kharg"
+  },
+  "adult": true,
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "diaper",
+      "text": {
+        "en": "Diaper",
+        "ar": "بامبرز"
+      },
+      "translit": "bambers"
+    },
+    {
+      "id": "always-pad",
+      "text": {
+        "en": "Always pad",
+        "ar": "أولويز"
+      },
+      "translit": "always"
+    },
+    {
+      "id": "panty",
+      "text": {
+        "en": "Panty",
+        "ar": "كلوت"
+      },
+      "translit": "kalout"
+    },
+    {
+      "id": "bra",
+      "text": {
+        "en": "Bra",
+        "ar": "سنتيان"
+      },
+      "translit": "sentian"
+    },
+    {
+      "id": "boxers",
+      "text": {
+        "en": "Boxers",
+        "ar": "بوكسر"
+      },
+      "translit": "boxer"
+    },
+    {
+      "id": "undershirt",
+      "text": {
+        "en": "Undershirt",
+        "ar": "فانلة داخلية"
+      },
+      "translit": "fanella dakhleya"
+    },
+    {
+      "id": "nightgown",
+      "text": {
+        "en": "Nightgown",
+        "ar": "قميص نوم"
+      },
+      "translit": "amees nom"
+    },
+    {
+      "id": "shapewear",
+      "text": {
+        "en": "Shapewear",
+        "ar": "مشد"
+      },
+      "translit": "mashad"
+    },
+    {
+      "id": "toilet-paper",
+      "text": {
+        "en": "Toilet paper",
+        "ar": "ورق تواليت"
+      },
+      "translit": "wara2 twalet"
+    },
+    {
+      "id": "bidet-sprayer",
+      "text": {
+        "en": "Bidet sprayer",
+        "ar": "شطاف"
+      },
+      "translit": "shattaf"
+    },
+    {
+      "id": "smelly-socks",
+      "text": {
+        "en": "Smelly socks",
+        "ar": "ريحة الشراب"
+      },
+      "translit": "re7et el shorab"
+    },
+    {
+      "id": "armpit",
+      "text": {
+        "en": "Armpit",
+        "ar": "تحت الباط"
+      },
+      "translit": "ta7t el bat"
+    },
+    {
+      "id": "sweat",
+      "text": {
+        "en": "Sweat",
+        "ar": "عرق"
+      },
+      "translit": "3ara2"
+    },
+    {
+      "id": "burp",
+      "text": {
+        "en": "Burp",
+        "ar": "تكريعة"
+      },
+      "translit": "tekree3a"
+    },
+    {
+      "id": "silent-fart",
+      "text": {
+        "en": "Silent fart",
+        "ar": "فسوة"
+      },
+      "translit": "faswa"
+    },
+    {
+      "id": "laxative",
+      "text": {
+        "en": "Laxative",
+        "ar": "ملين"
+      },
+      "translit": "molayyen"
+    },
+    {
+      "id": "razor",
+      "text": {
+        "en": "Razor",
+        "ar": "موس حلاقة"
+      },
+      "translit": "mous 7ela2a"
+    },
+    {
+      "id": "waxing",
+      "text": {
+        "en": "Waxing",
+        "ar": "شمع"
+      },
+      "translit": "sham3"
+    },
+    {
+      "id": "kiss",
+      "text": {
+        "en": "Kiss",
+        "ar": "بوسة"
+      },
+      "translit": "bousa"
+    },
+    {
+      "id": "wedding-night",
+      "text": {
+        "en": "Wedding night",
+        "ar": "ليلة الدخلة"
+      },
+      "translit": "leilet el dokhla"
+    },
+    {
+      "id": "honeymoon",
+      "text": {
+        "en": "Honeymoon",
+        "ar": "شهر العسل"
+      },
+      "translit": "shahr el 3asal"
+    },
+    {
+      "id": "condom",
+      "text": {
+        "en": "Condom",
+        "ar": "كوندوم"
+      },
+      "translit": "kondom"
+    },
+    {
+      "id": "beer-belly",
+      "text": {
+        "en": "Beer belly",
+        "ar": "كرش"
+      },
+      "translit": "kersh"
+    },
+    {
+      "id": "bald-spot",
+      "text": {
+        "en": "Bald spot",
+        "ar": "صلعة"
+      },
+      "translit": "sal3a"
+    },
+    {
+      "id": "dentures",
+      "text": {
+        "en": "Dentures",
+        "ar": "طقم سنان"
+      },
+      "translit": "ta2m senan"
+    },
+    {
+      "id": "wig",
+      "text": {
+        "en": "Wig",
+        "ar": "باروكة"
+      },
+      "translit": "barouka"
+    },
+    {
+      "id": "fake-lashes",
+      "text": {
+        "en": "Fake lashes",
+        "ar": "رموش صناعية"
+      },
+      "translit": "romoush sena3eya"
+    },
+    {
+      "id": "mother-in-law",
+      "text": {
+        "en": "Mother-in-law",
+        "ar": "حماتك"
+      },
+      "translit": "7amatak"
+    },
+    {
+      "id": "marriage-officiant",
+      "text": {
+        "en": "Marriage officiant",
+        "ar": "مأذون"
+      },
+      "translit": "ma2zoon"
+    },
+    {
+      "id": "bathrobe",
+      "text": {
+        "en": "Bathrobe",
+        "ar": "روب"
+      },
+      "translit": "rob"
+    }
+  ]
+}

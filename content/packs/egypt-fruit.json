@@ -1,0 +1,221 @@
+{
+  "id": "egypt-fruit",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🍉",
+  "name": {
+    "en": "Fruits & veggies",
+    "ar": "فاكهة وخضار"
+  },
+  "subtitle": {
+    "en": "Fakha w khodar",
+    "ar": "Fakha w khodar"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "watermelon",
+      "text": {
+        "en": "Watermelon",
+        "ar": "بطيخ"
+      },
+      "translit": "bateekh"
+    },
+    {
+      "id": "mango",
+      "text": {
+        "en": "Mango",
+        "ar": "مانجا"
+      },
+      "translit": "manga"
+    },
+    {
+      "id": "guava",
+      "text": {
+        "en": "Guava",
+        "ar": "جوافة"
+      },
+      "translit": "gawafa"
+    },
+    {
+      "id": "orange",
+      "text": {
+        "en": "Orange",
+        "ar": "برتقان"
+      },
+      "translit": "borto2an"
+    },
+    {
+      "id": "tangerine",
+      "text": {
+        "en": "Tangerine",
+        "ar": "يوسفي"
+      },
+      "translit": "yousfy"
+    },
+    {
+      "id": "banana",
+      "text": {
+        "en": "Banana",
+        "ar": "موز"
+      },
+      "translit": "mooz"
+    },
+    {
+      "id": "grapes",
+      "text": {
+        "en": "Grapes",
+        "ar": "عنب"
+      },
+      "translit": "3eneb"
+    },
+    {
+      "id": "strawberry",
+      "text": {
+        "en": "Strawberry",
+        "ar": "فراولة"
+      },
+      "translit": "farawla"
+    },
+    {
+      "id": "prickly-pear",
+      "text": {
+        "en": "Prickly pear",
+        "ar": "تين شوكي"
+      },
+      "translit": "teen shoky"
+    },
+    {
+      "id": "dates",
+      "text": {
+        "en": "Dates",
+        "ar": "بلح"
+      },
+      "translit": "bala7"
+    },
+    {
+      "id": "pomegranate",
+      "text": {
+        "en": "Pomegranate",
+        "ar": "رمان"
+      },
+      "translit": "romman"
+    },
+    {
+      "id": "sugarcane",
+      "text": {
+        "en": "Sugarcane",
+        "ar": "قصب"
+      },
+      "translit": "asab"
+    },
+    {
+      "id": "zucchini",
+      "text": {
+        "en": "Zucchini",
+        "ar": "كوسة"
+      },
+      "translit": "kousa"
+    },
+    {
+      "id": "eggplant",
+      "text": {
+        "en": "Eggplant",
+        "ar": "بتنجان"
+      },
+      "translit": "betengan"
+    },
+    {
+      "id": "tomato",
+      "text": {
+        "en": "Tomato",
+        "ar": "طماطم"
+      },
+      "translit": "tamatem"
+    },
+    {
+      "id": "cucumber",
+      "text": {
+        "en": "Cucumber",
+        "ar": "خيار"
+      },
+      "translit": "khiyar"
+    },
+    {
+      "id": "potato",
+      "text": {
+        "en": "Potato",
+        "ar": "بطاطس"
+      },
+      "translit": "batates"
+    },
+    {
+      "id": "onion",
+      "text": {
+        "en": "Onion",
+        "ar": "بصل"
+      },
+      "translit": "basal"
+    },
+    {
+      "id": "garlic",
+      "text": {
+        "en": "Garlic",
+        "ar": "توم"
+      },
+      "translit": "toom"
+    },
+    {
+      "id": "carrot",
+      "text": {
+        "en": "Carrot",
+        "ar": "جزر"
+      },
+      "translit": "gazar"
+    },
+    {
+      "id": "pepper",
+      "text": {
+        "en": "Pepper",
+        "ar": "فلفل"
+      },
+      "translit": "felfel"
+    },
+    {
+      "id": "lemon",
+      "text": {
+        "en": "Lemon",
+        "ar": "لمون"
+      },
+      "translit": "lamoun"
+    },
+    {
+      "id": "lettuce",
+      "text": {
+        "en": "Lettuce",
+        "ar": "خس"
+      },
+      "translit": "khass"
+    },
+    {
+      "id": "cabbage",
+      "text": {
+        "en": "Cabbage",
+        "ar": "كرنب"
+      },
+      "translit": "koronb"
+    },
+    {
+      "id": "apricot",
+      "text": {
+        "en": "Apricot",
+        "ar": "مشمش"
+      },
+      "translit": "meshmesh"
+    }
+  ]
+}

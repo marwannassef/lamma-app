@@ -1,0 +1,221 @@
+{
+  "id": "egypt-food",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🍲",
+  "name": {
+    "en": "Egyptian food",
+    "ar": "أكل مصري"
+  },
+  "subtitle": {
+    "en": "Akl masry",
+    "ar": "Akl masry"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "koshari",
+      "text": {
+        "en": "Koshari",
+        "ar": "كشري"
+      },
+      "translit": "koshary"
+    },
+    {
+      "id": "fava-beans",
+      "text": {
+        "en": "Fava beans",
+        "ar": "فول"
+      },
+      "translit": "fool"
+    },
+    {
+      "id": "falafel",
+      "text": {
+        "en": "Falafel",
+        "ar": "طعمية"
+      },
+      "translit": "ta3meya"
+    },
+    {
+      "id": "stuffed-veggies",
+      "text": {
+        "en": "Stuffed veggies",
+        "ar": "محشي"
+      },
+      "translit": "ma7shy"
+    },
+    {
+      "id": "molokhia",
+      "text": {
+        "en": "Molokhia",
+        "ar": "ملوخية"
+      },
+      "translit": "molokheya"
+    },
+    {
+      "id": "feteer-pie",
+      "text": {
+        "en": "Feteer pie",
+        "ar": "فطير مشلتت"
+      },
+      "translit": "feteer meshaltet"
+    },
+    {
+      "id": "liver-sandwich",
+      "text": {
+        "en": "Liver sandwich",
+        "ar": "كبدة"
+      },
+      "translit": "kebda"
+    },
+    {
+      "id": "hawawshi",
+      "text": {
+        "en": "Hawawshi",
+        "ar": "حواوشي"
+      },
+      "translit": "7awawshy"
+    },
+    {
+      "id": "rice-pudding",
+      "text": {
+        "en": "Rice pudding",
+        "ar": "رز بلبن"
+      },
+      "translit": "roz bel laban"
+    },
+    {
+      "id": "om-ali",
+      "text": {
+        "en": "Om Ali",
+        "ar": "أم علي"
+      },
+      "translit": "om 3ali"
+    },
+    {
+      "id": "basbousa",
+      "text": {
+        "en": "Basbousa",
+        "ar": "بسبوسة"
+      },
+      "translit": "basbousa"
+    },
+    {
+      "id": "kunafa",
+      "text": {
+        "en": "Kunafa",
+        "ar": "كنافة"
+      },
+      "translit": "konafa"
+    },
+    {
+      "id": "qatayef",
+      "text": {
+        "en": "Qatayef",
+        "ar": "قطايف"
+      },
+      "translit": "2atayef"
+    },
+    {
+      "id": "fatta",
+      "text": {
+        "en": "Fatta",
+        "ar": "فتة"
+      },
+      "translit": "fatta"
+    },
+    {
+      "id": "moussaka",
+      "text": {
+        "en": "Moussaka",
+        "ar": "مسقعة"
+      },
+      "translit": "mesa2a3a"
+    },
+    {
+      "id": "okra",
+      "text": {
+        "en": "Okra",
+        "ar": "بامية"
+      },
+      "translit": "bamya"
+    },
+    {
+      "id": "baladi-bread",
+      "text": {
+        "en": "Baladi bread",
+        "ar": "عيش بلدي"
+      },
+      "translit": "3eish balady"
+    },
+    {
+      "id": "shawarma",
+      "text": {
+        "en": "Shawarma",
+        "ar": "شاورما"
+      },
+      "translit": "shawerma"
+    },
+    {
+      "id": "french-fries",
+      "text": {
+        "en": "French fries",
+        "ar": "بطاطس محمرة"
+      },
+      "translit": "batates me7ammara"
+    },
+    {
+      "id": "pasta-bechamel",
+      "text": {
+        "en": "Pasta béchamel",
+        "ar": "مكرونة بشاميل"
+      },
+      "translit": "makarona bechamel"
+    },
+    {
+      "id": "simit",
+      "text": {
+        "en": "Simit",
+        "ar": "سميط"
+      },
+      "translit": "semeet"
+    },
+    {
+      "id": "belila",
+      "text": {
+        "en": "Belila",
+        "ar": "بليلة"
+      },
+      "translit": "belela"
+    },
+    {
+      "id": "lentil-soup",
+      "text": {
+        "en": "Lentil soup",
+        "ar": "شوربة عدس"
+      },
+      "translit": "shorbet 3ads"
+    },
+    {
+      "id": "fried-eggs",
+      "text": {
+        "en": "Fried eggs",
+        "ar": "بيض مقلي"
+      },
+      "translit": "beid ma2ly"
+    },
+    {
+      "id": "white-cheese",
+      "text": {
+        "en": "White cheese",
+        "ar": "جبنة بيضا"
+      },
+      "translit": "gebna beida"
+    }
+  ]
+}

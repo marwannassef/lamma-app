@@ -1,0 +1,205 @@
+{
+  "id": "egypt-games",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "⚽",
+  "name": {
+    "en": "Games & toys",
+    "ar": "لعب وألعاب"
+  },
+  "subtitle": {
+    "en": "Le3ab",
+    "ar": "Le3ab"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "football",
+      "text": {
+        "en": "Football",
+        "ar": "كورة"
+      },
+      "translit": "kora"
+    },
+    {
+      "id": "hide-and-seek",
+      "text": {
+        "en": "Hide and seek",
+        "ar": "استغماية"
+      },
+      "translit": "esteghomaya"
+    },
+    {
+      "id": "musical-chairs",
+      "text": {
+        "en": "Musical chairs",
+        "ar": "كراسي موسيقية"
+      },
+      "translit": "karasy moseeqeya"
+    },
+    {
+      "id": "jump-rope",
+      "text": {
+        "en": "Jump rope",
+        "ar": "نط الحبل"
+      },
+      "translit": "natt el 7abl"
+    },
+    {
+      "id": "marbles",
+      "text": {
+        "en": "Marbles",
+        "ar": "بلي"
+      },
+      "translit": "bely"
+    },
+    {
+      "id": "kite",
+      "text": {
+        "en": "Kite",
+        "ar": "طيارة ورق"
+      },
+      "translit": "tayyaret wara2"
+    },
+    {
+      "id": "chess",
+      "text": {
+        "en": "Chess",
+        "ar": "شطرنج"
+      },
+      "translit": "shatarang"
+    },
+    {
+      "id": "dominoes",
+      "text": {
+        "en": "Dominoes",
+        "ar": "دومينو"
+      },
+      "translit": "domino"
+    },
+    {
+      "id": "playing-cards",
+      "text": {
+        "en": "Playing cards",
+        "ar": "كوتشينة"
+      },
+      "translit": "kotsheena"
+    },
+    {
+      "id": "swings",
+      "text": {
+        "en": "Swings",
+        "ar": "مراجيح"
+      },
+      "translit": "marageeh"
+    },
+    {
+      "id": "slide",
+      "text": {
+        "en": "Slide",
+        "ar": "زحليقة"
+      },
+      "translit": "za7lee2a"
+    },
+    {
+      "id": "seven-stones",
+      "text": {
+        "en": "Seven stones",
+        "ar": "سبع طوبات"
+      },
+      "translit": "saba3 tobat"
+    },
+    {
+      "id": "cops-and-robbers",
+      "text": {
+        "en": "Cops and robbers",
+        "ar": "عسكر وحرامية"
+      },
+      "translit": "3askar w 7aramya"
+    },
+    {
+      "id": "playstation",
+      "text": {
+        "en": "PlayStation",
+        "ar": "بلايستيشن"
+      },
+      "translit": "playstation"
+    },
+    {
+      "id": "puzzle",
+      "text": {
+        "en": "Puzzle",
+        "ar": "بازل"
+      },
+      "translit": "puzzle"
+    },
+    {
+      "id": "doll",
+      "text": {
+        "en": "Doll",
+        "ar": "عروسة"
+      },
+      "translit": "3arousa"
+    },
+    {
+      "id": "rc-car",
+      "text": {
+        "en": "RC car",
+        "ar": "عربية بريموت"
+      },
+      "translit": "3arabeya b remote"
+    },
+    {
+      "id": "balloon",
+      "text": {
+        "en": "Balloon",
+        "ar": "بالونة"
+      },
+      "translit": "ballona"
+    },
+    {
+      "id": "spinning-top",
+      "text": {
+        "en": "Spinning top",
+        "ar": "نحلة"
+      },
+      "translit": "na7la"
+    },
+    {
+      "id": "building-blocks",
+      "text": {
+        "en": "Building blocks",
+        "ar": "مكعبات"
+      },
+      "translit": "moka3abat"
+    },
+    {
+      "id": "tug-of-war",
+      "text": {
+        "en": "Tug of war",
+        "ar": "شد الحبل"
+      },
+      "translit": "shadd el 7abl"
+    },
+    {
+      "id": "ping-pong",
+      "text": {
+        "en": "Ping pong",
+        "ar": "تنس طاولة"
+      },
+      "translit": "tennis tawla"
+    },
+    {
+      "id": "monopoly",
+      "text": {
+        "en": "Monopoly",
+        "ar": "بنك الحظ"
+      },
+      "translit": "bank el 7azz"
+    }
+  ]
+}

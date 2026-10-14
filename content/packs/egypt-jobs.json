@@ -1,0 +1,221 @@
+{
+  "id": "egypt-jobs",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "👷",
+  "name": {
+    "en": "Jobs",
+    "ar": "مهن"
+  },
+  "subtitle": {
+    "en": "Mehan",
+    "ar": "Mehan"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "doctor",
+      "text": {
+        "en": "Doctor",
+        "ar": "دكتور"
+      },
+      "translit": "doktor"
+    },
+    {
+      "id": "teacher",
+      "text": {
+        "en": "Teacher",
+        "ar": "مدرس"
+      },
+      "translit": "modarres"
+    },
+    {
+      "id": "police-officer",
+      "text": {
+        "en": "Police officer",
+        "ar": "ظابط"
+      },
+      "translit": "zabet"
+    },
+    {
+      "id": "engineer",
+      "text": {
+        "en": "Engineer",
+        "ar": "مهندس"
+      },
+      "translit": "mohandes"
+    },
+    {
+      "id": "driver",
+      "text": {
+        "en": "Driver",
+        "ar": "سواق"
+      },
+      "translit": "sawwa2"
+    },
+    {
+      "id": "doorman",
+      "text": {
+        "en": "Doorman",
+        "ar": "بواب"
+      },
+      "translit": "bawwab"
+    },
+    {
+      "id": "electrician",
+      "text": {
+        "en": "Electrician",
+        "ar": "كهربائي"
+      },
+      "translit": "kahrabai"
+    },
+    {
+      "id": "plumber",
+      "text": {
+        "en": "Plumber",
+        "ar": "سباك"
+      },
+      "translit": "sabbak"
+    },
+    {
+      "id": "carpenter",
+      "text": {
+        "en": "Carpenter",
+        "ar": "نجار"
+      },
+      "translit": "naggar"
+    },
+    {
+      "id": "baker",
+      "text": {
+        "en": "Baker",
+        "ar": "خباز"
+      },
+      "translit": "khabbaz"
+    },
+    {
+      "id": "fruit-seller",
+      "text": {
+        "en": "Fruit seller",
+        "ar": "فكهاني"
+      },
+      "translit": "fakahany"
+    },
+    {
+      "id": "grocer",
+      "text": {
+        "en": "Grocer",
+        "ar": "بقال"
+      },
+      "translit": "ba2al"
+    },
+    {
+      "id": "barber",
+      "text": {
+        "en": "Barber",
+        "ar": "حلاق"
+      },
+      "translit": "7allaa"
+    },
+    {
+      "id": "mechanic",
+      "text": {
+        "en": "Mechanic",
+        "ar": "ميكانيكي"
+      },
+      "translit": "mekaneeky"
+    },
+    {
+      "id": "pilot",
+      "text": {
+        "en": "Pilot",
+        "ar": "طيار"
+      },
+      "translit": "tayyar"
+    },
+    {
+      "id": "nurse",
+      "text": {
+        "en": "Nurse",
+        "ar": "ممرضة"
+      },
+      "translit": "momarreda"
+    },
+    {
+      "id": "chef",
+      "text": {
+        "en": "Chef",
+        "ar": "شيف"
+      },
+      "translit": "chef"
+    },
+    {
+      "id": "football-player",
+      "text": {
+        "en": "Football player",
+        "ar": "لاعب كورة"
+      },
+      "translit": "la3eb kora"
+    },
+    {
+      "id": "tv-presenter",
+      "text": {
+        "en": "TV presenter",
+        "ar": "مذيع"
+      },
+      "translit": "mozee3"
+    },
+    {
+      "id": "ironing-man",
+      "text": {
+        "en": "Ironing man",
+        "ar": "مكوجي"
+      },
+      "translit": "makwagy"
+    },
+    {
+      "id": "pharmacist",
+      "text": {
+        "en": "Pharmacist",
+        "ar": "صيدلي"
+      },
+      "translit": "saydaly"
+    },
+    {
+      "id": "butcher",
+      "text": {
+        "en": "Butcher",
+        "ar": "جزار"
+      },
+      "translit": "gazzar"
+    },
+    {
+      "id": "painter",
+      "text": {
+        "en": "Painter",
+        "ar": "رسام"
+      },
+      "translit": "rassam"
+    },
+    {
+      "id": "freska-seller",
+      "text": {
+        "en": "Freska seller",
+        "ar": "بياع فريسكا"
+      },
+      "translit": "baya3 freska"
+    },
+    {
+      "id": "traffic-officer",
+      "text": {
+        "en": "Traffic officer",
+        "ar": "عسكري مرور"
+      },
+      "translit": "3askary morour"
+    }
+  ]
+}

@@ -1,12 +1,15 @@
 import Constants from 'expo-constants';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Switch, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
+import { ADULT_ENABLED } from '@/core/config';
+import { allRegions } from '@/core/content';
 import { localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
+import { useRegions } from '@/core/settings/content';
 import { useSettings, type Appearance, type LanguagePref } from '@/core/settings/store';
 import { radius, space, useTheme } from '@/core/theme';
-import { Pressable, Screen, Text } from '@/core/ui';
-import { BackHeader } from '@/core/ui/BackHeader';
+import { BackHeader, ConfirmInline, Hint, Panel, Pressable, Screen, Text, Toggle } from '@/core/ui';
 
 interface Option<T extends string> {
   value: T;
@@ -54,45 +57,6 @@ function OptionGroup<T extends string>({
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  const { colors } = useTheme();
-  return (
-    <View style={[styles.section, { backgroundColor: colors.surface }]}>
-      <Text variant="heading">{title}</Text>
-      {children}
-    </View>
-  );
-}
-
-function ToggleRow({
-  label,
-  value,
-  onChange,
-  testID,
-}: {
-  label: string;
-  value: boolean;
-  onChange(v: boolean): void;
-  testID: string;
-}) {
-  const { colors } = useTheme();
-  return (
-    <View style={styles.toggleRow}>
-      <Text variant="label" style={styles.flex}>
-        {label}
-      </Text>
-      <Switch
-        testID={testID}
-        accessibilityLabel={label}
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ true: colors.secondary, false: colors.border }}
-        thumbColor={colors.surfaceRaised}
-      />
-    </View>
-  );
-}
-
 export default function Settings() {
   const { t } = useTranslation();
   const s = useSettings();
@@ -110,11 +74,23 @@ export default function Settings() {
     { value: 'dark', label: t('settings.appearanceDark') },
   ];
 
+  const regions = useRegions();
+  const [lastRegionHint, setLastRegionHint] = useState(false);
+  const [askAdult, setAskAdult] = useState(false);
+
+  const toggleRegion = (region: string, on: boolean) => {
+    const next = on ? [...regions, region] : regions.filter((r) => r !== region);
+    if (next.length === 0) return setLastRegionHint(true);
+    setLastRegionHint(false);
+    s.setRegions(allRegions.filter((r) => next.includes(r)));
+  };
+
   return (
     <Screen>
       <BackHeader title={t('settings.title')} />
 
-      <Section title={t('settings.language')}>
+      <Panel>
+        <Text variant="heading">{t('settings.language')}</Text>
         <OptionGroup
           testID="lang"
           options={languages}
@@ -127,46 +103,97 @@ export default function Settings() {
         <Text variant="caption" tone="muted">
           {t('settings.directionNote')}
         </Text>
-      </Section>
+      </Panel>
 
-      <Section title={t('settings.appearance')}>
+      <Panel>
+        <Text variant="heading">{t('regions.title')}</Text>
+        {allRegions.map((region) => (
+          <Toggle
+            key={region}
+            surface={false}
+            testID={`region-${region}`}
+            label={t(`regions.${region}` as 'regions.global', {
+              defaultValue: region.toUpperCase(),
+            })}
+            value={regions.includes(region)}
+            onChange={(on) => toggleRegion(region, on)}
+          />
+        ))}
+        {lastRegionHint ? <Hint>{t('regions.needOne')}</Hint> : null}
+        {ADULT_ENABLED ? (
+          <>
+            <Toggle
+              surface={false}
+              testID="adult"
+              label={t('adult.label')}
+              sublabel={t('adult.hint')}
+              value={s.adultMode}
+              onChange={(on) => (on ? setAskAdult(true) : s.setAdultMode(false))}
+            />
+            {askAdult ? (
+              <ConfirmInline
+                question={t('adult.ask')}
+                confirmLabel={t('adult.yes')}
+                cancelLabel={t('actions.cancel')}
+                onConfirm={() => {
+                  s.setAdultMode(true);
+                  setAskAdult(false);
+                }}
+                onCancel={() => setAskAdult(false)}
+              />
+            ) : null}
+          </>
+        ) : null}
+      </Panel>
+
+      <Panel>
+        <Text variant="heading">{t('settings.appearance')}</Text>
         <OptionGroup
           testID="appearance"
           options={appearances}
           value={s.appearance}
           onChange={s.setAppearance}
         />
-      </Section>
+      </Panel>
 
-      <Section title={t('settings.title')}>
-        <ToggleRow
+      <Panel>
+        <Text variant="heading">{t('settings.feedback')}</Text>
+        <Toggle
+          surface={false}
           testID="haptics"
           label={t('settings.haptics')}
           value={s.haptics}
           onChange={s.setHaptics}
         />
-        <ToggleRow
+        <Toggle
+          surface={false}
           testID="sound"
           label={t('settings.sound')}
           value={s.sound}
           onChange={s.setSound}
         />
-      </Section>
+      </Panel>
 
-      <Section title={t('settings.about')}>
+      <Panel>
+        <Text variant="heading">{t('settings.about')}</Text>
+        <Image
+          source={require('@/assets/images/publisher-logo.jpg')}
+          style={styles.logo}
+          resizeMode="contain"
+          accessibilityLabel={t('publisher')}
+        />
         <Text variant="label">{t('appName')}</Text>
         <Text variant="caption" tone="muted">
           {t('publisher')} · {t('settings.version', { version: Constants.expoConfig?.version })}
         </Text>
         <Text variant="body">{t('settings.privacy')}</Text>
-      </Section>
+      </Panel>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  section: { borderRadius: radius.lg, padding: space.lg, gap: space.md },
+  logo: { width: '100%', height: 180, borderRadius: radius.md },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   option: {
     borderWidth: 2,
@@ -174,5 +201,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     justifyContent: 'center',
   },
-  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 48 },
 });

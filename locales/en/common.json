@@ -1,0 +1,35 @@
+{
+  "appName": "Lamma",
+  "tagline": "One phone. Everyone plays.",
+  "publisher": "by AN Ventures Labs",
+  "home": {
+    "pickGame": "Pick a game",
+    "playersRange": "{{min}}–{{max}} players",
+    "comingSoon": "Coming soon",
+    "openSettings": "Settings"
+  },
+  "players": {
+    "defaultName": "Player {{n}}",
+    "count_one": "{{count}} player",
+    "count_other": "{{count}} players"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "languageSystem": "Phone language",
+    "directionNote": "The app restarts when the reading direction changes.",
+    "appearance": "Appearance",
+    "appearanceSystem": "Match phone",
+    "appearanceLight": "Light",
+    "appearanceDark": "Party night",
+    "haptics": "Vibration",
+    "sound": "Sound effects",
+    "about": "About",
+    "version": "Version {{version}}",
+    "privacy": "Lamma works fully offline. We don't collect, store or share any data about you."
+  },
+  "a11y": {
+    "back": "Back",
+    "selected": "Selected"
+  }
+}

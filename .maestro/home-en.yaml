@@ -1,0 +1,21 @@
+# Home renders in English and opens Settings.
+appId: com.anventureslabs.lamma
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: open-settings
+- tapOn:
+    id: lang-en
+- extendedWaitUntil:
+    visible: 'Settings'
+    timeout: 15000
+- tapOn:
+    id: back
+- assertVisible: 'Lamma'
+- assertVisible: 'One phone. Everyone plays.'
+- assertVisible: 'Spy'
+- tapOn:
+    id: game-spy
+- assertVisible:
+    id: coming-soon

@@ -61,6 +61,15 @@ describe('chooseCategory', () => {
     expect(['a', 'c']).toContain(chooseCategory(packs, 'gone', 'b', seededRng(2)).id);
   });
 
+  it('never picks adult packs at random, but plays them when chosen', () => {
+    const adult = { ...makePack('x'), adult: true };
+    const rng = seededRng(8);
+    for (let i = 0; i < 100; i++) {
+      expect(chooseCategory([...packs, adult], RANDOM, null, rng).id).not.toBe('x');
+    }
+    expect(chooseCategory([...packs, adult], 'x', 'x', rng).id).toBe('x');
+  });
+
   it('repeats only when a single pack exists', () => {
     expect(chooseCategory([packs[0]!], RANDOM, 'a', seededRng(1)).id).toBe('a');
   });

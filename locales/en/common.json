@@ -27,7 +27,9 @@
     "about": "About",
     "version": "Version {{version}}",
     "privacy": "Lamma works fully offline. We don't collect, store or share any data about you.",
-    "feedback": "Sound & vibration"
+    "feedback": "Sound & vibration",
+    "appearanceAuto": "Day & night",
+    "appearanceAutoNote": "Light from 7 am to 7 pm, dark the rest of the time. Follows your phone's clock."
   },
   "a11y": {
     "back": "Back",
@@ -54,8 +56,6 @@
     "needOne": "Keep at least one region on."
   },
   "adult": {
-    "label": "🔞 +18 mode",
-    "hint": "Adds spicy words for grown-ups",
     "ask": "🔞 Is everyone playing 18+?",
     "yes": "Yes, unlock 🔥"
   },

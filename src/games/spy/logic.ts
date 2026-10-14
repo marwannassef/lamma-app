@@ -14,7 +14,8 @@ export const clampSpies = (spies: number, players: number) =>
 
 /**
  * The pack for this round. Random mode never repeats the previous round's pack when there is
- * another option. A chosen pack that is no longer available (filtered out) falls back to random.
+ * another option, and never picks adult packs: those are only played when chosen explicitly.
+ * A chosen pack that is no longer available (filtered out) falls back to random.
  */
 export function chooseCategory(
   packs: readonly Pack[],
@@ -24,8 +25,9 @@ export function chooseCategory(
 ): Pack {
   const chosen = choice === RANDOM ? undefined : packs.find((p) => p.id === choice);
   if (chosen) return chosen;
-  const fresh = packs.filter((p) => p.id !== lastPackId);
-  return pick(rng, fresh.length > 0 ? fresh : packs);
+  const pool = packs.filter((p) => !p.adult);
+  const fresh = pool.filter((p) => p.id !== lastPackId);
+  return pick(rng, fresh.length > 0 ? fresh : pool);
 }
 
 /** A word not used yet in this pack. Once every word was used, the pack starts over. */

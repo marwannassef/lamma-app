@@ -9,15 +9,11 @@ export function useRegions(): string[] {
   return regions ?? defaultRegions();
 }
 
-/** Adult content is on only when the build includes it and the user turned it on. */
-export function useAdult(): boolean {
-  const adultMode = useSettings((s) => s.adultMode);
-  return ADULT_ENABLED && adultMode;
-}
-
-/** Packs for a game after the region and adult filters. */
+/**
+ * Packs for a game after the region filter. Adult packs are included whenever the build has
+ * them; games keep them out of random play and ask for 18+ confirmation before using one.
+ */
 export function usePacks(game: string): Pack[] {
   const regions = useRegions();
-  const adult = useAdult();
-  return filterPacks(allPacks, { game, regions, adult });
+  return filterPacks(allPacks, { game, regions, adult: ADULT_ENABLED });
 }

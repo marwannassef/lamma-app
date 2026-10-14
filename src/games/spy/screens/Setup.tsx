@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
-import { ADULT_ENABLED } from '@/core/config';
-import { allPacks, filterPacks, localized, type Pack } from '@/core/content';
+import { localized, type Pack } from '@/core/content';
 import {
   clampPlayers,
   MAX_NAME_LENGTH,
@@ -14,7 +13,6 @@ import {
 } from '@/core/players';
 import { LEVELS, usePunishments, type PunishmentLevel } from '@/core/punishments';
 import { usePacks, useRegions } from '@/core/settings/content';
-import { useSettings } from '@/core/settings/store';
 import { fitScores, useSession } from '@/core/session';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
 import {
@@ -55,10 +53,7 @@ export default function Setup() {
   const punishments = usePunishments();
   const packs = usePacks('spy');
   const regions = useRegions();
-  const adultMode = useSettings((s) => s.adultMode);
-  const setAdultMode = useSettings((s) => s.setAdultMode);
 
-  const [askAdult, setAskAdult] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [noPacksHint, setNoPacksHint] = useState(false);
 
@@ -80,20 +75,19 @@ export default function Setup() {
     router.push('/games/spy/play');
   };
 
-  const toggleAdult = (on: boolean) => {
-    if (on) return setAskAdult(true);
-    setAskAdult(false);
-    setAdultMode(false);
-    if (packs.find((p) => p.id === spy.choice)?.adult) spy.setChoice(RANDOM);
-  };
-  const confirmAdult = (adultPack: Pack | undefined) => {
-    setAskAdult(false);
-    setAdultMode(true);
-    if (adultPack) spy.setChoice(adultPack.id);
+  // +18 packs are their own categories: never in random play, and only after confirming 18+.
+  const adultPacks = packs.filter((p) => p.adult);
+  const [askAdultFor, setAskAdultFor] = useState<Pack | null>(null);
+  const chooseAdult = (pack: Pack) => {
+    if (spy.choice === pack.id) return;
+    setAskAdultFor(pack);
   };
 
   const groups = regions
-    .map((region) => ({ region, packs: packs.filter((p) => p.region === region) }))
+    .map((region) => ({
+      region,
+      packs: packs.filter((p) => p.region === region && !p.adult),
+    }))
     .filter((g) => g.packs.length > 0);
 
   return (
@@ -237,7 +231,6 @@ export default function Setup() {
                   title={localized(p.name, lang)}
                   subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
                   selected={!randomSelected && spy.choice === p.id}
-                  warning={p.adult}
                   onPress={() => spy.setChoice(p.id)}
                 />
               </View>
@@ -245,6 +238,31 @@ export default function Setup() {
           </View>
         </View>
       ))}
+      {adultPacks.map((p) => (
+        <Chip
+          key={p.id}
+          testID={`cat-${p.id}`}
+          emoji={p.emoji}
+          title={localized(p.name, lang)}
+          subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+          selected={!randomSelected && spy.choice === p.id}
+          warning
+          onPress={() => chooseAdult(p)}
+        />
+      ))}
+      {askAdultFor ? (
+        <ConfirmInline
+          testID="adult-confirm"
+          question={t('common:adult.ask')}
+          confirmLabel={t('common:adult.yes')}
+          cancelLabel={t('common:actions.cancel')}
+          onConfirm={() => {
+            spy.setChoice(askAdultFor.id);
+            setAskAdultFor(null);
+          }}
+          onCancel={() => setAskAdultFor(null)}
+        />
+      ) : null}
       {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
 
       <Text variant="heading">{t('common:punishments.title')}</Text>
@@ -262,32 +280,6 @@ export default function Setup() {
           </View>
         ))}
       </View>
-
-      {ADULT_ENABLED ? (
-        <>
-          <Toggle
-            testID="adult"
-            label={t('common:adult.label')}
-            sublabel={t('common:adult.hint')}
-            value={adultMode}
-            onChange={toggleAdult}
-          />
-          {askAdult ? (
-            <ConfirmInline
-              testID="adult-confirm"
-              question={t('common:adult.ask')}
-              confirmLabel={t('common:adult.yes')}
-              cancelLabel={t('common:actions.cancel')}
-              onConfirm={() =>
-                confirmAdult(
-                  filterPacks(allPacks, { game: 'spy', regions, adult: true }).find((p) => p.adult),
-                )
-              }
-              onCancel={() => setAskAdult(false)}
-            />
-          ) : null}
-        </>
-      ) : null}
 
       <Toggle
         testID="spy-sees"

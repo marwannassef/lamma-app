@@ -3,13 +3,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { ADULT_ENABLED } from '@/core/config';
 import { allRegions } from '@/core/content';
 import { localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
 import { useRegions } from '@/core/settings/content';
 import { useSettings, type Appearance, type LanguagePref } from '@/core/settings/store';
 import { radius, space, useTheme } from '@/core/theme';
-import { BackHeader, ConfirmInline, Hint, Panel, Pressable, Screen, Text, Toggle } from '@/core/ui';
+import { BackHeader, Hint, Panel, Pressable, Screen, Text, Toggle } from '@/core/ui';
 
 interface Option<T extends string> {
   value: T;
@@ -72,11 +71,11 @@ export default function Settings() {
     { value: 'system', label: t('settings.appearanceSystem') },
     { value: 'light', label: t('settings.appearanceLight') },
     { value: 'dark', label: t('settings.appearanceDark') },
+    { value: 'auto', label: t('settings.appearanceAuto') },
   ];
 
   const regions = useRegions();
   const [lastRegionHint, setLastRegionHint] = useState(false);
-  const [askAdult, setAskAdult] = useState(false);
 
   const toggleRegion = (region: string, on: boolean) => {
     const next = on ? [...regions, region] : regions.filter((r) => r !== region);
@@ -120,30 +119,6 @@ export default function Settings() {
           />
         ))}
         {lastRegionHint ? <Hint>{t('regions.needOne')}</Hint> : null}
-        {ADULT_ENABLED ? (
-          <>
-            <Toggle
-              surface={false}
-              testID="adult"
-              label={t('adult.label')}
-              sublabel={t('adult.hint')}
-              value={s.adultMode}
-              onChange={(on) => (on ? setAskAdult(true) : s.setAdultMode(false))}
-            />
-            {askAdult ? (
-              <ConfirmInline
-                question={t('adult.ask')}
-                confirmLabel={t('adult.yes')}
-                cancelLabel={t('actions.cancel')}
-                onConfirm={() => {
-                  s.setAdultMode(true);
-                  setAskAdult(false);
-                }}
-                onCancel={() => setAskAdult(false)}
-              />
-            ) : null}
-          </>
-        ) : null}
       </Panel>
 
       <Panel>
@@ -154,6 +129,11 @@ export default function Settings() {
           value={s.appearance}
           onChange={s.setAppearance}
         />
+        {s.appearance === 'auto' ? (
+          <Text variant="caption" tone="muted">
+            {t('settings.appearanceAutoNote')}
+          </Text>
+        ) : null}
       </Panel>
 
       <Panel>

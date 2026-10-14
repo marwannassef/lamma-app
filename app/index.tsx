@@ -26,6 +26,12 @@ export default function Home() {
       </View>
 
       <View style={styles.hero}>
+        <Image
+          source={require('@/assets/images/lamma-logo.png')}
+          style={styles.logo}
+          accessibilityIgnoresInvertColors
+          accessible={false}
+        />
         <Text variant="hero" tone="secondary" align="center" testID="app-title">
           {t('appName')}
         </Text>
@@ -92,7 +98,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     justifyContent: 'center',
   },
-  hero: { alignItems: 'center', gap: space.xs, paddingVertical: space.lg },
+  hero: { alignItems: 'center', gap: space.xs, paddingBottom: space.md },
+  logo: { width: 132, height: 132 },
   tile: {
     flexDirection: 'row',
     alignItems: 'center',

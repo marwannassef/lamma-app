@@ -77,5 +77,11 @@
   },
   "list": {
     "and": " & "
+  },
+  "games": {
+    "werewolf": {
+      "title": "Werewolf",
+      "blurb": "Villagers against hidden werewolves. The app narrates the night; the day decides who is out."
+    }
   }
 }

@@ -69,7 +69,7 @@ describe.each(['light', 'dark'] as const)('UI kit (%s)', (scheme) => {
     expect(screen.getByText('Panel')).toBeTruthy();
     expect(screen.getByText('✓')).toBeTruthy();
     expect(screen.getByText(/\+2$/)).toBeTruthy();
-    expect(screen.getByText('👑')).toBeTruthy();
+    expect(screen.getByText(/👑/)).toBeTruthy();
     fireEvent.press(screen.getByLabelText('Yes'));
     expect(onConfirm).toHaveBeenCalled();
   });

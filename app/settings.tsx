@@ -86,10 +86,9 @@ export default function Settings() {
 
   return (
     <Screen>
-      <BackHeader title={t('settings.title')} />
+      <BackHeader title={t('settings.title')} icon="⚙️" />
 
-      <Panel>
-        <Text variant="heading">{t('settings.language')}</Text>
+      <Panel title={t('settings.language')} icon="🌐">
         <OptionGroup
           testID="lang"
           options={languages}
@@ -104,8 +103,7 @@ export default function Settings() {
         </Text>
       </Panel>
 
-      <Panel>
-        <Text variant="heading">{t('regions.title')}</Text>
+      <Panel title={t('regions.title')} icon="🗺️">
         {allRegions.map((region) => (
           <Toggle
             key={region}
@@ -121,8 +119,7 @@ export default function Settings() {
         {lastRegionHint ? <Hint>{t('regions.needOne')}</Hint> : null}
       </Panel>
 
-      <Panel>
-        <Text variant="heading">{t('settings.appearance')}</Text>
+      <Panel title={t('settings.appearance')} icon="🎨">
         <OptionGroup
           testID="appearance"
           options={appearances}
@@ -136,8 +133,7 @@ export default function Settings() {
         ) : null}
       </Panel>
 
-      <Panel>
-        <Text variant="heading">{t('settings.feedback')}</Text>
+      <Panel title={t('settings.feedback')} icon="🔊">
         <Toggle
           surface={false}
           testID="haptics"
@@ -154,8 +150,7 @@ export default function Settings() {
         />
       </Panel>
 
-      <Panel>
-        <Text variant="heading">{t('settings.about')}</Text>
+      <Panel title={t('settings.about')} icon="ℹ️">
         <Image
           source={require('@/assets/images/publisher-logo.jpg')}
           style={styles.logo}

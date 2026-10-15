@@ -1,89 +1,168 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { radius, space, useTheme } from '@/core/theme';
 
 import { Pressable } from './Pressable';
 import { Text } from './Text';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'danger' | 'ghost';
 
 export interface ButtonProps {
   label: string;
   onPress(): void;
   variant?: Variant;
+  /** Leading emoji, e.g. "▶". */
+  icon?: string;
+  size?: 'lg' | 'md';
   testID?: string;
   accessibilityHint?: string;
-  /** Use the warmer danger color for the face (e.g. punishments). */
-  tone?: 'default' | 'danger';
 }
 
-/** Chunky button. Primary/secondary have a 6dp "lip" that presses down. */
+const LIP = 6;
+
+/** Chunky 3D game button: gradient face on a darker lip; it squishes down when pressed. */
 export function Button({
   label,
   onPress,
   variant = 'primary',
+  icon,
+  size = 'lg',
   testID,
   accessibilityHint,
-  tone = 'default',
 }: ButtonProps) {
   const { colors } = useTheme();
+  const pressed = useSharedValue(0);
+  const faceStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: pressed.value * (LIP - 2) }, { scale: 1 - pressed.value * 0.02 }],
+  }));
+  const content = (color: string) => (
+    <View style={styles.content}>
+      {icon ? (
+        <Text variant={size === 'lg' ? 'heading' : 'label'} accessible={false} style={{ color }}>
+          {icon}
+        </Text>
+      ) : null}
+      <Text
+        variant={size === 'lg' ? 'heading' : 'label'}
+        align="center"
+        style={[{ color }, size === 'lg' && styles.lgText]}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+
+  const common = {
+    testID,
+    accessibilityLabel: label,
+    accessibilityHint,
+    onPress,
+    onPressIn: () => {
+      pressed.value = withSpring(1, { damping: 18, stiffness: 500 });
+    },
+    onPressOut: () => {
+      pressed.value = withSpring(0, { damping: 12, stiffness: 300 });
+    },
+  };
+
   if (variant === 'ghost') {
     return (
-      <Pressable
-        testID={testID}
-        accessibilityLabel={label}
-        accessibilityHint={accessibilityHint}
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.ghost,
-          { borderColor: colors.border, backgroundColor: pressed ? colors.surface : 'transparent' },
-        ]}
-      >
-        <Text variant="label" align="center">
-          {label}
-        </Text>
+      <Pressable {...common} haptic={false}>
+        <Animated.View
+          style={[
+            styles.ghost,
+            size === 'md' && styles.md,
+            { borderColor: colors.border, backgroundColor: colors.surface },
+            faceStyle,
+          ]}
+        >
+          {content(colors.text)}
+        </Animated.View>
       </Pressable>
     );
   }
+
   const face =
-    tone === 'danger' ? colors.danger : variant === 'primary' ? colors.primary : colors.secondary;
-  const lip = variant === 'primary' && tone === 'default' ? colors.primaryLip : colors.text;
+    variant === 'primary'
+      ? colors.primaryGradient
+      : variant === 'secondary'
+        ? colors.secondaryGradient
+        : colors.dangerGradient;
+  const lip =
+    variant === 'primary'
+      ? colors.primaryLip
+      : variant === 'secondary'
+        ? colors.secondaryLip
+        : colors.secondaryLip;
   const textColor =
-    tone === 'danger' || variant === 'secondary' ? colors.onSecondary : colors.onPrimary;
+    variant === 'primary'
+      ? colors.onPrimary
+      : variant === 'secondary'
+        ? colors.onSecondary
+        : colors.onDanger;
+
   return (
-    <Pressable
-      testID={testID}
-      accessibilityLabel={label}
-      accessibilityHint={accessibilityHint}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.lip,
-        { backgroundColor: lip, paddingBottom: pressed ? 2 : 6, marginTop: pressed ? 4 : 0 },
-      ]}
-    >
-      <View style={[styles.face, { backgroundColor: face }]}>
-        <Text variant="heading" align="center" style={{ color: textColor }}>
-          {label}
-        </Text>
+    <Pressable {...common}>
+      <View style={[styles.lip, { backgroundColor: lip, shadowColor: face[1] }]}>
+        <Animated.View style={faceStyle}>
+          <LinearGradient
+            colors={face}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.face, size === 'md' && styles.md]}
+          >
+            <View style={styles.shine} pointerEvents="none" />
+            {content(textColor)}
+          </LinearGradient>
+        </Animated.View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  lip: { borderRadius: radius.lg },
+  lip: {
+    borderRadius: radius.lg,
+    paddingBottom: LIP,
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
   face: {
     borderRadius: radius.lg,
     paddingVertical: space.md,
     paddingHorizontal: space.lg,
-    minHeight: 56,
+    minHeight: 60,
     justifyContent: 'center',
+    overflow: 'hidden',
   },
+  md: { minHeight: 48, paddingVertical: space.sm },
+  shine: {
+    position: 'absolute',
+    top: 0,
+    start: 0,
+    end: 0,
+    height: '45%',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderTopStartRadius: radius.lg,
+    borderTopEndRadius: radius.lg,
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+  },
+  lgText: { fontSize: 24, lineHeight: 32 },
   ghost: {
     borderWidth: 2,
     borderRadius: radius.lg,
     paddingVertical: space.sm,
     paddingHorizontal: space.lg,
+    minHeight: 52,
     justifyContent: 'center',
   },
 });

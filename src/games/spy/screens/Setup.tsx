@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +17,7 @@ import { usePacks, useRegions } from '@/core/settings/content';
 import { fitScores, useSession } from '@/core/session';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
 import {
+  Avatar,
   BackHeader,
   Button,
   Chip,
@@ -91,14 +93,24 @@ export default function Setup() {
     .filter((g) => g.packs.length > 0);
 
   return (
-    <Screen>
-      <BackHeader title={t('title')} />
+    <Screen
+      footer={
+        <Button
+          testID="start"
+          icon="🚀"
+          label={t('setup.start', { n: session.round })}
+          onPress={start}
+        />
+      }
+    >
+      <BackHeader title={t('title')} icon="🕵️" />
       <Text variant="body" tone="muted" align="center">
         {t('setup.lead')}
       </Text>
 
       <Stepper
         testID="players"
+        icon="👥"
         label={t('setup.players')}
         value={count}
         min={MIN_PLAYERS}
@@ -111,6 +123,7 @@ export default function Setup() {
       />
       <Stepper
         testID="spies"
+        icon="🕵️"
         label={t('setup.spies')}
         sublabel={t('setup.spiesSub')}
         value={spies}
@@ -123,37 +136,44 @@ export default function Setup() {
         maxHint={count < 7 ? t('setup.needMorePlayers') : t('setup.maxSpies')}
       />
 
-      <Text variant="heading">{t('setup.names')}</Text>
-      <View style={styles.names}>
-        {Array.from({ length: count }, (_, i) => {
-          const value = names[i] ?? '';
-          const placeholder = t('common:players.defaultName', { n: i + 1 });
-          return (
-            <TextInput
-              key={i}
-              testID={`name-${i}`}
-              value={value}
-              onChangeText={(v) => setName(i, v)}
-              placeholder={placeholder}
-              placeholderTextColor={colors.textMuted}
-              maxLength={MAX_NAME_LENGTH}
-              accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-              autoCorrect={false}
-              returnKeyType="done"
-              maxFontSizeMultiplier={2}
-              style={[
-                styles.nameInput,
-                {
-                  backgroundColor: colors.surfaceRaised,
-                  borderColor: colors.border,
-                  color: colors.text,
-                  fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                },
-              ]}
-            />
-          );
-        })}
-      </View>
+      <Panel title={t('setup.names')} icon="✍️">
+        <View style={styles.names}>
+          {Array.from({ length: count }, (_, i) => {
+            const value = names[i] ?? '';
+            const placeholder = t('common:players.defaultName', { n: i + 1 });
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.nameCell,
+                  { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+                ]}
+              >
+                <Avatar player={i} size={32} />
+                <TextInput
+                  testID={`name-${i}`}
+                  value={value}
+                  onChangeText={(v) => setName(i, v)}
+                  placeholder={placeholder}
+                  placeholderTextColor={colors.textMuted}
+                  maxLength={MAX_NAME_LENGTH}
+                  accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                  autoCorrect={false}
+                  returnKeyType="done"
+                  maxFontSizeMultiplier={2}
+                  style={[
+                    styles.nameInput,
+                    {
+                      color: colors.text,
+                      fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                    },
+                  ]}
+                />
+              </View>
+            );
+          })}
+        </View>
+      </Panel>
 
       {hasScores ? (
         <Panel title={t('common:scores.title')}>
@@ -173,6 +193,8 @@ export default function Setup() {
           ) : (
             <Button
               variant="ghost"
+              size="md"
+              icon="♻️"
               testID="reset-scores"
               label={t('common:scores.reset')}
               onPress={() => setConfirmReset(true)}
@@ -181,105 +203,123 @@ export default function Setup() {
         </Panel>
       ) : null}
 
-      <Pressable
-        testID="cat-random"
-        accessibilityRole="radio"
-        accessibilityState={{ checked: randomSelected }}
-        accessibilityLabel={`${t('setup.random')}, ${t('setup.randomSub')}`}
-        onPress={() => spy.setChoice(RANDOM)}
-        style={[
-          styles.random,
-          {
-            borderColor: colors.secondary,
-            borderStyle: randomSelected ? 'solid' : 'dashed',
-            backgroundColor: randomSelected ? colors.secondary : 'transparent',
-          },
-        ]}
-      >
-        <Text
-          variant="heading"
-          align="center"
-          style={{ color: randomSelected ? colors.onSecondary : colors.secondary }}
+      <Panel title={t('setup.categories')} icon="🗂️">
+        <Pressable
+          testID="cat-random"
+          accessibilityRole="radio"
+          accessibilityState={{ checked: randomSelected }}
+          accessibilityLabel={`${t('setup.random')}, ${t('setup.randomSub')}`}
+          onPress={() => spy.setChoice(RANDOM)}
+          style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
         >
-          {randomSelected ? `✓ ${t('setup.random')}` : t('setup.random')}
-        </Text>
-        <Text
-          variant="caption"
-          align="center"
-          style={{ color: randomSelected ? colors.onSecondary : colors.textMuted }}
-        >
-          {t('setup.randomSub')}
-        </Text>
-      </Pressable>
-
-      <Text variant="heading">{t('setup.orPick')}</Text>
-      {groups.map((g) => (
-        <View key={g.region} style={styles.group}>
-          {groups.length > 1 ? (
-            <Text variant="label" tone="muted">
-              {t(`common:regions.${g.region}` as 'common:regions.global', {
-                defaultValue: g.region.toUpperCase(),
-              })}
+          <LinearGradient
+            colors={
+              randomSelected
+                ? colors.secondaryGradient
+                : [colors.surfaceRaised, colors.surfaceRaised]
+            }
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[
+              styles.random,
+              {
+                borderColor: randomSelected ? colors.glow : colors.border,
+                borderStyle: randomSelected ? 'solid' : 'dashed',
+              },
+            ]}
+          >
+            <Text style={styles.dice} accessible={false}>
+              🎲
             </Text>
-          ) : null}
-          <View style={styles.grid} accessibilityRole="radiogroup">
-            {g.packs.map((p) => (
-              <View key={p.id} style={styles.cell}>
-                <Chip
-                  testID={`cat-${p.id}`}
-                  emoji={p.emoji}
-                  title={localized(p.name, lang)}
-                  subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
-                  selected={!randomSelected && spy.choice === p.id}
-                  onPress={() => spy.setChoice(p.id)}
-                />
-              </View>
-            ))}
-          </View>
-        </View>
-      ))}
-      {adultPacks.map((p) => (
-        <Chip
-          key={p.id}
-          testID={`cat-${p.id}`}
-          emoji={p.emoji}
-          title={localized(p.name, lang)}
-          subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
-          selected={!randomSelected && spy.choice === p.id}
-          warning
-          onPress={() => chooseAdult(p)}
-        />
-      ))}
-      {askAdultFor ? (
-        <ConfirmInline
-          testID="adult-confirm"
-          question={t('common:adult.ask')}
-          confirmLabel={t('common:adult.yes')}
-          cancelLabel={t('common:actions.cancel')}
-          onConfirm={() => {
-            spy.setChoice(askAdultFor.id);
-            setAskAdultFor(null);
-          }}
-          onCancel={() => setAskAdultFor(null)}
-        />
-      ) : null}
-      {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
+            <View style={styles.randomText}>
+              <Text
+                variant="heading"
+                style={{ color: randomSelected ? colors.onSecondary : colors.text }}
+              >
+                {randomSelected ? `✓ ${t('setup.random')}` : t('setup.random')}
+              </Text>
+              <Text
+                variant="caption"
+                style={{ color: randomSelected ? colors.onSecondary : colors.textMuted }}
+              >
+                {t('setup.randomSub')}
+              </Text>
+            </View>
+          </LinearGradient>
+        </Pressable>
 
-      <Text variant="heading">{t('common:punishments.title')}</Text>
-      <View style={styles.levels} accessibilityRole="radiogroup">
-        {LEVELS.map((level) => (
-          <View key={level} style={styles.levelCell}>
-            <Chip
-              compact
-              testID={`level-${level}`}
-              emoji={LEVEL_EMOJI[level]}
-              title={t(`common:punishments.levels.${level}`)}
-              selected={punishments.level === level}
-              onPress={() => punishments.setLevel(level)}
-            />
+        <Text variant="label" tone="muted">
+          {t('setup.orPick')}
+        </Text>
+        {groups.map((g) => (
+          <View key={g.region} style={styles.group}>
+            {groups.length > 1 ? (
+              <Text variant="caption" tone="muted">
+                {t(`common:regions.${g.region}` as 'common:regions.global', {
+                  defaultValue: g.region.toUpperCase(),
+                })}
+              </Text>
+            ) : null}
+            <View style={styles.grid} accessibilityRole="radiogroup">
+              {g.packs.map((p) => (
+                <View key={p.id} style={styles.cell}>
+                  <Chip
+                    testID={`cat-${p.id}`}
+                    emoji={p.emoji}
+                    title={localized(p.name, lang)}
+                    subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+                    selected={!randomSelected && spy.choice === p.id}
+                    onPress={() => spy.setChoice(p.id)}
+                  />
+                </View>
+              ))}
+            </View>
           </View>
         ))}
-      </View>
+        {adultPacks.map((p) => (
+          <Chip
+            key={p.id}
+            testID={`cat-${p.id}`}
+            emoji={p.emoji}
+            title={localized(p.name, lang)}
+            subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+            selected={!randomSelected && spy.choice === p.id}
+            warning
+            onPress={() => chooseAdult(p)}
+          />
+        ))}
+        {askAdultFor ? (
+          <ConfirmInline
+            testID="adult-confirm"
+            question={t('common:adult.ask')}
+            confirmLabel={t('common:adult.yes')}
+            cancelLabel={t('common:actions.cancel')}
+            onConfirm={() => {
+              spy.setChoice(askAdultFor.id);
+              setAskAdultFor(null);
+            }}
+            onCancel={() => setAskAdultFor(null)}
+          />
+        ) : null}
+        {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
+      </Panel>
+
+      <Panel title={t('common:punishments.title')} icon="😈">
+        <View style={styles.levels} accessibilityRole="radiogroup">
+          {LEVELS.map((level) => (
+            <View key={level} style={styles.levelCell}>
+              <Chip
+                compact
+                testID={`level-${level}`}
+                emoji={LEVEL_EMOJI[level]}
+                title={t(`common:punishments.levels.${level}`)}
+                selected={punishments.level === level}
+                onPress={() => punishments.setLevel(level)}
+              />
+            </View>
+          ))}
+        </View>
+      </Panel>
 
       <Toggle
         testID="spy-sees"
@@ -288,28 +328,33 @@ export default function Setup() {
         value={spy.spySeesCategory}
         onChange={spy.setSpySeesCategory}
       />
-
-      <Button testID="start" label={t('setup.start', { n: session.round })} onPress={start} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   names: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  nameInput: {
+  nameCell: {
     width: '48.5%',
-    minHeight: 48,
-    borderWidth: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    minHeight: 52,
+    borderWidth: 1.5,
     borderRadius: radius.md,
-    paddingHorizontal: space.md,
-    fontSize: 16,
+    paddingHorizontal: space.xs,
   },
+  nameInput: { flex: 1, minHeight: 48, fontSize: 16, paddingHorizontal: space.xs },
   random: {
-    borderWidth: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    borderWidth: 2,
     borderRadius: radius.lg,
     padding: space.md,
-    alignItems: 'center',
   },
+  dice: { fontSize: 40, lineHeight: 50 },
+  randomText: { flex: 1 },
   group: { gap: space.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   cell: { width: '48.5%' },

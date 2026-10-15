@@ -6,7 +6,8 @@
     "pickGame": "اختار لعبة",
     "playersRange": "من {{min}} لـ {{max}} لاعبين",
     "comingSoon": "قريبًا",
-    "openSettings": "الإعدادات"
+    "openSettings": "الإعدادات",
+    "play": "العب"
   },
   "players": {
     "defaultName": "لاعب {{n}}",

@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -10,6 +11,7 @@ import { Text } from './Text';
 export interface StepperProps {
   label: string;
   sublabel?: string;
+  icon?: string;
   value: number;
   min: number;
   max: number;
@@ -22,6 +24,39 @@ export interface StepperProps {
   testID: string;
 }
 
+function RoundButton({
+  sign,
+  label,
+  dim,
+  onPress,
+  testID,
+}: {
+  sign: string;
+  label: string;
+  dim: boolean;
+  onPress(): void;
+  testID: string;
+}) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => [
+        { opacity: dim ? 0.45 : 1 },
+        pressed && { transform: [{ scale: 0.92 }] },
+      ]}
+    >
+      <LinearGradient colors={colors.secondaryGradient} style={styles.btn}>
+        <Text variant="title" align="center" style={{ color: colors.onSecondary }}>
+          {sign}
+        </Text>
+      </LinearGradient>
+    </Pressable>
+  );
+}
+
 export function Stepper(p: StepperProps) {
   const { colors } = useTheme();
   const [hint, setHint] = useState<string | null>(null);
@@ -32,11 +67,14 @@ export function Stepper(p: StepperProps) {
     setHint(null);
     p.onChange(next);
   };
-  const atMin = p.value <= p.min;
-  const atMax = p.value >= p.max;
   return (
-    <View style={[styles.wrap, { backgroundColor: colors.surface }]}>
+    <View style={[styles.wrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.row}>
+        {p.icon ? (
+          <Text style={styles.icon} accessible={false}>
+            {p.icon}
+          </Text>
+        ) : null}
         <View style={styles.labels}>
           <Text variant="label">{p.label}</Text>
           {p.sublabel ? (
@@ -46,41 +84,29 @@ export function Stepper(p: StepperProps) {
           ) : null}
         </View>
         <View style={styles.controls}>
-          <Pressable
-            testID={`${p.testID}-minus`}
-            accessibilityLabel={p.decreaseLabel}
+          <RoundButton
+            sign="−"
+            label={p.decreaseLabel}
+            dim={p.value <= p.min}
             onPress={() => step(-1)}
-            style={[
-              styles.btn,
-              { backgroundColor: colors.surfaceRaised, opacity: atMin ? 0.5 : 1 },
-            ]}
-          >
-            <Text variant="title" tone="secondary" align="center">
-              −
-            </Text>
-          </Pressable>
+            testID={`${p.testID}-minus`}
+          />
           <Text
-            variant="title"
+            variant="hero"
             align="center"
-            style={styles.value}
+            style={[styles.value, { color: colors.text }]}
             testID={`${p.testID}-value`}
             accessibilityLabel={`${p.label}: ${p.value}`}
           >
             {String(p.value)}
           </Text>
-          <Pressable
-            testID={`${p.testID}-plus`}
-            accessibilityLabel={p.increaseLabel}
+          <RoundButton
+            sign="+"
+            label={p.increaseLabel}
+            dim={p.value >= p.max}
             onPress={() => step(1)}
-            style={[
-              styles.btn,
-              { backgroundColor: colors.surfaceRaised, opacity: atMax ? 0.5 : 1 },
-            ]}
-          >
-            <Text variant="title" tone="secondary" align="center">
-              +
-            </Text>
-          </Pressable>
+            testID={`${p.testID}-plus`}
+          />
         </View>
       </View>
       {hint ? <Hint>{hint}</Hint> : null}
@@ -89,8 +115,15 @@ export function Stepper(p: StepperProps) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { borderRadius: radius.lg, padding: space.md, paddingStart: space.lg, gap: space.xs },
+  wrap: {
+    borderRadius: radius.card - 4,
+    borderWidth: 1.5,
+    padding: space.md,
+    paddingStart: space.lg,
+    gap: space.xs,
+  },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  icon: { fontSize: 28, lineHeight: 36 },
   labels: { flex: 1 },
   controls: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   btn: {
@@ -100,5 +133,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  value: { minWidth: 40 },
+  value: { minWidth: 48, fontSize: 40, lineHeight: 50 },
 });

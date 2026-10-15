@@ -11,13 +11,12 @@ import { ThemeProvider } from '@/core/theme';
 
 import { clampSpies } from '../logic';
 import { useSpy } from '../store';
-import Card from './Card';
-import Pass from './Pass';
+import Reveal from './Reveal';
 import Round from './Round';
 
-type Phase = { name: 'pass' | 'card'; player: number } | { name: 'round' };
+type Phase = { name: 'reveal'; player: number } | { name: 'round' };
 
-/** Runs one round: pass the phone → card for each player → round screen. */
+/** Runs one round: each player flips their secret card → round screen. */
 export default function Play() {
   useKeepAwake();
   const round = useSpy((s) => s.round);
@@ -26,7 +25,7 @@ export default function Play() {
   const count = usePlayers((s) => s.count);
   const packs = usePacks('spy');
   const session = useSession();
-  const [phase, setPhase] = useState<Phase>({ name: 'pass', player: 0 });
+  const [phase, setPhase] = useState<Phase>({ name: 'reveal', player: 0 });
 
   const pack = round && allPacks.find((p) => p.id === round.packId);
   const word = pack?.words.find((w) => w.id === round?.wordId);
@@ -46,40 +45,32 @@ export default function Play() {
             packs,
             no: session.startRound(),
           });
-          setPhase({ name: 'pass', player: 0 });
+          setPhase({ name: 'reveal', player: 0 });
         }}
         onSettings={() => (router.canGoBack() ? router.back() : router.replace('/games/spy'))}
       />
     );
   }
 
-  // Pass and Card use the dark "party night" theme so the card glows in a dim room.
+  // The card reveal uses the dark "party night" theme so the card glows in a dim room.
   return (
     <ThemeProvider scheme="dark">
       <StatusBar style="light" />
-      {phase.name === 'pass' ? (
-        <Pass
-          key={`pass-${phase.player}`}
-          player={phase.player}
-          onShow={() => setPhase({ name: 'card', player: phase.player })}
-        />
-      ) : (
-        <Card
-          key={`card-${phase.player}`}
-          player={phase.player}
-          pack={pack}
-          word={word}
-          isSpy={round.spies.includes(phase.player)}
-          spySeesCategory={spySeesCategory}
-          onHide={() =>
-            setPhase(
-              phase.player + 1 < count
-                ? { name: 'pass', player: phase.player + 1 }
-                : { name: 'round' },
-            )
-          }
-        />
-      )}
+      <Reveal
+        key={`reveal-${round.no}-${phase.player}`}
+        player={phase.player}
+        pack={pack}
+        word={word}
+        isSpy={round.spies.includes(phase.player)}
+        spySeesCategory={spySeesCategory}
+        onDone={() =>
+          setPhase(
+            phase.player + 1 < count
+              ? { name: 'reveal', player: phase.player + 1 }
+              : { name: 'round' },
+          )
+        }
+      />
     </ThemeProvider>
   );
 }

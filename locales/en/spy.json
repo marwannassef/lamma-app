@@ -17,13 +17,14 @@
     "maxSpies": "2 spies is the most.",
     "names": "Names (optional)",
     "nameLabel": "Name for player {{n}}",
-    "random": "🎲 Random mode",
+    "random": "Random mode",
     "randomSub": "New category every round",
     "orPick": "Or pick a category",
     "spySees": "Spy sees category",
     "spySeesSub": "The spy's card shows the category",
     "start": "Start round {{n}}",
-    "noPacks": "No word packs are on. Turn on a region in Settings."
+    "noPacks": "No word packs are on. Turn on a region in Settings.",
+    "categories": "Categories"
   },
   "pass": {
     "label": "Pass the phone to",

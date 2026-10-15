@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: space.md,
     minHeight: 48,
-    borderRadius: radius.lg,
+    borderRadius: radius.card - 4,
   },
   labels: { flex: 1 },
 });

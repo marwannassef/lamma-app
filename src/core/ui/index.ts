@@ -1,7 +1,11 @@
+export { Avatar, seatOf } from './Avatar';
 export { BackHeader } from './BackHeader';
+export { Badge } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Chip } from './Chip';
+export { Confetti } from './Confetti';
 export { ConfirmInline } from './ConfirmInline';
+export { GameBackground } from './GameBackground';
 export { Hint } from './Hint';
 export { Panel } from './Panel';
 export { Pressable } from './Pressable';

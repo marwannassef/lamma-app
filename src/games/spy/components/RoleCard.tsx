@@ -1,7 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FlipInEasyY } from 'react-native-reanimated';
 
 import { localized, wordLines, type Pack, type Word } from '@/core/content';
 import { colors as themes, gradients, radius, space } from '@/core/theme';
@@ -13,7 +12,7 @@ const spyInk = themes.dark.text;
 
 const LINE_SIZES = [44, 26, 22] as const;
 
-/** A player's secret card: the word, or "You're the spy!". Flips in (instant with reduced motion). */
+/** Front of a player's secret card: the word, or "You're the spy!". Fills its container. */
 export function RoleCard({
   pack,
   word,
@@ -30,12 +29,12 @@ export function RoleCard({
 
   if (isSpy) {
     return (
-      <Animated.View entering={FlipInEasyY.duration(450)} style={styles.glow} testID="card-spy">
+      <View style={[styles.fill, styles.glow]} testID="card-spy">
         <LinearGradient
           colors={gradients.spy}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.card, styles.inner]}
+          style={[styles.card, styles.fill, styles.inner]}
         >
           <Text style={styles.spyEmoji} accessible={false}>
             🕵️
@@ -52,18 +51,18 @@ export function RoleCard({
               : t('card.spyNoCategory')}
           </Text>
         </LinearGradient>
-      </Animated.View>
+      </View>
     );
   }
 
   const lines = wordLines(pack, word, i18n.language);
   return (
-    <Animated.View entering={FlipInEasyY.duration(450)} testID="card-word">
+    <View style={styles.fill} testID="card-word">
       <LinearGradient
         colors={gradients.brand}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.card, styles.border]}
+        style={[styles.card, styles.fill, styles.border]}
       >
         <View style={[styles.inner, styles.paper, { backgroundColor: paper.bg }]}>
           <Text variant="label" align="center" style={{ color: paper.textMuted }}>
@@ -87,12 +86,13 @@ export function RoleCard({
           ))}
         </View>
       </LinearGradient>
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: radius.card, minHeight: 300 },
+  fill: { flex: 1 },
+  card: { borderRadius: radius.card },
   border: { padding: 6 },
   inner: {
     flexGrow: 1,

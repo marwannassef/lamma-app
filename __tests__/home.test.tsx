@@ -13,7 +13,7 @@ describe('Home', () => {
     render(<Home />);
     expect(screen.getByText('Lamma')).toBeTruthy();
     expect(screen.getByText('Spy')).toBeTruthy();
-    expect(screen.getByText('3–12 players')).toBeTruthy();
+    expect(screen.getByText(/3–12 players/)).toBeTruthy();
     expect(screen.getByText('Werewolf')).toBeTruthy();
     expect(screen.getAllByText('Coming soon')).toHaveLength(1);
   });

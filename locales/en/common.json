@@ -6,7 +6,8 @@
     "pickGame": "Pick a game",
     "playersRange": "{{min}}–{{max}} players",
     "comingSoon": "Coming soon",
-    "openSettings": "Settings"
+    "openSettings": "Settings",
+    "play": "Play"
   },
   "players": {
     "defaultName": "Player {{n}}",

@@ -15,7 +15,8 @@ describe('Home', () => {
     expect(screen.getByText('Spy')).toBeTruthy();
     expect(screen.getByText(/3–12 players/)).toBeTruthy();
     expect(screen.getByText('Werewolf')).toBeTruthy();
-    expect(screen.getAllByText('Coming soon')).toHaveLength(1);
+    expect(screen.queryByText('Coming soon')).toBeNull();
+    expect(screen.getByText(/4–16 players/)).toBeTruthy();
   });
 
   it('renders in Arabic', async () => {

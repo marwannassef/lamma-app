@@ -1,0 +1,294 @@
+{
+  "title": "Werewolf",
+  "setup": {
+    "lead": "One phone in the middle of the table runs the whole game. No moderator needed.",
+    "players": "Players",
+    "fewerPlayers": "Fewer players",
+    "morePlayers": "More players",
+    "minPlayers": "Werewolf needs at least 4 players.",
+    "maxPlayers": "16 players is the most.",
+    "seating": "Seating order",
+    "seatingHint": "Put players in order clockwise around the table.",
+    "moveUp": "Move {{name}} up",
+    "moveDown": "Move {{name}} down",
+    "nameLabel": "Name for seat {{n}}",
+    "setups": "Pick a setup",
+    "custom": "Custom",
+    "customPitch": "Choose every role yourself.",
+    "tiers": {
+      "basic": {
+        "name": "Basic",
+        "pitch": "Wolves, a Seer and the village. Perfect first game."
+      },
+      "gentle": {
+        "name": "Gentle",
+        "pitch": "A Doctor keeps small games going longer."
+      },
+      "classic": {
+        "name": "Classic",
+        "pitch": "The Hunter takes someone down with them."
+      },
+      "party": {
+        "name": "Party",
+        "pitch": "Lovers, a Tanner and other twists."
+      },
+      "chaos": {
+        "name": "Chaos",
+        "pitch": "A Serial Killer joins the hunt."
+      }
+    },
+    "balance": {
+      "villageFriendly": "Village-friendly",
+      "leansVillage": "Leans village",
+      "balanced": "Balanced",
+      "leansWolves": "Leans wolves",
+      "wolfFriendly": "Wolf-friendly"
+    },
+    "length": "Up to {{rounds}} rounds · about {{minutes}} min",
+    "playThis": "Play this",
+    "edit": "Edit",
+    "selected": "Selected",
+    "villagersFill": "Villagers fill the rest: {{n}}",
+    "rules": "House rules",
+    "start": "Start game",
+    "discussion": "Discussion timer",
+    "untimed": "Untimed",
+    "seconds": "{{n}} s",
+    "glance": "Wolves' silent glance",
+    "minTurn": "Minimum turn time",
+    "revealOnDeath": "Reveal roles when players die",
+    "revealOnDeathSub": "Off = hardcore: the dead stay a mystery.",
+    "doctorSelf": "Doctor self-protect",
+    "doctorSelfOptions": {
+      "never": "Never",
+      "night1": "Night 1 only",
+      "always": "Always"
+    },
+    "detailed": "Detailed narration",
+    "detailedSub": "The morning also says who was saved and how people died.",
+    "mayor": "Mayor",
+    "mayorOptions": {
+      "off": "Off",
+      "elected": "Elected on day 1"
+    },
+    "errors": {
+      "wrongTotal": "Roles must match the number of players.",
+      "noKiller": "Add at least one werewolf.",
+      "tooManyKillers": "Killers must be fewer than half the players.",
+      "tooManySpecials": "There are more roles than players.",
+      "needsSeer": "This setup needs a Seer.",
+      "alphaNeedsPack": "The Alpha needs at least 2 wolves in the pack.",
+      "cubNeedsPack": "The Wolf Cub needs at least 2 wolves in the pack.",
+      "loneWolfNeedsPack": "The Lone Wolf needs at least 3 wolves in the pack.",
+      "tooManyOfRole": "Some roles can only appear once."
+    },
+    "warnings": {
+      "favorsVillage": "This setup strongly favors the village.",
+      "favorsWolves": "This setup strongly favors the wolves.",
+      "bigPack": "The pack is a third of the table or more.",
+      "smallTableTwist": "Cupid and the Tanner work best with 7+ players.",
+      "earlySerialKiller": "The Serial Killer works best with 9+ players.",
+      "noVillagers": "With no plain villagers, bluffing gets hard.",
+      "manyInfoRoles": "Lots of information roles make the wolves easy to find."
+    },
+    "tryNext": "✨ Try next",
+    "inProgress": "A game is in progress",
+    "resume": "Resume game",
+    "discard": "End it"
+  },
+  "teams": {
+    "village": "Village",
+    "wolves": "Wolves",
+    "neutral": "Solo",
+    "lovers": "Lovers"
+  },
+  "roles": {
+    "villager": {
+      "name": "Villager",
+      "ability": "No special power. Find the wolves and vote them out."
+    },
+    "werewolf": {
+      "name": "Werewolf",
+      "ability": "Each night, agree with your pack on a victim."
+    },
+    "alpha": {
+      "name": "Alpha Werewolf",
+      "ability": "You lead the pack: your pick is the one that counts."
+    },
+    "seer": {
+      "name": "Seer",
+      "ability": "Each night, learn whether one player is a werewolf."
+    },
+    "doctor": {
+      "name": "Doctor",
+      "ability": "Each night, protect one player. Not the same player two nights in a row."
+    },
+    "witch": {
+      "name": "Witch",
+      "ability": "One healing potion for the wolves' victim and one poison, each once per game."
+    },
+    "hunter": {
+      "name": "Hunter",
+      "ability": "When you die, you shoot one player and take them with you."
+    },
+    "cupid": {
+      "name": "Cupid",
+      "ability": "Pick two lovers now. If one dies, the other dies of heartbreak."
+    },
+    "tanner": {
+      "name": "Tanner",
+      "ability": "You win alone if the village votes you out."
+    },
+    "wolfCub": {
+      "name": "Wolf Cub",
+      "ability": "If you die, the pack kills two players the next night."
+    },
+    "loneWolf": {
+      "name": "Lone Wolf",
+      "ability": "You hunt with the pack, but you only win as the last wolf standing."
+    },
+    "sorcerer": {
+      "name": "Sorcerer",
+      "ability": "You help the wolves. Each night, check whether a player is the Seer."
+    },
+    "apprenticeSeer": {
+      "name": "Apprentice Seer",
+      "ability": "If the Seer dies, you become the Seer."
+    },
+    "mayor": {
+      "name": "Mayor",
+      "ability": "Everyone knows you. You break ties in the vote."
+    },
+    "lycan": {
+      "name": "Lycan",
+      "ability": "You're a villager, but the Seer sees you as a werewolf."
+    },
+    "cursed": {
+      "name": "Cursed",
+      "ability": "If the wolves attack you, you become one of them."
+    },
+    "serialKiller": {
+      "name": "Serial Killer",
+      "ability": "Kill one player every night. Wolves can't kill you."
+    }
+  },
+  "discovery": {
+    "title": "Meet your role",
+    "passTo": "Pass the phone to",
+    "imPlayer": "I'm {{name}}",
+    "hold": "Hold the seal to see your role",
+    "release": "Release to hide",
+    "handNext": "Hand the phone to {{name}}",
+    "pack": "Your pack: {{names}}",
+    "packAlone": "You're the only wolf.",
+    "sorcererPack": "The pack: {{names}}",
+    "cupidPick": "Pick the two lovers",
+    "cupidHint": "Tap two players. You can pick yourself.",
+    "cupidConfirm": "Link them ❤️",
+    "lover": "❤️ Your lover: {{name}}"
+  },
+  "night": {
+    "title": "Night {{n}}",
+    "fall": "Night falls upon the village… Everyone, close your eyes.",
+    "wolvesWake": "Wake the wolves",
+    "glance": "Werewolves, open your eyes. Find your pack and silently agree on your victim.",
+    "glanceTwice": "Tonight the pack hunts twice. Agree on two victims.",
+    "glanceEnd": "Werewolves, close your eyes… Everyone, open your eyes. Pass the phone around the table.",
+    "startPass": "Start the pass"
+  },
+  "pass": {
+    "passTo": "Pass the phone to",
+    "imPlayer": "I'm {{name}}",
+    "hold": "Hold to open your turn",
+    "confirm": "Hold to confirm",
+    "waiting": "Take your time…",
+    "dream": "You're dreaming. Tap a house to check the roof.",
+    "wolf": "Tap the victim your pack agreed on.",
+    "wolfTwo": "Tap the two victims your pack agreed on.",
+    "pack": "Pack",
+    "alpha": "Alpha",
+    "seer": "Tap a player to see if they're a werewolf.",
+    "seerWolf": "🐺 Werewolf",
+    "seerInnocent": "👤 Not a werewolf",
+    "sorcerer": "Tap a player to see if they're the Seer.",
+    "isSeer": "🔮 Is the Seer",
+    "notSeer": "❌ Not the Seer",
+    "doctor": "Tap a player to protect tonight.",
+    "doctorLast": "Protected last night",
+    "witch": "Your potions",
+    "heal": "Heal tonight's werewolf victim",
+    "poison": "Poison someone",
+    "used": "Used",
+    "noPotion": "Keep both potions tonight",
+    "serialKiller": "Tap your victim.",
+    "bitten": "You were bitten. You are now a Werewolf.",
+    "dead": "You're out, but take your turn so nobody can tell.",
+    "you": "You"
+  },
+  "morning": {
+    "title": "Morning",
+    "single": "The church bells toll… {{name}} did not survive the night.",
+    "multi": "A bloodbath in the shadows… {{names}} did not survive the night.",
+    "none": "A violent struggle in the dark… but no one was harmed.",
+    "was": "{{name}} was the {{role}}.",
+    "cause": {
+      "wolves": "{{name}} was taken by the wolves.",
+      "serialKiller": "{{name}} was killed by the Serial Killer.",
+      "poison": "{{name}} was poisoned.",
+      "heartbreak": "{{name}} died of a broken heart."
+    },
+    "saved": {
+      "doctor": "The Doctor saved someone tonight.",
+      "witch": "The Witch's potion saved someone tonight.",
+      "immune": "Someone shrugged off the wolves' attack."
+    },
+    "continue": "Continue"
+  },
+  "effects": {
+    "hunter": "{{name}} was the Hunter and takes a last shot. Who do they shoot?",
+    "mayor": "{{name}} hands over the Mayor's badge. Who gets it?",
+    "nobody": "Nobody"
+  },
+  "day": {
+    "title": "Day {{n}}",
+    "electMayor": "Elect a Mayor: who did the town point at?",
+    "discussion": "Talk it out. Who's lying?",
+    "pause": "Pause",
+    "resume": "Resume",
+    "add": "+30 s",
+    "voteNow": "Vote now",
+    "untimed": "No time limit",
+    "countdown": "Point in…",
+    "point": "Point!",
+    "voteTitle": "Who got the most fingers?",
+    "tie": "It's a tie",
+    "tieHint": "Tap the tied players, then confirm.",
+    "confirmTie": "Confirm tie",
+    "noExecution": "No execution",
+    "mayorBreak": "Mayor {{name}}, break the tie.",
+    "spare": "Spare everyone",
+    "banished": "The village has banished {{name}}!",
+    "theyWere": "They were… the {{role}}!",
+    "nobody": "Nobody was banished today.",
+    "continue": "Continue",
+    "dead": "Out"
+  },
+  "over": {
+    "outcome": {
+      "village": "The village wins! 🏡",
+      "wolves": "The werewolves win! 🐺",
+      "tanner": "The Tanner wins alone! 🪢",
+      "serialKiller": "The Serial Killer wins! 🔪",
+      "lovers": "The lovers win together! ❤️",
+      "draw": "Nobody survived. It's a draw."
+    },
+    "winners": "Winners",
+    "roles": "Everyone's roles",
+    "playAgain": "Play again",
+    "home": "Home"
+  },
+  "host": {
+    "quit": "End game",
+    "quitConfirm": "End this game? The current game will be lost."
+  }
+}

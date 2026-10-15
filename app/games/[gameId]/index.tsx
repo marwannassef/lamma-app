@@ -8,7 +8,7 @@ import { getGame } from '@/games/registry';
 
 /** Placeholder entry for a game whose screens haven't shipped yet (Spy lands in M4). */
 export default function GameEntry() {
-  const { t } = useTranslation(['common', 'spy']);
+  const { t } = useTranslation(['common', 'spy', 'werewolf']);
   const { gameId } = useLocalSearchParams<{ gameId: string }>();
   const game = getGame(gameId);
   if (!game) return <Redirect href="/" />;

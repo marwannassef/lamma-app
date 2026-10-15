@@ -43,7 +43,7 @@ function Logo() {
 }
 
 function GameCard({ game }: { game: GameModule }) {
-  const { t } = useTranslation(['common', 'spy']);
+  const { t } = useTranslation(['common', 'spy', 'werewolf']);
   const { colors } = useTheme();
   const title = t(game.titleKey);
   const players = t('home.playersRange', { min: game.minPlayers, max: game.maxPlayers });
@@ -109,7 +109,7 @@ function GameCard({ game }: { game: GameModule }) {
 }
 
 export default function Home() {
-  const { t } = useTranslation(['common', 'spy']);
+  const { t } = useTranslation(['common', 'spy', 'werewolf']);
   const { colors } = useTheme();
 
   return (

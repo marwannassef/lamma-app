@@ -1,17 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { localized, type Pack } from '@/core/content';
-import {
-  clampPlayers,
-  MAX_NAME_LENGTH,
-  MAX_PLAYERS,
-  MIN_PLAYERS,
-  usePlayers,
-} from '@/core/players';
+import { clampPlayers, MAX_NAME_LENGTH, usePlayers } from '@/core/players';
 import { LEVELS, usePunishments, type PunishmentLevel } from '@/core/punishments';
 import { usePacks, useRegions } from '@/core/settings/content';
 import { fitScores, useSession } from '@/core/session';
@@ -32,6 +26,7 @@ import {
   Toggle,
 } from '@/core/ui';
 
+import { spy as spyGame } from '..';
 import { clampSpies, maxSpies, RANDOM } from '../logic';
 import { useSpy } from '../store';
 
@@ -59,6 +54,11 @@ export default function Setup() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [noPacksHint, setNoPacksHint] = useState(false);
 
+  // The shared roster goes up to 16 (Werewolf); Spy plays with at most 12.
+  useEffect(() => {
+    if (count > spyGame.maxPlayers) setCount(spyGame.maxPlayers);
+  }, [count, setCount]);
+
   const spies = clampSpies(spy.spies, count);
   const scores = fitScores(session.scores, count);
   const hasScores = scores.some((s) => s > 0);
@@ -66,7 +66,7 @@ export default function Setup() {
   const randomSelected = spy.choice === RANDOM || !choiceAvailable;
 
   const changePlayers = (n: number) => {
-    const next = clampPlayers(n);
+    const next = clampPlayers(n, spyGame.minPlayers, spyGame.maxPlayers);
     setCount(next);
     if (spy.spies > maxSpies(next)) spy.setSpies(maxSpies(next));
   };
@@ -113,8 +113,8 @@ export default function Setup() {
         icon="👥"
         label={t('setup.players')}
         value={count}
-        min={MIN_PLAYERS}
-        max={MAX_PLAYERS}
+        min={spyGame.minPlayers}
+        max={spyGame.maxPlayers}
         onChange={changePlayers}
         decreaseLabel={t('setup.fewerPlayers')}
         increaseLabel={t('setup.morePlayers')}

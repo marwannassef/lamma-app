@@ -4,12 +4,14 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { storage } from '@/core/storage';
 
+/** Limits of the shared roster; each game narrows them with its own min/max players. */
 export const MIN_PLAYERS = 3;
-export const MAX_PLAYERS = 12;
+export const MAX_PLAYERS = 16;
 export const MAX_NAME_LENGTH = 14;
 const DEFAULT_PLAYERS = 5;
 
-export const clampPlayers = (n: number) => Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, n));
+export const clampPlayers = (n: number, min = MIN_PLAYERS, max = MAX_PLAYERS) =>
+  Math.min(max, Math.max(min, n));
 
 interface PlayersState {
   count: number;
@@ -17,6 +19,8 @@ interface PlayersState {
   names: string[];
   setCount(count: number): void;
   setName(index: number, name: string): void;
+  /** Moves a player to another seat (seating order is clockwise around the table). */
+  move(from: number, to: number): void;
 }
 
 /** The roster, shared by every game. Player indices are 0-based. */
@@ -31,6 +35,14 @@ export const usePlayers = create<PlayersState>()(
           const names = s.names.slice();
           names[index] = name.slice(0, MAX_NAME_LENGTH);
           return { names };
+        }),
+      move: (from, to) =>
+        set((s) => {
+          if (from === to || to < 0 || to >= s.count || from < 0 || from >= s.count) return {};
+          const names = Array.from({ length: s.count }, (_, i) => s.names[i] ?? '');
+          const [moved] = names.splice(from, 1);
+          names.splice(to, 0, moved ?? '');
+          return { names: [...names, ...s.names.slice(s.count)] };
         }),
     }),
     { name: 'players', version: 1, storage: createJSONStorage(() => storage) },

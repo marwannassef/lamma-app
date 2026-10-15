@@ -37,3 +37,9 @@ jest.mock('expo-router', () => ({
   Redirect: () => null,
   useLocalSearchParams: () => ({}),
 }));
+
+// Screens read safe-area insets; give them fixed values in tests.
+jest.mock(
+  'react-native-safe-area-context',
+  () => require('react-native-safe-area-context/jest/mock').default,
+);

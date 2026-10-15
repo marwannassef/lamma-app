@@ -1,6 +1,7 @@
 // MMKV switches to an in-memory mock automatically under Jest (JEST_WORKER_ID).
 jest.mock('expo-localization', () => ({
   getLocales: () => [{ languageCode: 'en', languageTag: 'en-US', regionCode: 'US' }],
+  getCalendars: () => [{ timeZone: 'America/New_York' }],
 }));
 
 // MMKV's index imports Nitro at load time even though it uses the mock under Jest.

@@ -77,6 +77,7 @@
       "^@/assets/(.*)$": "<rootDir>/assets/$1",
       "^@/locales/(.*)$": "<rootDir>/locales/$1",
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    "globalSetup": "./test/globalSetup.js"
   }
 }

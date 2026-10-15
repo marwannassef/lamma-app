@@ -29,7 +29,7 @@
     "privacy": "Lamma works fully offline. We don't collect, store or share any data about you.",
     "feedback": "Sound & vibration",
     "appearanceAuto": "Day & night",
-    "appearanceAutoNote": "Light from 7 am to 7 pm, dark the rest of the time. Follows your phone's clock."
+    "appearanceAutoNote": "Light from sunrise to sunset where you are, estimated from your phone's time zone. No location access needed."
   },
   "a11y": {
     "back": "Back",

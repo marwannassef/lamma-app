@@ -181,5 +181,16 @@
         "ar": "كوب"
       }
     }
+  ],
+  "pairs": [
+    ["fridge", "oven"],
+    ["sofa", "bed"],
+    ["pillow", "blanket"],
+    ["mirror", "window"],
+    ["curtain", "carpet"],
+    ["television", "remote-control"],
+    ["toothbrush", "towel"],
+    ["key", "door"],
+    ["table", "chair"]
   ]
 }

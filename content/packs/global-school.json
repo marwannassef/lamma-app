@@ -181,5 +181,15 @@
         "ar": "شهادة"
       }
     }
+  ],
+  "pairs": [
+    ["eraser", "sharpener"],
+    ["board", "chalk"],
+    ["exam", "homework"],
+    ["library", "lab"],
+    ["glue", "scissors"],
+    ["calculator", "ruler"],
+    ["school-bell", "break-time"],
+    ["pencil", "colors"]
   ]
 }

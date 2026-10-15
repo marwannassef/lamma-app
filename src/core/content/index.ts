@@ -6,6 +6,7 @@ import { packFiles } from './packFiles';
 import type { LocaleCode, Pack, Region, Word } from './types';
 
 export type { LocaleCode, Pack, Region, Word };
+export { chooseCategory, chooseWord, RANDOM, type CategoryChoice } from './picking';
 
 type Context = { keys(): string[]; (key: string): unknown };
 const fromContext = (ctx: Context) => ctx.keys().map((k) => ctx(k) as Pack);

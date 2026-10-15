@@ -10,3 +10,4 @@ export {
 } from './tokens';
 export { fontAssets, fontFamilyFor, type FontRole, type FontWeight } from './fonts';
 export { ThemeProvider, useTheme } from './ThemeProvider';
+export { STEALTH } from './stealth';

@@ -217,5 +217,16 @@
       },
       "translit": "el maktaba"
     }
+  ],
+  "pairs": [
+    ["pencil-case", "schoolbag"],
+    ["eraser", "sharpener"],
+    ["notebook", "book"],
+    ["board", "chalk"],
+    ["exam", "report-card"],
+    ["break-time", "pe-class"],
+    ["school-bell", "morning-line-up"],
+    ["lab", "library"],
+    ["colors", "pencil"]
   ]
 }

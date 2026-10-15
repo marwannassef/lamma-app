@@ -217,5 +217,17 @@
       },
       "translit": "gebna beida"
     }
+  ],
+  "pairs": [
+    ["koshari", "pasta-bechamel"],
+    ["fava-beans", "falafel"],
+    ["molokhia", "okra"],
+    ["feteer-pie", "hawawshi"],
+    ["liver-sandwich", "shawarma"],
+    ["rice-pudding", "om-ali"],
+    ["basbousa", "kunafa"],
+    ["stuffed-veggies", "moussaka"],
+    ["baladi-bread", "simit"],
+    ["fried-eggs", "white-cheese"]
   ]
 }

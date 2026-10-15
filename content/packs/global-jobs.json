@@ -181,5 +181,16 @@
         "ar": "منقذ"
       }
     }
+  ],
+  "pairs": [
+    ["doctor", "nurse"],
+    ["dentist", "vet"],
+    ["police-officer", "firefighter"],
+    ["chef", "baker"],
+    ["pilot", "astronaut"],
+    ["painter", "photographer"],
+    ["carpenter", "plumber"],
+    ["teacher", "scientist"],
+    ["mechanic", "engineer"]
   ]
 }

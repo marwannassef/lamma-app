@@ -258,5 +258,16 @@
       },
       "translit": "odet el nom"
     }
+  ],
+  "pairs": [
+    ["kiss", "cuddle"],
+    ["flirting", "wink"],
+    ["crush", "ex"],
+    ["honeymoon", "wedding-night"],
+    ["lingerie", "nightgown"],
+    ["bra", "bikini"],
+    ["jealousy", "cheating"],
+    ["divorce", "second-wife"],
+    ["fart", "toilet-paper"]
   ]
 }

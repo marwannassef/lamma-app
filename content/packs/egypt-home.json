@@ -217,5 +217,16 @@
       },
       "translit": "sereer"
     }
+  ],
+  "pairs": [
+    ["fridge", "stove"],
+    ["fan", "air-conditioner"],
+    ["sofa", "bed"],
+    ["pillow", "blanket"],
+    ["curtain", "carpet"],
+    ["mirror", "wardrobe"],
+    ["cup", "cooking-pot"],
+    ["remote-control", "tv"],
+    ["wall-clock", "chandelier"]
   ]
 }

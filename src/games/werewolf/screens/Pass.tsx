@@ -3,13 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName } from '@/core/players';
-import { radius, space } from '@/core/theme';
-import { Avatar, Screen, Text, Toggle } from '@/core/ui';
+import { radius, space, STEALTH } from '@/core/theme';
+import { Avatar, HoldButton, PlayerPicker, Screen, Text, Toggle, useCountdown } from '@/core/ui';
 
-import { HoldButton, useCountdown } from '../components/HoldButton';
-import { STEALTH } from '../components/meta';
 import { RoleIcon } from '../components/RoleIcon';
-import { PlayerPicker } from '../components/PlayerPicker';
 import {
   expectedAction,
   isPackWolf,
@@ -213,7 +210,7 @@ function Action({ game, phase }: { game: GameState; phase: PassPhase }) {
         </View>
       ) : showPicker ? (
         <PlayerPicker
-          game={game}
+          players={game.players}
           selected={picked}
           include={(p) => kind === 'dummy' || p.alive}
           disabled={(id) => {

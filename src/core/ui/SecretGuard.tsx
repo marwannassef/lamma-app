@@ -3,7 +3,7 @@ import { usePreventScreenCapture } from 'expo-screen-capture';
 import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, BackHandler, Platform, StyleSheet, View } from 'react-native';
 
-import { STEALTH } from './meta';
+import { STEALTH } from '@/core/theme';
 
 const DIM = 0.25;
 
@@ -14,7 +14,7 @@ const DIM = 0.25;
  */
 export function SecretGuard({ children }: { children: ReactNode }) {
   const [hidden, setHidden] = useState(AppState.currentState !== 'active');
-  usePreventScreenCapture('werewolf-secret');
+  usePreventScreenCapture('secret-screen');
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (s) => setHidden(s !== 'active'));

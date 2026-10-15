@@ -43,7 +43,7 @@ function Logo() {
 }
 
 function GameCard({ game }: { game: GameModule }) {
-  const { t } = useTranslation(['common', 'spy', 'werewolf']);
+  const { t } = useTranslation(['common', 'spy', 'werewolf', 'blendIn']);
   const { colors } = useTheme();
   const title = t(game.titleKey);
   const players = t('home.playersRange', { min: game.minPlayers, max: game.maxPlayers });
@@ -88,7 +88,11 @@ function GameCard({ game }: { game: GameModule }) {
                 {t(game.blurbKey)}
               </Text>
               <View style={styles.badges}>
-                <Badge icon="👥" label={players} />
+                {game.mystery ? (
+                  <Badge tone="secondary" label={t('games.mystery.teaser')} />
+                ) : (
+                  <Badge icon="👥" label={players} />
+                )}
                 {!game.ready ? <Badge tone="primary" label={t('home.comingSoon')} /> : null}
               </View>
             </View>
@@ -109,7 +113,7 @@ function GameCard({ game }: { game: GameModule }) {
 }
 
 export default function Home() {
-  const { t } = useTranslation(['common', 'spy', 'werewolf']);
+  const { t } = useTranslation(['common', 'spy', 'werewolf', 'blendIn']);
   const { colors } = useTheme();
 
   return (

@@ -217,5 +217,16 @@
       },
       "translit": "3askary morour"
     }
+  ],
+  "pairs": [
+    ["doctor", "nurse"],
+    ["police-officer", "traffic-officer"],
+    ["engineer", "mechanic"],
+    ["driver", "pilot"],
+    ["electrician", "plumber"],
+    ["carpenter", "painter"],
+    ["baker", "chef"],
+    ["fruit-seller", "grocer"],
+    ["pharmacist", "butcher"]
   ]
 }

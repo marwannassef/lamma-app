@@ -2,9 +2,15 @@ import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName } from '@/core/players';
 import { radius, space } from '@/core/theme';
-import { Avatar, Pressable, Text } from '@/core/ui';
+import { Avatar } from './Avatar';
+import { Pressable } from './Pressable';
+import { Text } from './Text';
 
-import type { GameState, PlayerId } from '../engine';
+type PlayerId = number;
+export interface PickablePlayer {
+  id: PlayerId;
+  alive: boolean;
+}
 
 export interface PickerTag {
   label: string;
@@ -15,8 +21,8 @@ export interface PickerTag {
  * Grid of players to tap. `disabled` players stay visible (with their tag) but can't be picked.
  * Colours are passed in so the same picker works on stealth and public screens.
  */
-export function PlayerPicker({
-  game,
+export function PlayerPicker<P extends PickablePlayer>({
+  players,
   selected,
   onToggle,
   include = (p) => p.alive,
@@ -27,10 +33,10 @@ export function PlayerPicker({
   bg,
   accent,
 }: {
-  game: GameState;
+  players: readonly P[];
   selected: readonly PlayerId[];
   onToggle(id: PlayerId): void;
-  include?: (p: GameState['players'][number]) => boolean;
+  include?: (p: P) => boolean;
   disabled?: (id: PlayerId) => boolean;
   tags?: (id: PlayerId) => PickerTag | undefined;
   fg: string;
@@ -41,7 +47,7 @@ export function PlayerPicker({
   const nameOf = usePlayerName();
   return (
     <View style={styles.grid} accessibilityRole="radiogroup">
-      {game.players.filter(include).map((p) => {
+      {players.filter(include).map((p) => {
         const on = selected.includes(p.id);
         const off = disabled(p.id);
         const tag = tags(p.id);

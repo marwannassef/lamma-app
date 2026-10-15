@@ -1,0 +1,182 @@
+{
+  "id": "global-instruments",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🎸",
+  "name": {
+    "en": "Instruments",
+    "ar": "آلات موسيقية"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "guitar",
+      "text": {
+        "en": "Guitar",
+        "ar": "جيتار"
+      }
+    },
+    {
+      "id": "piano",
+      "text": {
+        "en": "Piano",
+        "ar": "بيانو"
+      }
+    },
+    {
+      "id": "drums",
+      "text": {
+        "en": "Drums",
+        "ar": "طبول"
+      }
+    },
+    {
+      "id": "violin",
+      "text": {
+        "en": "Violin",
+        "ar": "كمان"
+      }
+    },
+    {
+      "id": "flute",
+      "text": {
+        "en": "Flute",
+        "ar": "فلوت"
+      }
+    },
+    {
+      "id": "trumpet",
+      "text": {
+        "en": "Trumpet",
+        "ar": "بوق"
+      }
+    },
+    {
+      "id": "saxophone",
+      "text": {
+        "en": "Saxophone",
+        "ar": "ساكسفون"
+      }
+    },
+    {
+      "id": "harp",
+      "text": {
+        "en": "Harp",
+        "ar": "قيثارة"
+      }
+    },
+    {
+      "id": "oud",
+      "text": {
+        "en": "Oud",
+        "ar": "عود"
+      }
+    },
+    {
+      "id": "tabla",
+      "text": {
+        "en": "Tabla",
+        "ar": "طبلة"
+      }
+    },
+    {
+      "id": "accordion",
+      "text": {
+        "en": "Accordion",
+        "ar": "أكورديون"
+      }
+    },
+    {
+      "id": "harmonica",
+      "text": {
+        "en": "Harmonica",
+        "ar": "هارمونيكا"
+      }
+    },
+    {
+      "id": "cello",
+      "text": {
+        "en": "Cello",
+        "ar": "تشيلو"
+      }
+    },
+    {
+      "id": "xylophone",
+      "text": {
+        "en": "Xylophone",
+        "ar": "إكسيليفون"
+      }
+    },
+    {
+      "id": "tambourine",
+      "text": {
+        "en": "Tambourine",
+        "ar": "دف"
+      }
+    },
+    {
+      "id": "keyboard",
+      "text": {
+        "en": "Keyboard",
+        "ar": "أورج"
+      }
+    },
+    {
+      "id": "bass-guitar",
+      "text": {
+        "en": "Bass guitar",
+        "ar": "جيتار باص"
+      }
+    },
+    {
+      "id": "clarinet",
+      "text": {
+        "en": "Clarinet",
+        "ar": "كلارينيت"
+      }
+    },
+    {
+      "id": "trombone",
+      "text": {
+        "en": "Trombone",
+        "ar": "ترومبون"
+      }
+    },
+    {
+      "id": "banjo",
+      "text": {
+        "en": "Banjo",
+        "ar": "بانجو"
+      }
+    },
+    {
+      "id": "ukulele",
+      "text": {
+        "en": "Ukulele",
+        "ar": "يوكوليلي"
+      }
+    },
+    {
+      "id": "bagpipes",
+      "text": {
+        "en": "Bagpipes",
+        "ar": "مزمار القربة"
+      }
+    }
+  ],
+  "pairs": [
+    ["guitar", "ukulele"],
+    ["piano", "keyboard"],
+    ["drums", "tambourine"],
+    ["violin", "cello"],
+    ["flute", "clarinet"],
+    ["trumpet", "trombone"],
+    ["oud", "banjo"],
+    ["harmonica", "accordion"],
+    ["tabla", "drums"]
+  ]
+}

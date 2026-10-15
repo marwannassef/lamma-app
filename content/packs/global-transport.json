@@ -167,5 +167,16 @@
         "ar": "سيارة شرطة"
       }
     }
+  ],
+  "pairs": [
+    ["car", "taxi"],
+    ["bus", "metro"],
+    ["airplane", "helicopter"],
+    ["bicycle", "motorcycle"],
+    ["boat", "ship"],
+    ["ambulance", "fire-truck"],
+    ["truck", "tractor"],
+    ["rocket", "hot-air-balloon"],
+    ["scooter", "skateboard"]
   ]
 }

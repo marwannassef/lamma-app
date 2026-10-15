@@ -217,5 +217,16 @@
       },
       "translit": "el mostashfa"
     }
+  ],
+  "pairs": [
+    ["the-pyramids", "the-sphinx"],
+    ["hurghada", "sharm-el-sheikh"],
+    ["luxor", "aswan"],
+    ["alexandria", "north-coast"],
+    ["cairo-tower", "the-citadel"],
+    ["siwa", "fayoum"],
+    ["the-zoo", "amusement-park"],
+    ["supermarket", "the-mall"],
+    ["the-nile", "the-corniche"]
   ]
 }

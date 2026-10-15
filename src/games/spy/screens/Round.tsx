@@ -2,21 +2,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, type LayoutChangeEvent, type ScrollView } from 'react-native';
-import Animated, { FlipInEasyX, ZoomIn } from 'react-native-reanimated';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 
 import { localized, wordLines, type Pack, type Word } from '@/core/content';
 import { usePlayerName, usePlayers } from '@/core/players';
-import { losersOf, punishmentText, usePunishments, type PunishmentCard } from '@/core/punishments';
+import { losersOf } from '@/core/punishments';
 import { fitScores, useSession } from '@/core/session';
 import { gradients, radius, space, useTheme } from '@/core/theme';
 import {
   Avatar,
-  Badge,
   Button,
   Confetti,
   Hint,
   Panel,
   Pressable,
+  PunishmentPanel,
   Scoreboard,
   Screen,
   Text,
@@ -132,13 +132,11 @@ export default function Round({
   const setVerdict = useSpy((s) => s.setVerdict);
   const setGain = useSpy((s) => s.setGain);
   const session = useSession();
-  const punishments = usePunishments();
 
   const scrollRef = useRef<ScrollView>(null);
   const reveal = useReveal(scrollRef);
   const [revealed, setRevealed] = useState(round.gain != null);
   const [showHint, setShowHint] = useState(false);
-  const [cards, setCards] = useState<PunishmentCard[] | null>(null);
   const [celebrate, setCelebrate] = useState(false);
 
   const join = (ids: readonly number[]) => ids.map(nameOf).join(t('common:list.and'));
@@ -329,87 +327,7 @@ export default function Round({
                   </Panel>
                 </Animated.View>
 
-                {punishments.level !== 'off' && losers.length > 0 ? (
-                  <Panel title={t('common:punishments.panelTitle')} icon="😈" testID="punishments">
-                    <Text variant="body" align="center">
-                      {t('common:punishments.losers', { names: join(losers) })}
-                    </Text>
-                    {cards == null ? (
-                      <Button
-                        testID="draw-punishment"
-                        variant="danger"
-                        icon="🎁"
-                        label={t('common:punishments.draw')}
-                        onPress={() => setCards(punishments.deal(losers))}
-                      />
-                    ) : (
-                      cards.map((card, i) => (
-                        <Animated.View
-                          key={`${card.id}-${card.swapped}`}
-                          entering={FlipInEasyX.delay(i * 120).duration(500)}
-                          accessibilityLiveRegion="polite"
-                        >
-                          <LinearGradient
-                            colors={colors.dangerGradient}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={[
-                              styles.pun,
-                              { transform: [{ rotate: i % 2 ? '1deg' : '-1deg' }] },
-                            ]}
-                          >
-                            <View style={styles.punWho}>
-                              {card.players.slice(0, 6).map((p) => (
-                                <Avatar key={p} player={p} size={32} />
-                              ))}
-                            </View>
-                            <Text variant="label" align="center" style={{ color: colors.onDanger }}>
-                              {card.players.length > 1
-                                ? t('common:punishments.group', { names: join(card.players) })
-                                : nameOf(card.players[0] ?? 0)}
-                            </Text>
-                            <Text
-                              variant="title"
-                              align="center"
-                              style={{ color: colors.onDanger }}
-                              testID="punishment-text"
-                            >
-                              {punishmentText(lang, card.draw.level, card.draw.index)}
-                            </Text>
-                            <View style={styles.punLevel}>
-                              <Badge label={t(`common:punishments.levels.${card.draw.level}`)} />
-                            </View>
-                            {!card.swapped ? (
-                              <Pressable
-                                testID={`swap-${card.id}`}
-                                accessibilityLabel={t('common:punishments.swap')}
-                                onPress={() =>
-                                  setCards((cs) =>
-                                    (cs ?? []).map((c) =>
-                                      c.id === card.id ? punishments.swap(c) : c,
-                                    ),
-                                  )
-                                }
-                                style={styles.swap}
-                              >
-                                <Text
-                                  variant="label"
-                                  align="center"
-                                  style={{
-                                    color: colors.onDanger,
-                                    textDecorationLine: 'underline',
-                                  }}
-                                >
-                                  {t('common:punishments.swap')}
-                                </Text>
-                              </Pressable>
-                            ) : null}
-                          </LinearGradient>
-                        </Animated.View>
-                      ))
-                    )}
-                  </Panel>
-                ) : null}
+                <PunishmentPanel losers={losers} />
               </View>
             )}
           </View>

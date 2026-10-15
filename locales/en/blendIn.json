@@ -1,0 +1,123 @@
+{
+  "title": "Blend In",
+  "blurb": "Everyone knows the secret word except the Chameleon. One word each, then point!",
+  "setup": {
+    "lead": "One word each, the phone in the middle of the table. Spot the Chameleon before they blend in.",
+    "players": "Players",
+    "fewerPlayers": "Fewer players",
+    "morePlayers": "More players",
+    "minPlayers": "Blend In needs at least 3 players.",
+    "maxPlayers": "12 players is the most.",
+    "bestWith": "Best with 4–8 players.",
+    "names": "Names (optional)",
+    "nameLabel": "Name for player {{n}}",
+    "mode": "Mode",
+    "modes": {
+      "classic": {
+        "name": "Classic",
+        "sub": "The Chameleon knows only the topic"
+      },
+      "undercover": {
+        "name": "Undercover",
+        "sub": "The odd one out gets a close word and doesn't know it"
+      }
+    },
+    "topic": "Topic",
+    "random": "Random",
+    "randomSub": "New topic every round",
+    "length": "Game length",
+    "rounds": "{{n}} rounds",
+    "target": "First to 10",
+    "clueRounds": "Clue rounds before voting",
+    "clueTimer": "Clue timer",
+    "off": "Off",
+    "seconds": "{{n}} s",
+    "escape": "Escape difficulty",
+    "escapeLevels": {
+      "easy": "Easy · 4",
+      "normal": "Normal · 8",
+      "hard": "Hard · 16"
+    },
+    "neverFirst": "The Chameleon never starts",
+    "neverFirstSub": "Going first with no clues to hear is nearly impossible.",
+    "start": "Start game",
+    "noPacks": "No topics are available for this mode. Turn on a region in Settings.",
+    "howTo": "How to play",
+    "rules": [
+      "Everyone gets the secret word except the Chameleon.",
+      "Take turns saying exactly one word as a clue.",
+      "No gestures, no sound effects, no repeating a clue.",
+      "Never say the secret word, part of it, or a translation.",
+      "Point at the Chameleon. If caught, they can still escape by guessing the word."
+    ],
+    "inProgress": "A game is in progress",
+    "resume": "Resume game",
+    "options": "Options"
+  },
+  "peek": {
+    "passTo": "Pass the phone to",
+    "imPlayer": "I'm {{name}}",
+    "hold": "Hold to see your card",
+    "release": "Release to hide",
+    "topic": "Topic: {{emoji}} {{name}}",
+    "innocentHint": "Give a one-word clue that proves you know the word, without making it easy for the Chameleon.",
+    "chameleonTitle": "You're the Chameleon!",
+    "chameleonHint": "Listen to the clues, give a believable one-word clue, and work out the secret word.",
+    "undercoverHint": "Give a one-word clue that proves you know the word. Someone has a slightly different one…",
+    "secretWord": "Secret word"
+  },
+  "circle": {
+    "starts": "{{name}}, you start. One word.",
+    "turn": "{{name}}'s turn",
+    "next": "Next",
+    "ruleBroken": "Rule broken",
+    "reminder": "One word. No gestures. Don't say the word.",
+    "round": "Clue round {{n}} of {{total}}",
+    "upNext": "Up next: {{names}}"
+  },
+  "discuss": {
+    "title": "Who seemed off?",
+    "sub": "Talk it over, or point straight away.",
+    "point": "Point now"
+  },
+  "vote": {
+    "countdown": "Point at the Chameleon in…",
+    "point": "Point!",
+    "title": "Who got the most fingers?",
+    "accuse": "Accuse {{name}}",
+    "tie": "It's a tie",
+    "tieHint": "Tap the tied players, then confirm.",
+    "confirmTie": "Confirm tie",
+    "undo": "Undo · {{n}}",
+    "revote": "Tie! Each of them defends themselves in one sentence, then point again."
+  },
+  "escape": {
+    "caught": "You caught the Chameleon! But can they escape?",
+    "passTo": "Hand the phone to {{name}}",
+    "imPlayer": "I'm {{name}}",
+    "pick": "Tap the secret word",
+    "suspense": "Did they blend in…?"
+  },
+  "result": {
+    "wrongPerson": "It was {{name}} all along! 🦎",
+    "escaped": "{{name}} blended in and escaped!",
+    "town": "The town wins!",
+    "ruleBroken": "A rule was broken! The Chameleon gets a point.",
+    "wordWas": "The secret word was",
+    "undercoverHad": "{{name}} had",
+    "guessed": "They guessed",
+    "next": "Next round",
+    "finish": "See the winner"
+  },
+  "over": {
+    "title": "Game over!",
+    "winner": "{{names}} wins!",
+    "winners": "{{names}} win!",
+    "playAgain": "Play again",
+    "home": "Home"
+  },
+  "host": {
+    "quit": "End game",
+    "quitConfirm": "End this game? The current game will be lost."
+  }
+}

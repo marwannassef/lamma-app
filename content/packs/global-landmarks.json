@@ -167,5 +167,16 @@
         "ar": "متحف اللوفر"
       }
     }
+  ],
+  "pairs": [
+    ["eiffel-tower", "big-ben"],
+    ["pyramids-of-giza", "petra"],
+    ["statue-of-liberty", "golden-gate-bridge"],
+    ["burj-khalifa", "leaning-tower-of-pisa"],
+    ["niagara-falls", "grand-canyon"],
+    ["mount-everest", "mount-fuji"],
+    ["colosseum", "stonehenge"],
+    ["taj-mahal", "louvre-museum"],
+    ["amazon-rainforest", "sahara-desert"]
   ]
 }

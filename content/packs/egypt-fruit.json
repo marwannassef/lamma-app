@@ -217,5 +217,16 @@
       },
       "translit": "meshmesh"
     }
+  ],
+  "pairs": [
+    ["mango", "guava"],
+    ["orange", "tangerine"],
+    ["grapes", "strawberry"],
+    ["prickly-pear", "pomegranate"],
+    ["zucchini", "eggplant"],
+    ["tomato", "pepper"],
+    ["onion", "garlic"],
+    ["potato", "carrot"],
+    ["lettuce", "cabbage"]
   ]
 }

@@ -17,4 +17,6 @@ export interface GameModule {
   entryRoute: Href;
   /** False until the game's screens ship; the home tile then shows "Coming soon". */
   ready: boolean;
+  /** A secret teaser: hides the player count and details. */
+  mystery?: boolean;
 }

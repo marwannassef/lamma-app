@@ -174,5 +174,17 @@
         "ar": "قبعة شمس"
       }
     }
+  ],
+  "pairs": [
+    ["sandcastle", "bucket-and-spade"],
+    ["seashell", "starfish"],
+    ["crab", "jellyfish"],
+    ["sunglasses", "sun-hat"],
+    ["swimsuit", "flip-flops"],
+    ["sunscreen", "beach-umbrella"],
+    ["surfboard", "swim-ring"],
+    ["lighthouse", "sailboat"],
+    ["coconut", "watermelon"],
+    ["sunset", "wave"]
   ]
 }

@@ -35,13 +35,6 @@ export const TEAM_GRADIENT: Record<Team, readonly [string, string]> = {
   neutral: ['#EF7A3C', '#8C3A12'],
 };
 
-/** Secret screens: near-black OLED background and low-contrast text (§4, §11). */
-export const STEALTH = {
-  bg: '#0A0710',
-  text: '#8C86A0',
-  accent: 'rgba(107,63,198,0.6)',
-} as const;
-
 /** Commissioned role art. Roles without art yet fall back to ROLE_GLYPH. */
 export const ROLE_ART: Partial<Record<RoleId, number>> = {
   villager: require('@/assets/images/roles/villager.png'),

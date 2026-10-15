@@ -4,11 +4,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName } from '@/core/players';
 import { radius, space, useTheme } from '@/core/theme';
-import { Avatar, Button, Panel, Screen, Text } from '@/core/ui';
+import { Avatar, Button, Panel, PlayerPicker, Screen, Text, useCountdown } from '@/core/ui';
 
-import { useCountdown } from '../components/HoldButton';
 import { RoleIcon } from '../components/RoleIcon';
-import { PlayerPicker } from '../components/PlayerPicker';
 import { RoleCard } from '../components/RoleCard';
 import type { Effect, GameState, NightReport, PlayerId } from '../engine';
 import { useWerewolf } from '../store';
@@ -135,7 +133,7 @@ export function DeathEffects({ game, effect }: { game: GameState; effect: Effect
         </Text>
       </View>
       <PlayerPicker
-        game={game}
+        players={game.players}
         selected={picked != null ? [picked] : []}
         onToggle={setPicked}
         {...picker}
@@ -168,7 +166,7 @@ export function MayorElection({ game }: { game: GameState }) {
         {t('day.electMayor')}
       </Text>
       <PlayerPicker
-        game={game}
+        players={game.players}
         selected={picked != null ? [picked] : []}
         onToggle={setPicked}
         {...picker}
@@ -352,7 +350,7 @@ export function Vote({ game }: { game: GameState }) {
         {tie ? t('day.tieHint') : t('day.voteTitle')}
       </Text>
       <PlayerPicker
-        game={game}
+        players={game.players}
         selected={picked}
         onToggle={(id) =>
           setPicked((cur) =>
@@ -399,7 +397,7 @@ export function MayorTieBreak({ game, tied }: { game: GameState; tied: PlayerId[
         </Text>
       </View>
       <PlayerPicker
-        game={game}
+        players={game.players}
         selected={picked != null ? [picked] : []}
         include={(p) => tied.includes(p.id)}
         onToggle={setPicked}

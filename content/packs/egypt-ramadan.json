@@ -177,5 +177,15 @@
       },
       "translit": "el helal"
     }
+  ],
+  "pairs": [
+    ["suhoor", "iftar"],
+    ["eid-cookies", "eid-biscuits"],
+    ["khoshaf", "apricot-drink"],
+    ["dried-dates", "nuts-and-dried-fruit"],
+    ["eid-prayer", "taraweeh-prayer"],
+    ["ramadan-lantern", "ramadan-decorations"],
+    ["mesaharaty-drummer", "iftar-cannon"],
+    ["eid-money", "eid-clothes"]
   ]
 }

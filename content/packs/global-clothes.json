@@ -1,0 +1,197 @@
+{
+  "id": "global-clothes",
+  "region": "global",
+  "game": "spy",
+  "emoji": "👕",
+  "name": {
+    "en": "Clothes",
+    "ar": "ملابس"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "shirt",
+      "text": {
+        "en": "Shirt",
+        "ar": "قميص"
+      }
+    },
+    {
+      "id": "t-shirt",
+      "text": {
+        "en": "T-shirt",
+        "ar": "تيشيرت"
+      }
+    },
+    {
+      "id": "jeans",
+      "text": {
+        "en": "Jeans",
+        "ar": "جينز"
+      }
+    },
+    {
+      "id": "dress",
+      "text": {
+        "en": "Dress",
+        "ar": "فستان"
+      }
+    },
+    {
+      "id": "skirt",
+      "text": {
+        "en": "Skirt",
+        "ar": "تنورة"
+      }
+    },
+    {
+      "id": "jacket",
+      "text": {
+        "en": "Jacket",
+        "ar": "جاكيت"
+      }
+    },
+    {
+      "id": "coat",
+      "text": {
+        "en": "Coat",
+        "ar": "معطف"
+      }
+    },
+    {
+      "id": "sweater",
+      "text": {
+        "en": "Sweater",
+        "ar": "سويتر"
+      }
+    },
+    {
+      "id": "hoodie",
+      "text": {
+        "en": "Hoodie",
+        "ar": "هودي"
+      }
+    },
+    {
+      "id": "shorts",
+      "text": {
+        "en": "Shorts",
+        "ar": "شورت"
+      }
+    },
+    {
+      "id": "pajamas",
+      "text": {
+        "en": "Pajamas",
+        "ar": "بيجامة"
+      }
+    },
+    {
+      "id": "socks",
+      "text": {
+        "en": "Socks",
+        "ar": "جوارب"
+      }
+    },
+    {
+      "id": "shoes",
+      "text": {
+        "en": "Shoes",
+        "ar": "حذاء"
+      }
+    },
+    {
+      "id": "sneakers",
+      "text": {
+        "en": "Sneakers",
+        "ar": "حذاء رياضي"
+      }
+    },
+    {
+      "id": "boots",
+      "text": {
+        "en": "Boots",
+        "ar": "حذاء طويل"
+      }
+    },
+    {
+      "id": "sandals",
+      "text": {
+        "en": "Sandals",
+        "ar": "صندل"
+      }
+    },
+    {
+      "id": "hat",
+      "text": {
+        "en": "Hat",
+        "ar": "قبعة"
+      }
+    },
+    {
+      "id": "cap",
+      "text": {
+        "en": "Cap",
+        "ar": "كاب"
+      }
+    },
+    {
+      "id": "scarf",
+      "text": {
+        "en": "Scarf",
+        "ar": "وشاح"
+      }
+    },
+    {
+      "id": "gloves",
+      "text": {
+        "en": "Gloves",
+        "ar": "قفازات"
+      }
+    },
+    {
+      "id": "tie",
+      "text": {
+        "en": "Tie",
+        "ar": "ربطة عنق"
+      }
+    },
+    {
+      "id": "belt",
+      "text": {
+        "en": "Belt",
+        "ar": "حزام"
+      }
+    },
+    {
+      "id": "suit",
+      "text": {
+        "en": "Suit",
+        "ar": "بدلة"
+      }
+    },
+    {
+      "id": "vest",
+      "text": {
+        "en": "Vest",
+        "ar": "صديري"
+      }
+    }
+  ],
+  "pairs": [
+    ["shirt", "t-shirt"],
+    ["jeans", "shorts"],
+    ["dress", "skirt"],
+    ["jacket", "coat"],
+    ["sweater", "hoodie"],
+    ["socks", "gloves"],
+    ["shoes", "sneakers"],
+    ["boots", "sandals"],
+    ["hat", "cap"],
+    ["scarf", "tie"]
+  ]
+}

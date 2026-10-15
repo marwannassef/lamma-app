@@ -1,0 +1,221 @@
+{
+  "id": "egypt-animals",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🐪",
+  "name": {
+    "en": "Animals",
+    "ar": "حيوانات"
+  },
+  "subtitle": {
+    "en": "7ayawanat",
+    "ar": "7ayawanat"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "camel",
+      "text": {
+        "en": "Camel",
+        "ar": "جمل"
+      },
+      "translit": "gamal"
+    },
+    {
+      "id": "donkey",
+      "text": {
+        "en": "Donkey",
+        "ar": "حمار"
+      },
+      "translit": "7omar"
+    },
+    {
+      "id": "water-buffalo",
+      "text": {
+        "en": "Water buffalo",
+        "ar": "جاموسة"
+      },
+      "translit": "gamousa"
+    },
+    {
+      "id": "cow",
+      "text": {
+        "en": "Cow",
+        "ar": "بقرة"
+      },
+      "translit": "ba2ara"
+    },
+    {
+      "id": "goat",
+      "text": {
+        "en": "Goat",
+        "ar": "معزة"
+      },
+      "translit": "me3za"
+    },
+    {
+      "id": "sheep",
+      "text": {
+        "en": "Sheep",
+        "ar": "خروف"
+      },
+      "translit": "kharouf"
+    },
+    {
+      "id": "chicken",
+      "text": {
+        "en": "Chicken",
+        "ar": "فرخة"
+      },
+      "translit": "farkha"
+    },
+    {
+      "id": "duck",
+      "text": {
+        "en": "Duck",
+        "ar": "بطة"
+      },
+      "translit": "batta"
+    },
+    {
+      "id": "goose",
+      "text": {
+        "en": "Goose",
+        "ar": "وزة"
+      },
+      "translit": "wezza"
+    },
+    {
+      "id": "pigeon",
+      "text": {
+        "en": "Pigeon",
+        "ar": "حمامة"
+      },
+      "translit": "7amama"
+    },
+    {
+      "id": "cat",
+      "text": {
+        "en": "Cat",
+        "ar": "قطة"
+      },
+      "translit": "otta"
+    },
+    {
+      "id": "dog",
+      "text": {
+        "en": "Dog",
+        "ar": "كلب"
+      },
+      "translit": "kalb"
+    },
+    {
+      "id": "horse",
+      "text": {
+        "en": "Horse",
+        "ar": "حصان"
+      },
+      "translit": "7osan"
+    },
+    {
+      "id": "rabbit",
+      "text": {
+        "en": "Rabbit",
+        "ar": "أرنب"
+      },
+      "translit": "arnab"
+    },
+    {
+      "id": "crocodile",
+      "text": {
+        "en": "Crocodile",
+        "ar": "تمساح"
+      },
+      "translit": "temsa7"
+    },
+    {
+      "id": "giraffe",
+      "text": {
+        "en": "Giraffe",
+        "ar": "زرافة"
+      },
+      "translit": "zarafa"
+    },
+    {
+      "id": "lion",
+      "text": {
+        "en": "Lion",
+        "ar": "أسد"
+      },
+      "translit": "asad"
+    },
+    {
+      "id": "elephant",
+      "text": {
+        "en": "Elephant",
+        "ar": "فيل"
+      },
+      "translit": "fil"
+    },
+    {
+      "id": "monkey",
+      "text": {
+        "en": "Monkey",
+        "ar": "قرد"
+      },
+      "translit": "erd"
+    },
+    {
+      "id": "turtle",
+      "text": {
+        "en": "Turtle",
+        "ar": "سلحفاة"
+      },
+      "translit": "sel7efa"
+    },
+    {
+      "id": "mouse",
+      "text": {
+        "en": "Mouse",
+        "ar": "فار"
+      },
+      "translit": "far"
+    },
+    {
+      "id": "cockroach",
+      "text": {
+        "en": "Cockroach",
+        "ar": "صرصار"
+      },
+      "translit": "sarsar"
+    },
+    {
+      "id": "mosquito",
+      "text": {
+        "en": "Mosquito",
+        "ar": "ناموسة"
+      },
+      "translit": "namousa"
+    },
+    {
+      "id": "crow",
+      "text": {
+        "en": "Crow",
+        "ar": "غراب"
+      },
+      "translit": "ghorab"
+    },
+    {
+      "id": "rooster",
+      "text": {
+        "en": "Rooster",
+        "ar": "ديك"
+      },
+      "translit": "deek"
+    }
+  ]
+}

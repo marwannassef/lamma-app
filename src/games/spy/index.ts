@@ -10,5 +10,5 @@ export const spy: GameModule = {
   usesScores: true,
   usesPunishments: true,
   entryRoute: '/games/spy',
-  ready: false,
+  ready: true,
 };

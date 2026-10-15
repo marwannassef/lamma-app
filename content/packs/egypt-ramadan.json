@@ -1,0 +1,181 @@
+{
+  "id": "egypt-ramadan",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🌙",
+  "name": {
+    "en": "Ramadan & Eid",
+    "ar": "رمضان والعيد"
+  },
+  "subtitle": {
+    "en": "Ramadan w el 3eed",
+    "ar": "Ramadan w el 3eed"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "ramadan-lantern",
+      "text": {
+        "en": "Ramadan lantern",
+        "ar": "فانوس"
+      },
+      "translit": "fanous"
+    },
+    {
+      "id": "mesaharaty-drummer",
+      "text": {
+        "en": "Mesaharaty drummer",
+        "ar": "مسحراتي"
+      },
+      "translit": "mesa7araty"
+    },
+    {
+      "id": "iftar-cannon",
+      "text": {
+        "en": "Iftar cannon",
+        "ar": "مدفع الفطار"
+      },
+      "translit": "madfa3 el fetar"
+    },
+    {
+      "id": "dried-dates",
+      "text": {
+        "en": "Dried dates",
+        "ar": "تمر"
+      },
+      "translit": "tamr"
+    },
+    {
+      "id": "khoshaf",
+      "text": {
+        "en": "Khoshaf",
+        "ar": "خشاف"
+      },
+      "translit": "khoshaf"
+    },
+    {
+      "id": "nuts-and-dried-fruit",
+      "text": {
+        "en": "Nuts & dried fruit",
+        "ar": "ياميش"
+      },
+      "translit": "yameesh"
+    },
+    {
+      "id": "eid-money",
+      "text": {
+        "en": "Eid money",
+        "ar": "عيدية"
+      },
+      "translit": "3eedeya"
+    },
+    {
+      "id": "eid-cookies",
+      "text": {
+        "en": "Eid cookies",
+        "ar": "كحك"
+      },
+      "translit": "ka7k"
+    },
+    {
+      "id": "eid-prayer",
+      "text": {
+        "en": "Eid prayer",
+        "ar": "صلاة العيد"
+      },
+      "translit": "salat el 3eed"
+    },
+    {
+      "id": "eid-clothes",
+      "text": {
+        "en": "Eid clothes",
+        "ar": "لبس العيد"
+      },
+      "translit": "lebs el 3eed"
+    },
+    {
+      "id": "ramadan-decorations",
+      "text": {
+        "en": "Ramadan decorations",
+        "ar": "زينة رمضان"
+      },
+      "translit": "zeenet ramadan"
+    },
+    {
+      "id": "suhoor",
+      "text": {
+        "en": "Suhoor",
+        "ar": "سحور"
+      },
+      "translit": "so7oor"
+    },
+    {
+      "id": "iftar",
+      "text": {
+        "en": "Iftar",
+        "ar": "فطار"
+      },
+      "translit": "fetar"
+    },
+    {
+      "id": "eid-sheep",
+      "text": {
+        "en": "Eid sheep",
+        "ar": "خروف العيد"
+      },
+      "translit": "kharouf el 3eed"
+    },
+    {
+      "id": "taraweeh-prayer",
+      "text": {
+        "en": "Taraweeh prayer",
+        "ar": "تراويح"
+      },
+      "translit": "tarawee7"
+    },
+    {
+      "id": "apricot-drink",
+      "text": {
+        "en": "Apricot drink",
+        "ar": "قمر الدين"
+      },
+      "translit": "amar el deen"
+    },
+    {
+      "id": "licorice-drink",
+      "text": {
+        "en": "Licorice drink",
+        "ar": "عرقسوس"
+      },
+      "translit": "3er2sous"
+    },
+    {
+      "id": "eid-biscuits",
+      "text": {
+        "en": "Eid biscuits",
+        "ar": "بسكوت العيد"
+      },
+      "translit": "baskoot el 3eed"
+    },
+    {
+      "id": "the-quran",
+      "text": {
+        "en": "The Quran",
+        "ar": "المصحف"
+      },
+      "translit": "el mos7af"
+    },
+    {
+      "id": "crescent-moon",
+      "text": {
+        "en": "Crescent moon",
+        "ar": "الهلال"
+      },
+      "translit": "el helal"
+    }
+  ]
+}

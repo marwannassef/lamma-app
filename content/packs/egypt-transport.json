@@ -1,0 +1,181 @@
+{
+  "id": "egypt-transport",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🚌",
+  "name": {
+    "en": "Transport",
+    "ar": "مواصلات"
+  },
+  "subtitle": {
+    "en": "Mowasalat",
+    "ar": "Mowasalat"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "microbus",
+      "text": {
+        "en": "Microbus",
+        "ar": "ميكروباص"
+      },
+      "translit": "microbas"
+    },
+    {
+      "id": "tuk-tuk",
+      "text": {
+        "en": "Tuk-tuk",
+        "ar": "توك توك"
+      },
+      "translit": "tok tok"
+    },
+    {
+      "id": "taxi",
+      "text": {
+        "en": "Taxi",
+        "ar": "تاكسي"
+      },
+      "translit": "taxi"
+    },
+    {
+      "id": "metro",
+      "text": {
+        "en": "Metro",
+        "ar": "مترو"
+      },
+      "translit": "metro"
+    },
+    {
+      "id": "bus",
+      "text": {
+        "en": "Bus",
+        "ar": "أتوبيس"
+      },
+      "translit": "otobees"
+    },
+    {
+      "id": "train",
+      "text": {
+        "en": "Train",
+        "ar": "قطر"
+      },
+      "translit": "atr"
+    },
+    {
+      "id": "bike",
+      "text": {
+        "en": "Bike",
+        "ar": "عجلة"
+      },
+      "translit": "3agala"
+    },
+    {
+      "id": "motorcycle",
+      "text": {
+        "en": "Motorcycle",
+        "ar": "موتوسيكل"
+      },
+      "translit": "motosykl"
+    },
+    {
+      "id": "boat",
+      "text": {
+        "en": "Boat",
+        "ar": "مركب"
+      },
+      "translit": "markeb"
+    },
+    {
+      "id": "felucca",
+      "text": {
+        "en": "Felucca",
+        "ar": "فلوكة"
+      },
+      "translit": "falouka"
+    },
+    {
+      "id": "airplane",
+      "text": {
+        "en": "Airplane",
+        "ar": "طيارة"
+      },
+      "translit": "tayyara"
+    },
+    {
+      "id": "horse-carriage",
+      "text": {
+        "en": "Horse carriage",
+        "ar": "حنطور"
+      },
+      "translit": "7antour"
+    },
+    {
+      "id": "cargo-tricycle",
+      "text": {
+        "en": "Cargo tricycle",
+        "ar": "تروسيكل"
+      },
+      "translit": "troseekl"
+    },
+    {
+      "id": "car",
+      "text": {
+        "en": "Car",
+        "ar": "عربية ملاكي"
+      },
+      "translit": "3arabeya malaky"
+    },
+    {
+      "id": "tram",
+      "text": {
+        "en": "Tram",
+        "ar": "ترام"
+      },
+      "translit": "tram"
+    },
+    {
+      "id": "ferry",
+      "text": {
+        "en": "Ferry",
+        "ar": "معدية"
+      },
+      "translit": "me3addeya"
+    },
+    {
+      "id": "ambulance",
+      "text": {
+        "en": "Ambulance",
+        "ar": "عربية إسعاف"
+      },
+      "translit": "3arabeyet es3af"
+    },
+    {
+      "id": "fire-truck",
+      "text": {
+        "en": "Fire truck",
+        "ar": "عربية مطافي"
+      },
+      "translit": "3arabeyet matafy"
+    },
+    {
+      "id": "tow-truck",
+      "text": {
+        "en": "Tow truck",
+        "ar": "ونش"
+      },
+      "translit": "wensh"
+    },
+    {
+      "id": "scooter",
+      "text": {
+        "en": "Scooter",
+        "ar": "سكوتر"
+      },
+      "translit": "scooter"
+    }
+  ]
+}

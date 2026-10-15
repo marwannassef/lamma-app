@@ -1,0 +1,171 @@
+{
+  "id": "global-transport",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🚗",
+  "name": {
+    "en": "Transport",
+    "ar": "مواصلات"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "car",
+      "text": {
+        "en": "Car",
+        "ar": "سيارة"
+      }
+    },
+    {
+      "id": "bus",
+      "text": {
+        "en": "Bus",
+        "ar": "حافلة"
+      }
+    },
+    {
+      "id": "train",
+      "text": {
+        "en": "Train",
+        "ar": "قطار"
+      }
+    },
+    {
+      "id": "airplane",
+      "text": {
+        "en": "Airplane",
+        "ar": "طائرة"
+      }
+    },
+    {
+      "id": "helicopter",
+      "text": {
+        "en": "Helicopter",
+        "ar": "هليكوبتر"
+      }
+    },
+    {
+      "id": "bicycle",
+      "text": {
+        "en": "Bicycle",
+        "ar": "دراجة"
+      }
+    },
+    {
+      "id": "motorcycle",
+      "text": {
+        "en": "Motorcycle",
+        "ar": "دراجة نارية"
+      }
+    },
+    {
+      "id": "boat",
+      "text": {
+        "en": "Boat",
+        "ar": "قارب"
+      }
+    },
+    {
+      "id": "ship",
+      "text": {
+        "en": "Ship",
+        "ar": "سفينة"
+      }
+    },
+    {
+      "id": "submarine",
+      "text": {
+        "en": "Submarine",
+        "ar": "غواصة"
+      }
+    },
+    {
+      "id": "taxi",
+      "text": {
+        "en": "Taxi",
+        "ar": "تاكسي"
+      }
+    },
+    {
+      "id": "metro",
+      "text": {
+        "en": "Metro",
+        "ar": "مترو"
+      }
+    },
+    {
+      "id": "truck",
+      "text": {
+        "en": "Truck",
+        "ar": "شاحنة"
+      }
+    },
+    {
+      "id": "ambulance",
+      "text": {
+        "en": "Ambulance",
+        "ar": "سيارة إسعاف"
+      }
+    },
+    {
+      "id": "fire-truck",
+      "text": {
+        "en": "Fire truck",
+        "ar": "سيارة إطفاء"
+      }
+    },
+    {
+      "id": "rocket",
+      "text": {
+        "en": "Rocket",
+        "ar": "صاروخ"
+      }
+    },
+    {
+      "id": "hot-air-balloon",
+      "text": {
+        "en": "Hot-air balloon",
+        "ar": "منطاد"
+      }
+    },
+    {
+      "id": "scooter",
+      "text": {
+        "en": "Scooter",
+        "ar": "سكوتر"
+      }
+    },
+    {
+      "id": "tractor",
+      "text": {
+        "en": "Tractor",
+        "ar": "جرار زراعي"
+      }
+    },
+    {
+      "id": "skateboard",
+      "text": {
+        "en": "Skateboard",
+        "ar": "لوح تزلج"
+      }
+    },
+    {
+      "id": "cable-car",
+      "text": {
+        "en": "Cable car",
+        "ar": "تلفريك"
+      }
+    },
+    {
+      "id": "police-car",
+      "text": {
+        "en": "Police car",
+        "ar": "سيارة شرطة"
+      }
+    }
+  ]
+}

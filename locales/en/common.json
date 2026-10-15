@@ -6,7 +6,8 @@
     "pickGame": "Pick a game",
     "playersRange": "{{min}}–{{max}} players",
     "comingSoon": "Coming soon",
-    "openSettings": "Settings"
+    "openSettings": "Settings",
+    "play": "Play"
   },
   "players": {
     "defaultName": "Player {{n}}",
@@ -26,10 +27,62 @@
     "sound": "Sound effects",
     "about": "About",
     "version": "Version {{version}}",
-    "privacy": "Lamma works fully offline. We don't collect, store or share any data about you."
+    "privacy": "Lamma works fully offline. We don't collect, store or share any data about you.",
+    "feedback": "Sound & vibration",
+    "appearanceAuto": "Day & night",
+    "appearanceAutoNote": "Light from sunrise to sunset where you are, estimated from your phone's time zone. No location access needed."
   },
   "a11y": {
     "back": "Back",
     "selected": "Selected"
+  },
+  "actions": {
+    "cancel": "Cancel"
+  },
+  "scores": {
+    "title": "Scores 🏆",
+    "points_one": "{{count}} point",
+    "points_other": "{{count}} points",
+    "gain_one": "+{{count}} this round",
+    "gain_other": "+{{count}} this round",
+    "leader": "Leader",
+    "reset": "Reset scores",
+    "resetConfirm": "Reset all scores and start again from round 1?",
+    "resetYes": "Reset"
+  },
+  "regions": {
+    "title": "Word packs",
+    "global": "Worldwide",
+    "eg": "Egypt",
+    "needOne": "Keep at least one region on."
+  },
+  "adult": {
+    "ask": "🔞 Is everyone playing 18+?",
+    "yes": "Yes, unlock 🔥"
+  },
+  "punishments": {
+    "title": "Punishment for losers",
+    "levels": {
+      "off": "Off",
+      "light": "Light",
+      "medium": "Medium",
+      "hard": "Hard",
+      "public": "Public & funny",
+      "mix": "Mix"
+    },
+    "panelTitle": "Punishment time! 😈",
+    "losers": "Losers: {{names}}",
+    "draw": "Draw punishment 🎁",
+    "swap": "Swap it (once) 🔄",
+    "group": "Everyone who lost: {{names}}"
+  },
+  "list": {
+    "and": " & "
+  },
+  "games": {
+    "werewolf": {
+      "title": "Werewolf",
+      "blurb": "Villagers against hidden werewolves. The app narrates the night; the day decides who is out."
+    }
   }
 }

@@ -1,0 +1,205 @@
+{
+  "id": "egypt-beach",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🏖️",
+  "name": {
+    "en": "Beach & summer",
+    "ar": "البحر والصيف"
+  },
+  "subtitle": {
+    "en": "El masyaf",
+    "ar": "El masyaf"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "beach-umbrella",
+      "text": {
+        "en": "Beach umbrella",
+        "ar": "شمسية"
+      },
+      "translit": "shamseya"
+    },
+    {
+      "id": "swim-ring",
+      "text": {
+        "en": "Swim ring",
+        "ar": "عوامة"
+      },
+      "translit": "3awwama"
+    },
+    {
+      "id": "sand",
+      "text": {
+        "en": "Sand",
+        "ar": "رملة"
+      },
+      "translit": "ramla"
+    },
+    {
+      "id": "wave",
+      "text": {
+        "en": "Wave",
+        "ar": "موجة"
+      },
+      "translit": "moga"
+    },
+    {
+      "id": "fish",
+      "text": {
+        "en": "Fish",
+        "ar": "سمك"
+      },
+      "translit": "samak"
+    },
+    {
+      "id": "shrimp",
+      "text": {
+        "en": "Shrimp",
+        "ar": "جمبري"
+      },
+      "translit": "gambary"
+    },
+    {
+      "id": "crab",
+      "text": {
+        "en": "Crab",
+        "ar": "كابوريا"
+      },
+      "translit": "kaboria"
+    },
+    {
+      "id": "jellyfish",
+      "text": {
+        "en": "Jellyfish",
+        "ar": "قنديل البحر"
+      },
+      "translit": "andeel el ba7r"
+    },
+    {
+      "id": "sunglasses",
+      "text": {
+        "en": "Sunglasses",
+        "ar": "نضارة شمس"
+      },
+      "translit": "naddaret shams"
+    },
+    {
+      "id": "swimsuit",
+      "text": {
+        "en": "Swimsuit",
+        "ar": "مايوه"
+      },
+      "translit": "mayoh"
+    },
+    {
+      "id": "freska",
+      "text": {
+        "en": "Freska",
+        "ar": "فريسكا"
+      },
+      "translit": "freska"
+    },
+    {
+      "id": "grilled-corn",
+      "text": {
+        "en": "Grilled corn",
+        "ar": "درة مشوي"
+      },
+      "translit": "dora mashwy"
+    },
+    {
+      "id": "lupini-beans",
+      "text": {
+        "en": "Lupini beans",
+        "ar": "ترمس"
+      },
+      "translit": "termes"
+    },
+    {
+      "id": "ice-cream",
+      "text": {
+        "en": "Ice cream",
+        "ar": "آيس كريم"
+      },
+      "translit": "ice cream"
+    },
+    {
+      "id": "bucket-and-shovel",
+      "text": {
+        "en": "Bucket & shovel",
+        "ar": "جردل وجاروف"
+      },
+      "translit": "gardal w garoof"
+    },
+    {
+      "id": "seashells",
+      "text": {
+        "en": "Seashells",
+        "ar": "صدف"
+      },
+      "translit": "sadaf"
+    },
+    {
+      "id": "starfish",
+      "text": {
+        "en": "Starfish",
+        "ar": "نجمة البحر"
+      },
+      "translit": "negmet el ba7r"
+    },
+    {
+      "id": "lifeguard",
+      "text": {
+        "en": "Lifeguard",
+        "ar": "المنقذ"
+      },
+      "translit": "el monqez"
+    },
+    {
+      "id": "chalet",
+      "text": {
+        "en": "Chalet",
+        "ar": "شاليه"
+      },
+      "translit": "shalieh"
+    },
+    {
+      "id": "beach-chair",
+      "text": {
+        "en": "Beach chair",
+        "ar": "كرسي بحر"
+      },
+      "translit": "korsy ba7r"
+    },
+    {
+      "id": "swimming-pool",
+      "text": {
+        "en": "Swimming pool",
+        "ar": "حمام سباحة"
+      },
+      "translit": "7ammam seba7a"
+    },
+    {
+      "id": "sunscreen",
+      "text": {
+        "en": "Sunscreen",
+        "ar": "كريم الشمس"
+      },
+      "translit": "cream el shams"
+    },
+    {
+      "id": "towel",
+      "text": {
+        "en": "Towel",
+        "ar": "فوطة"
+      },
+      "translit": "foota"
+    }
+  ]
+}

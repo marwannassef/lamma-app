@@ -1,0 +1,178 @@
+{
+  "id": "global-beach",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🏖️",
+  "name": {
+    "en": "Beach & summer",
+    "ar": "البحر والصيف"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "sand",
+      "text": {
+        "en": "Sand",
+        "ar": "رمل"
+      }
+    },
+    {
+      "id": "wave",
+      "text": {
+        "en": "Wave",
+        "ar": "موجة"
+      }
+    },
+    {
+      "id": "seashell",
+      "text": {
+        "en": "Seashell",
+        "ar": "صدفة"
+      }
+    },
+    {
+      "id": "starfish",
+      "text": {
+        "en": "Starfish",
+        "ar": "نجم البحر"
+      }
+    },
+    {
+      "id": "crab",
+      "text": {
+        "en": "Crab",
+        "ar": "سلطعون"
+      }
+    },
+    {
+      "id": "jellyfish",
+      "text": {
+        "en": "Jellyfish",
+        "ar": "قنديل البحر"
+      }
+    },
+    {
+      "id": "sunglasses",
+      "text": {
+        "en": "Sunglasses",
+        "ar": "نظارة شمس"
+      }
+    },
+    {
+      "id": "swimsuit",
+      "text": {
+        "en": "Swimsuit",
+        "ar": "مايوه"
+      }
+    },
+    {
+      "id": "sunscreen",
+      "text": {
+        "en": "Sunscreen",
+        "ar": "واقي الشمس"
+      }
+    },
+    {
+      "id": "beach-umbrella",
+      "text": {
+        "en": "Beach umbrella",
+        "ar": "شمسية"
+      }
+    },
+    {
+      "id": "sandcastle",
+      "text": {
+        "en": "Sandcastle",
+        "ar": "قلعة رملية"
+      }
+    },
+    {
+      "id": "bucket-and-spade",
+      "text": {
+        "en": "Bucket and spade",
+        "ar": "جردل ومجرفة"
+      }
+    },
+    {
+      "id": "watermelon",
+      "text": {
+        "en": "Watermelon",
+        "ar": "بطيخ"
+      }
+    },
+    {
+      "id": "surfboard",
+      "text": {
+        "en": "Surfboard",
+        "ar": "لوح ركوب الأمواج"
+      }
+    },
+    {
+      "id": "swim-ring",
+      "text": {
+        "en": "Swim ring",
+        "ar": "عوامة"
+      }
+    },
+    {
+      "id": "flip-flops",
+      "text": {
+        "en": "Flip-flops",
+        "ar": "شبشب"
+      }
+    },
+    {
+      "id": "lighthouse",
+      "text": {
+        "en": "Lighthouse",
+        "ar": "منارة"
+      }
+    },
+    {
+      "id": "sailboat",
+      "text": {
+        "en": "Sailboat",
+        "ar": "مركب شراعي"
+      }
+    },
+    {
+      "id": "swimming-pool",
+      "text": {
+        "en": "Swimming pool",
+        "ar": "حمام سباحة"
+      }
+    },
+    {
+      "id": "seagull",
+      "text": {
+        "en": "Seagull",
+        "ar": "نورس"
+      }
+    },
+    {
+      "id": "coconut",
+      "text": {
+        "en": "Coconut",
+        "ar": "جوز الهند"
+      }
+    },
+    {
+      "id": "sunset",
+      "text": {
+        "en": "Sunset",
+        "ar": "غروب الشمس"
+      }
+    },
+    {
+      "id": "sun-hat",
+      "text": {
+        "en": "Sun hat",
+        "ar": "قبعة شمس"
+      }
+    }
+  ]
+}

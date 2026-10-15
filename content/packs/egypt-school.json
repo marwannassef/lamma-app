@@ -1,0 +1,221 @@
+{
+  "id": "egypt-school",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🎒",
+  "name": {
+    "en": "School",
+    "ar": "المدرسة"
+  },
+  "subtitle": {
+    "en": "El madrasa",
+    "ar": "El madrasa"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "schoolbag",
+      "text": {
+        "en": "Schoolbag",
+        "ar": "شنطة"
+      },
+      "translit": "shanta"
+    },
+    {
+      "id": "pencil-case",
+      "text": {
+        "en": "Pencil case",
+        "ar": "مقلمة"
+      },
+      "translit": "ma2lama"
+    },
+    {
+      "id": "eraser",
+      "text": {
+        "en": "Eraser",
+        "ar": "أستيكة"
+      },
+      "translit": "asteeka"
+    },
+    {
+      "id": "sharpener",
+      "text": {
+        "en": "Sharpener",
+        "ar": "براية"
+      },
+      "translit": "barraya"
+    },
+    {
+      "id": "ruler",
+      "text": {
+        "en": "Ruler",
+        "ar": "مسطرة"
+      },
+      "translit": "mastara"
+    },
+    {
+      "id": "notebook",
+      "text": {
+        "en": "Notebook",
+        "ar": "كراسة"
+      },
+      "translit": "karrasa"
+    },
+    {
+      "id": "board",
+      "text": {
+        "en": "Board",
+        "ar": "سبورة"
+      },
+      "translit": "sabbora"
+    },
+    {
+      "id": "chalk",
+      "text": {
+        "en": "Chalk",
+        "ar": "طباشير"
+      },
+      "translit": "tabasheer"
+    },
+    {
+      "id": "desk",
+      "text": {
+        "en": "Desk",
+        "ar": "تختة"
+      },
+      "translit": "takhta"
+    },
+    {
+      "id": "break-time",
+      "text": {
+        "en": "Break time",
+        "ar": "الفسحة"
+      },
+      "translit": "el fos7a"
+    },
+    {
+      "id": "morning-line-up",
+      "text": {
+        "en": "Morning line-up",
+        "ar": "طابور الصبح"
+      },
+      "translit": "tabour el sob7"
+    },
+    {
+      "id": "principal",
+      "text": {
+        "en": "Principal",
+        "ar": "الناظر"
+      },
+      "translit": "el nazer"
+    },
+    {
+      "id": "school-bell",
+      "text": {
+        "en": "School bell",
+        "ar": "الجرس"
+      },
+      "translit": "el garas"
+    },
+    {
+      "id": "book",
+      "text": {
+        "en": "Book",
+        "ar": "كتاب"
+      },
+      "translit": "ketab"
+    },
+    {
+      "id": "pencil",
+      "text": {
+        "en": "Pencil",
+        "ar": "قلم رصاص"
+      },
+      "translit": "alam rosas"
+    },
+    {
+      "id": "colors",
+      "text": {
+        "en": "Colors",
+        "ar": "ألوان"
+      },
+      "translit": "alwan"
+    },
+    {
+      "id": "school-uniform",
+      "text": {
+        "en": "School uniform",
+        "ar": "زي المدرسة"
+      },
+      "translit": "zay el madrasa"
+    },
+    {
+      "id": "exam",
+      "text": {
+        "en": "Exam",
+        "ar": "امتحان"
+      },
+      "translit": "emte7an"
+    },
+    {
+      "id": "report-card",
+      "text": {
+        "en": "Report card",
+        "ar": "شهادة"
+      },
+      "translit": "shahada"
+    },
+    {
+      "id": "homework",
+      "text": {
+        "en": "Homework",
+        "ar": "واجب"
+      },
+      "translit": "wageb"
+    },
+    {
+      "id": "pe-class",
+      "text": {
+        "en": "PE class",
+        "ar": "حصة الألعاب"
+      },
+      "translit": "7esset el al3ab"
+    },
+    {
+      "id": "school-bus",
+      "text": {
+        "en": "School bus",
+        "ar": "أتوبيس المدرسة"
+      },
+      "translit": "otobees el madrasa"
+    },
+    {
+      "id": "canteen",
+      "text": {
+        "en": "Canteen",
+        "ar": "الكانتين"
+      },
+      "translit": "el kanteen"
+    },
+    {
+      "id": "lab",
+      "text": {
+        "en": "Lab",
+        "ar": "المعمل"
+      },
+      "translit": "el ma3mal"
+    },
+    {
+      "id": "library",
+      "text": {
+        "en": "Library",
+        "ar": "المكتبة"
+      },
+      "translit": "el maktaba"
+    }
+  ]
+}

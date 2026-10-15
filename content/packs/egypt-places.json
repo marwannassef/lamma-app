@@ -1,0 +1,221 @@
+{
+  "id": "egypt-places",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "📍",
+  "name": {
+    "en": "Places in Egypt",
+    "ar": "أماكن في مصر"
+  },
+  "subtitle": {
+    "en": "Amaken f masr",
+    "ar": "Amaken f masr"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "the-pyramids",
+      "text": {
+        "en": "The Pyramids",
+        "ar": "الأهرامات"
+      },
+      "translit": "el ahramat"
+    },
+    {
+      "id": "the-sphinx",
+      "text": {
+        "en": "The Sphinx",
+        "ar": "أبو الهول"
+      },
+      "translit": "abu el hol"
+    },
+    {
+      "id": "the-nile",
+      "text": {
+        "en": "The Nile",
+        "ar": "النيل"
+      },
+      "translit": "el nil"
+    },
+    {
+      "id": "cairo-tower",
+      "text": {
+        "en": "Cairo Tower",
+        "ar": "برج القاهرة"
+      },
+      "translit": "borg el qahera"
+    },
+    {
+      "id": "alexandria",
+      "text": {
+        "en": "Alexandria",
+        "ar": "إسكندرية"
+      },
+      "translit": "eskendereya"
+    },
+    {
+      "id": "hurghada",
+      "text": {
+        "en": "Hurghada",
+        "ar": "الغردقة"
+      },
+      "translit": "el ghardaa"
+    },
+    {
+      "id": "sharm-el-sheikh",
+      "text": {
+        "en": "Sharm El Sheikh",
+        "ar": "شرم الشيخ"
+      },
+      "translit": "sharm el sheikh"
+    },
+    {
+      "id": "luxor",
+      "text": {
+        "en": "Luxor",
+        "ar": "الأقصر"
+      },
+      "translit": "lo2sor"
+    },
+    {
+      "id": "aswan",
+      "text": {
+        "en": "Aswan",
+        "ar": "أسوان"
+      },
+      "translit": "aswan"
+    },
+    {
+      "id": "khan-el-khalili",
+      "text": {
+        "en": "Khan El Khalili",
+        "ar": "خان الخليلي"
+      },
+      "translit": "khan el khalili"
+    },
+    {
+      "id": "the-citadel",
+      "text": {
+        "en": "The Citadel",
+        "ar": "القلعة"
+      },
+      "translit": "el al3a"
+    },
+    {
+      "id": "egyptian-museum",
+      "text": {
+        "en": "Egyptian Museum",
+        "ar": "المتحف المصري"
+      },
+      "translit": "el mat7af el masry"
+    },
+    {
+      "id": "north-coast",
+      "text": {
+        "en": "North Coast",
+        "ar": "الساحل الشمالي"
+      },
+      "translit": "el sa7el"
+    },
+    {
+      "id": "the-zoo",
+      "text": {
+        "en": "The Zoo",
+        "ar": "جنينة الحيوانات"
+      },
+      "translit": "geneinet el 7ayawanat"
+    },
+    {
+      "id": "siwa",
+      "text": {
+        "en": "Siwa",
+        "ar": "سيوة"
+      },
+      "translit": "siwa"
+    },
+    {
+      "id": "fayoum",
+      "text": {
+        "en": "Fayoum",
+        "ar": "الفيوم"
+      },
+      "translit": "el fayoum"
+    },
+    {
+      "id": "al-azhar",
+      "text": {
+        "en": "Al-Azhar",
+        "ar": "الأزهر"
+      },
+      "translit": "el azhar"
+    },
+    {
+      "id": "ramses-train-station",
+      "text": {
+        "en": "Ramses train station",
+        "ar": "محطة مصر"
+      },
+      "translit": "ma7atet masr"
+    },
+    {
+      "id": "the-corniche",
+      "text": {
+        "en": "The Corniche",
+        "ar": "الكورنيش"
+      },
+      "translit": "el korneish"
+    },
+    {
+      "id": "amusement-park",
+      "text": {
+        "en": "Amusement park",
+        "ar": "الملاهي"
+      },
+      "translit": "el malahy"
+    },
+    {
+      "id": "mosque",
+      "text": {
+        "en": "Mosque",
+        "ar": "الجامع"
+      },
+      "translit": "el game3"
+    },
+    {
+      "id": "the-mall",
+      "text": {
+        "en": "The mall",
+        "ar": "المول"
+      },
+      "translit": "el mall"
+    },
+    {
+      "id": "the-club",
+      "text": {
+        "en": "The club",
+        "ar": "النادي"
+      },
+      "translit": "el nady"
+    },
+    {
+      "id": "supermarket",
+      "text": {
+        "en": "Supermarket",
+        "ar": "السوبر ماركت"
+      },
+      "translit": "el supermarket"
+    },
+    {
+      "id": "hospital",
+      "text": {
+        "en": "Hospital",
+        "ar": "المستشفى"
+      },
+      "translit": "el mostashfa"
+    }
+  ]
+}

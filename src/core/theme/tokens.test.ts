@@ -21,9 +21,25 @@ describe.each(['light', 'dark'] as const)('%s theme meets WCAG AA', (scheme) => 
     ['text on surfaceRaised', c.text, c.surfaceRaised],
     ['textMuted', c.textMuted, c.bg],
     ['textMuted on surface', c.textMuted, c.surface],
-    ['onPrimary on primary', c.onPrimary, c.primary],
-    ['onSecondary on secondary', c.onSecondary, c.secondary],
+    ...c.primaryGradient.map(
+      (g) => ['onPrimary on primary gradient', c.onPrimary, g] as [string, string, string],
+    ),
+    ...c.secondaryGradient.map(
+      (g) => ['onSecondary on secondary gradient', c.onSecondary, g] as [string, string, string],
+    ),
+    ...c.dangerGradient.map(
+      (g) => ['onDanger on danger gradient', c.onDanger, g] as [string, string, string],
+    ),
+    ['text on surfaceRaised', c.text, c.surfaceRaised],
+    ['textMuted on surfaceRaised', c.textMuted, c.surfaceRaised],
+    ['gold on surface', c.gold, c.surface],
+    ['success on surface', c.success, c.surface],
+    ['danger on surface', c.danger, c.surface],
     ['secondary on bg', c.secondary, c.bg],
+    ...c.bgGradient.map((g) => ['text on bg gradient', c.text, g] as [string, string, string]),
+    ...c.bgGradient.map(
+      (g) => ['textMuted on bg gradient', c.textMuted, g] as [string, string, string],
+    ),
     ['secondary on surface', c.secondary, c.surface],
     ['danger on bg', c.danger, c.bg],
     ['success on bg', c.success, c.bg],

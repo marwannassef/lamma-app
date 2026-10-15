@@ -1,0 +1,185 @@
+{
+  "id": "global-school",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🎒",
+  "name": {
+    "en": "School",
+    "ar": "المدرسة"
+  },
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "backpack",
+      "text": {
+        "en": "Backpack",
+        "ar": "حقيبة مدرسية"
+      }
+    },
+    {
+      "id": "pencil",
+      "text": {
+        "en": "Pencil",
+        "ar": "قلم رصاص"
+      }
+    },
+    {
+      "id": "eraser",
+      "text": {
+        "en": "Eraser",
+        "ar": "ممحاة"
+      }
+    },
+    {
+      "id": "ruler",
+      "text": {
+        "en": "Ruler",
+        "ar": "مسطرة"
+      }
+    },
+    {
+      "id": "notebook",
+      "text": {
+        "en": "Notebook",
+        "ar": "دفتر"
+      }
+    },
+    {
+      "id": "sharpener",
+      "text": {
+        "en": "Sharpener",
+        "ar": "مبراة"
+      }
+    },
+    {
+      "id": "board",
+      "text": {
+        "en": "Board",
+        "ar": "سبورة"
+      }
+    },
+    {
+      "id": "chalk",
+      "text": {
+        "en": "Chalk",
+        "ar": "طباشير"
+      }
+    },
+    {
+      "id": "desk",
+      "text": {
+        "en": "Desk",
+        "ar": "مكتب"
+      }
+    },
+    {
+      "id": "exam",
+      "text": {
+        "en": "Exam",
+        "ar": "امتحان"
+      }
+    },
+    {
+      "id": "homework",
+      "text": {
+        "en": "Homework",
+        "ar": "واجب"
+      }
+    },
+    {
+      "id": "break-time",
+      "text": {
+        "en": "Break time",
+        "ar": "الفسحة"
+      }
+    },
+    {
+      "id": "school-bus",
+      "text": {
+        "en": "School bus",
+        "ar": "حافلة المدرسة"
+      }
+    },
+    {
+      "id": "library",
+      "text": {
+        "en": "Library",
+        "ar": "مكتبة"
+      }
+    },
+    {
+      "id": "lab",
+      "text": {
+        "en": "Lab",
+        "ar": "معمل"
+      }
+    },
+    {
+      "id": "uniform",
+      "text": {
+        "en": "Uniform",
+        "ar": "زي مدرسي"
+      }
+    },
+    {
+      "id": "calculator",
+      "text": {
+        "en": "Calculator",
+        "ar": "آلة حاسبة"
+      }
+    },
+    {
+      "id": "map",
+      "text": {
+        "en": "Map",
+        "ar": "خريطة"
+      }
+    },
+    {
+      "id": "glue",
+      "text": {
+        "en": "Glue",
+        "ar": "صمغ"
+      }
+    },
+    {
+      "id": "scissors",
+      "text": {
+        "en": "Scissors",
+        "ar": "مقص"
+      }
+    },
+    {
+      "id": "colors",
+      "text": {
+        "en": "Colors",
+        "ar": "ألوان"
+      }
+    },
+    {
+      "id": "school-bell",
+      "text": {
+        "en": "School bell",
+        "ar": "جرس المدرسة"
+      }
+    },
+    {
+      "id": "principal",
+      "text": {
+        "en": "Principal",
+        "ar": "مدير المدرسة"
+      }
+    },
+    {
+      "id": "report-card",
+      "text": {
+        "en": "Report card",
+        "ar": "شهادة"
+      }
+    }
+  ]
+}

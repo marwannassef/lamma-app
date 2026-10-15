@@ -46,6 +46,10 @@ module.exports = defineConfig([
     },
   },
   {
+    files: ['**/*.test.ts', '**/*.test.tsx', '__tests__/**', 'test/**'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
+  {
     // A game may import from core, but never from another game.
     files: ['src/games/*/**'],
     rules: {

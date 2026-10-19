@@ -60,6 +60,13 @@
     "web": {
       "output": "single",
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5a9efbbe-0096-4f3f-a3cf-0d28780eb0bf"
+      }
+    },
+    "owner": "mnassef"
   }
 }

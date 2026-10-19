@@ -15,10 +15,12 @@ import {
   Badge,
   Button,
   Chip,
+  ConfirmInline,
   Hint,
   HowToPlay,
   Panel,
   Pressable,
+  ReorderList,
   Screen,
   Stepper,
   Text,
@@ -26,12 +28,11 @@ import {
 } from '@/core/ui';
 
 import { werewolf as module } from '..';
-import { ROLE_GLYPH, TEAM_COLOR } from '../components/meta';
+import { TEAM_COLOR } from '../components/meta';
 import { RoleIcon } from '../components/RoleIcon';
 import {
   ALL_ROLES,
   balance,
-  CORE_ROLES,
   dealRoles,
   DEFAULT_RULES,
   estimatedMinutes,
@@ -41,16 +42,21 @@ import {
   preselect,
   recommendedSetups,
   ROLES,
+  surpriseMe,
+  TIERS,
+  total,
   tryNextTier,
   validateSetup,
   type HouseRules,
   type RoleCounts,
   type Tier,
 } from '../engine';
-import { useWerewolf, type SetupChoice } from '../store';
+import { useWerewolf, type SavedSetup, type SetupChoice } from '../store';
 
-/** Roles that ship today (§3.1). Expansion roles arrive in W5. */
-const AVAILABLE = CORE_ROLES;
+/** Every role ships, core and expansion (W5). */
+const AVAILABLE = ALL_ROLES;
+/** Surprise me is offered from this many players (§5.4). */
+const SURPRISE_FROM = 7;
 const COMPLEXITY: Record<Tier, number> = { basic: 1, gentle: 1, classic: 2, party: 3, chaos: 3 };
 
 function RoleChips({ roles }: { roles: RoleCounts }) {
@@ -203,7 +209,7 @@ function CustomEditor({
             <Stepper
               key={r}
               testID={`custom-${r}`}
-              icon={ROLE_GLYPH[r]}
+              icon={<RoleIcon role={r} size={36} />}
               label={t(`roles.${r}.name`)}
               value={roles[r] ?? 0}
               min={0}
@@ -217,9 +223,12 @@ function CustomEditor({
           ))}
         </View>
       ))}
-      <Text variant="label" tone="muted">
-        {`${ROLE_GLYPH.villager} ${t('setup.villagersFill', { n: filled.villager ?? 0 })}`}
-      </Text>
+      <View style={styles.cardHead}>
+        <RoleIcon role="villager" size={28} />
+        <Text variant="label" tone="muted">
+          {t('setup.villagersFill', { n: filled.villager ?? 0 })}
+        </Text>
+      </View>
       <BalanceMeter roles={filled} />
     </View>
   );
@@ -262,6 +271,207 @@ function Options<T extends string | number | null>({
   );
 }
 
+/** A setup card's frame: a radio that highlights when chosen. */
+function CardFrame({
+  testID,
+  label,
+  selected,
+  onPress,
+  children,
+}: {
+  testID: string;
+  label: string;
+  selected: boolean;
+  onPress(): void;
+  children: React.ReactNode;
+}) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      testID={testID}
+      haptic={false}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: selected }}
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={[
+        styles.setupCard,
+        {
+          backgroundColor: selected ? colors.surfaceRaised : colors.surface,
+          borderColor: selected ? colors.secondary : colors.border,
+        },
+      ]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
+/** "🎲 Surprise me" (§5.4): a random balanced setup, rerolled on demand. */
+function SurpriseCard({
+  roles,
+  locked,
+  onRoll,
+}: {
+  /** The rolled setup while this card is chosen. */
+  roles: RoleCounts | null;
+  locked: boolean;
+  onRoll(): void;
+}) {
+  const { t } = useTranslation(['werewolf', 'common']);
+  const roll = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onRoll;
+  return (
+    <CardFrame
+      testID="setup-surprise"
+      label={`${t('setup.surprise')}, ${t('setup.surprisePitch')}`}
+      selected={roles != null}
+      onPress={() => (roles ? undefined : roll())}
+    >
+      <View style={styles.cardHead}>
+        <Text variant="heading" style={styles.flex}>
+          {roles ? `✓ 🎲 ${t('setup.surprise')}` : `🎲 ${t('setup.surprise')}`}
+        </Text>
+        {locked ? <Badge tone="gold" icon="🔒" label={t('common:premium.lockedTag')} /> : null}
+      </View>
+      <Text variant="caption" tone="muted">
+        {t('setup.surprisePitch')}
+      </Text>
+      {roles ? (
+        <>
+          <RoleChips roles={roles} />
+          <BalanceMeter roles={roles} />
+          <Button
+            size="md"
+            variant="ghost"
+            icon="🔀"
+            testID="surprise-reroll"
+            label={t('setup.reroll')}
+            onPress={roll}
+          />
+        </>
+      ) : null}
+    </CardFrame>
+  );
+}
+
+/** A setup the group saved from Custom (§5.6). Deleting asks inline first. */
+function SavedCard({
+  setup,
+  selected,
+  onPick,
+  onDelete,
+}: {
+  setup: SavedSetup;
+  selected: boolean;
+  onPick(): void;
+  onDelete(): void;
+}) {
+  const { t } = useTranslation(['werewolf', 'common']);
+  const [ask, setAsk] = useState(false);
+  return (
+    <CardFrame
+      testID={`saved-${setup.id}`}
+      label={`${setup.name}, ${t('setup.savedTag')}`}
+      selected={selected}
+      onPress={onPick}
+    >
+      <View style={styles.cardHead}>
+        <Text variant="heading" style={styles.flex}>
+          {selected ? `✓ ⭐ ${setup.name}` : `⭐ ${setup.name}`}
+        </Text>
+        <Badge tone="primary" label={t('setup.savedTag')} />
+      </View>
+      <RoleChips roles={setup.roles} />
+      <BalanceMeter roles={setup.roles} />
+      {ask ? (
+        <ConfirmInline
+          testID={`saved-delete-confirm-${setup.id}`}
+          question={t('setup.deleteConfirm', { name: setup.name })}
+          confirmLabel={t('setup.delete')}
+          cancelLabel={t('common:actions.cancel')}
+          onConfirm={onDelete}
+          onCancel={() => setAsk(false)}
+        />
+      ) : (
+        <View style={styles.cardButtons}>
+          <View style={styles.flex}>
+            <Button
+              size="md"
+              variant={selected ? 'secondary' : 'ghost'}
+              label={selected ? t('setup.selected') : t('setup.playThis')}
+              onPress={onPick}
+            />
+          </View>
+          <View style={styles.flex}>
+            <Button
+              size="md"
+              variant="ghost"
+              icon="🗑️"
+              testID={`saved-delete-${setup.id}`}
+              label={t('setup.delete')}
+              onPress={() => setAsk(true)}
+            />
+          </View>
+        </View>
+      )}
+    </CardFrame>
+  );
+}
+
+/** Names and saves the custom setup being edited. */
+function SaveCustom({ onSave }: { onSave(name: string): void }) {
+  const { t } = useTranslation('werewolf');
+  const { colors } = useTheme();
+  const [name, setName] = useState('');
+  const [saved, setSaved] = useState(false);
+  return (
+    <View style={styles.stack}>
+      <View style={styles.cardButtons}>
+        <TextInput
+          testID="save-name"
+          value={name}
+          onChangeText={(v) => {
+            setName(v);
+            setSaved(false);
+          }}
+          placeholder={t('setup.saveName')}
+          placeholderTextColor={colors.textMuted}
+          maxLength={24}
+          accessibilityLabel={t('setup.saveName')}
+          maxFontSizeMultiplier={2}
+          style={[
+            styles.seat,
+            styles.flex,
+            {
+              color: colors.text,
+              backgroundColor: colors.surfaceRaised,
+              borderColor: colors.border,
+              fontFamily: fontFamilyFor(name || t('setup.saveName'), 'body', 'bold'),
+            },
+          ]}
+        />
+        <Button
+          size="md"
+          variant="secondary"
+          icon="⭐"
+          testID="save-setup"
+          label={t('setup.save')}
+          onPress={() => {
+            onSave(name.trim() || t('setup.saveName'));
+            setName('');
+            setSaved(true);
+          }}
+        />
+      </View>
+      {saved ? (
+        <Text variant="caption" tone="muted" accessibilityLiveRegion="polite">
+          {t('setup.savedDone')}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
 export default function Setup() {
   const { t } = useTranslation(['werewolf', 'common']);
   const { colors } = useTheme();
@@ -289,16 +499,27 @@ export default function Setup() {
     { lastTier: store.lastTierByCount[count] ?? null },
   );
   // Keep the chosen tier across player-count changes when it still exists (§5.4).
+  const saved = store.savedSetups.filter((x) => x.players === count);
   const current: SetupChoice =
     choice?.kind === 'custom'
       ? choice
-      : choice && cards.some((c) => c.tier === choice.tier) && !tierLocked(choice.tier)
+      : choice?.kind === 'surprise' && total(choice.roles) === count && !free
         ? choice
-        : { kind: 'curated', tier: preselected?.tier ?? 'basic' };
+        : choice?.kind === 'saved' && saved.some((x) => x.id === choice.id)
+          ? choice
+          : choice?.kind === 'curated' &&
+              cards.some((c) => c.tier === choice.tier) &&
+              !tierLocked(choice.tier)
+            ? choice
+            : { kind: 'curated', tier: preselected?.tier ?? 'basic' };
   const roles: RoleCounts =
     current.kind === 'custom'
       ? fillVillagers(current.roles, count)
-      : (cards.find((c) => c.tier === current.tier)?.roles ?? {});
+      : current.kind === 'surprise'
+        ? current.roles
+        : current.kind === 'saved'
+          ? (saved.find((x) => x.id === current.id)?.roles ?? {})
+          : (cards.find((c) => c.tier === current.tier)?.roles ?? {});
   const check = validateSetup(roles, count);
   const [showErrors, setShowErrors] = useState(false);
 
@@ -316,6 +537,16 @@ export default function Setup() {
     const dealt = dealRoles(roles, count, mathRng);
     store.start(newGame(dealt, rules), current.kind === 'curated' ? current.tier : null);
     router.push('/games/werewolf/play');
+  };
+
+  // Surprise me draws from the chosen tier's roles (Classic at least), Party when nothing fits.
+  const rollSurprise = () => {
+    const tier: Tier =
+      current.kind === 'curated' && TIERS.indexOf(current.tier) >= TIERS.indexOf('classic')
+        ? current.tier
+        : 'party';
+    const rolled = surpriseMe(count, tier, mathRng, AVAILABLE);
+    setChoice(rolled ? { kind: 'surprise', roles: rolled } : { kind: 'curated', tier: 'party' });
   };
 
   const setRules = (patch: Partial<HouseRules>) =>
@@ -383,60 +614,48 @@ export default function Setup() {
         <Text variant="caption" tone="muted">
           {t('setup.seatingHint')}
         </Text>
-        {Array.from({ length: count }, (_, i) => {
-          const value = names[i] ?? '';
-          const placeholder = t('common:players.defaultName', { n: i + 1 });
-          return (
-            <View
-              key={i}
-              style={[
-                styles.seat,
-                { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
-              ]}
-            >
-              <Text variant="label" tone="muted" style={styles.seatNo}>
-                {String(i + 1)}
-              </Text>
-              <Avatar player={i} size={32} />
-              <TextInput
-                testID={`seat-${i}`}
-                value={value}
-                onChangeText={(v) => setName(i, v)}
-                placeholder={placeholder}
-                placeholderTextColor={colors.textMuted}
-                maxLength={MAX_NAME_LENGTH}
-                accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-                autoCorrect={false}
-                maxFontSizeMultiplier={2}
+        <ReorderList
+          count={count}
+          onMove={move}
+          handleLabel={(i) => t('setup.dragSeat', { name: nameOf(i) })}
+          moveUpLabel={(i) => t('setup.moveUp', { name: nameOf(i) })}
+          moveDownLabel={(i) => t('setup.moveDown', { name: nameOf(i) })}
+          renderRow={(i) => {
+            const value = names[i] ?? '';
+            const placeholder = t('common:players.defaultName', { n: i + 1 });
+            return (
+              <View
                 style={[
-                  styles.seatInput,
-                  {
-                    color: colors.text,
-                    fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                  },
+                  styles.seat,
+                  { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
                 ]}
-              />
-              <Pressable
-                accessibilityLabel={t('setup.moveUp', { name: nameOf(i) })}
-                onPress={() => move(i, i - 1)}
-                style={[styles.move, { opacity: i === 0 ? 0.3 : 1 }]}
               >
-                <Text variant="heading" tone="secondary">
-                  ▲
+                <Text variant="label" tone="muted" style={styles.seatNo}>
+                  {String(i + 1)}
                 </Text>
-              </Pressable>
-              <Pressable
-                accessibilityLabel={t('setup.moveDown', { name: nameOf(i) })}
-                onPress={() => move(i, i + 1)}
-                style={[styles.move, { opacity: i === count - 1 ? 0.3 : 1 }]}
-              >
-                <Text variant="heading" tone="secondary">
-                  ▼
-                </Text>
-              </Pressable>
-            </View>
-          );
-        })}
+                <Avatar player={i} size={32} />
+                <TextInput
+                  testID={`seat-${i}`}
+                  value={value}
+                  onChangeText={(v) => setName(i, v)}
+                  placeholder={placeholder}
+                  placeholderTextColor={colors.textMuted}
+                  maxLength={MAX_NAME_LENGTH}
+                  accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                  autoCorrect={false}
+                  maxFontSizeMultiplier={2}
+                  style={[
+                    styles.seatInput,
+                    {
+                      color: colors.text,
+                      fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                    },
+                  ]}
+                />
+              </View>
+            );
+          }}
+        />
       </Panel>
 
       <Text variant="heading">{`🃏 ${t('setup.setups')}`}</Text>
@@ -453,6 +672,24 @@ export default function Setup() {
           locked={tierLocked(c.tier)}
         />
       ))}
+
+      {saved.map((x) => (
+        <SavedCard
+          key={x.id}
+          setup={x}
+          selected={current.kind === 'saved' && current.id === x.id}
+          onPick={() => setChoice({ kind: 'saved', id: x.id })}
+          onDelete={() => store.deleteSetup(x.id)}
+        />
+      ))}
+
+      {count >= SURPRISE_FROM ? (
+        <SurpriseCard
+          roles={current.kind === 'surprise' ? current.roles : null}
+          locked={free}
+          onRoll={rollSurprise}
+        />
+      ) : null}
 
       <Pressable
         testID="setup-custom"
@@ -490,6 +727,14 @@ export default function Setup() {
             onChange={(r) => {
               store.setCustomRoles(r);
               setChoice({ kind: 'custom', roles: r });
+            }}
+          />
+        ) : null}
+        {current.kind === 'custom' && check.errors.length === 0 ? (
+          <SaveCustom
+            onSave={(name) => {
+              const id = store.saveSetup(name, count, roles);
+              setChoice({ kind: 'saved', id });
             }}
           />
         ) : null}
@@ -641,7 +886,6 @@ const styles = StyleSheet.create({
   },
   seatNo: { width: 22, textAlign: 'center' },
   seatInput: { flex: 1, minHeight: 48, fontSize: 16 },
-  move: { width: 40, alignItems: 'center', justifyContent: 'center' },
   optionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   option: { width: '23%', minWidth: 72, flexDirection: 'row' },
 });

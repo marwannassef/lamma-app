@@ -1,6 +1,6 @@
 import type { RoleId, Team } from '../engine';
 
-/** Placeholder role art (§11: a large glyph on a team-colour gradient until the art ships). */
+/** Emoji for each role, for plain-text places (role art is ROLE_ART). */
 export const ROLE_GLYPH: Record<RoleId, string> = {
   villager: '🧑‍🌾',
   werewolf: '🐺',
@@ -35,16 +35,23 @@ export const TEAM_GRADIENT: Record<Team, readonly [string, string]> = {
   neutral: ['#EF7A3C', '#8C3A12'],
 };
 
-/** Commissioned role art. Roles without art yet fall back to ROLE_GLYPH. */
-export const ROLE_ART: Partial<Record<RoleId, number>> = {
+/** Role art (scripts/generate-role-art.py), in the style of the Werewolf game logo. */
+export const ROLE_ART: Record<RoleId, number> = {
   villager: require('@/assets/images/roles/villager.png'),
   werewolf: require('@/assets/images/roles/werewolf.png'),
   alpha: require('@/assets/images/roles/alpha.png'),
+  wolfCub: require('@/assets/images/roles/wolf-cub.png'),
+  loneWolf: require('@/assets/images/roles/lone-wolf.png'),
+  sorcerer: require('@/assets/images/roles/sorcerer.png'),
   seer: require('@/assets/images/roles/seer.png'),
+  apprenticeSeer: require('@/assets/images/roles/apprentice-seer.png'),
   doctor: require('@/assets/images/roles/doctor.png'),
   witch: require('@/assets/images/roles/witch.png'),
   hunter: require('@/assets/images/roles/hunter.png'),
   cupid: require('@/assets/images/roles/cupid.png'),
   mayor: require('@/assets/images/roles/mayor.png'),
+  lycan: require('@/assets/images/roles/lycan.png'),
+  cursed: require('@/assets/images/roles/cursed.png'),
   tanner: require('@/assets/images/roles/tanner.png'),
+  serialKiller: require('@/assets/images/roles/serial-killer.png'),
 };

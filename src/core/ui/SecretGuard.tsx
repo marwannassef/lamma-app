@@ -1,9 +1,10 @@
 import type * as BrightnessApi from 'expo-brightness';
-import { usePreventScreenCapture } from 'expo-screen-capture';
 import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, BackHandler, Platform, StyleSheet, View } from 'react-native';
 
 import { STEALTH } from '@/core/theme';
+
+import { useNoScreenCapture } from './platformGuards';
 
 const DIM = 0.25;
 
@@ -29,7 +30,7 @@ function brightness(): BrightnessModule | null {
  */
 export function SecretGuard({ children }: { children: ReactNode }) {
   const [hidden, setHidden] = useState(AppState.currentState !== 'active');
-  usePreventScreenCapture('secret-screen');
+  useNoScreenCapture('secret-screen');
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (s) => setHidden(s !== 'active'));

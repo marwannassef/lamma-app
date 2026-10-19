@@ -1,5 +1,4 @@
 import * as Haptics from 'expo-haptics';
-import { usePreventScreenCapture } from 'expo-screen-capture';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, StyleSheet, View } from 'react-native';
@@ -15,7 +14,7 @@ import type { Pack, Word } from '@/core/content';
 import { customName, usePlayers } from '@/core/players';
 import { useSettings } from '@/core/settings/store';
 import { radius, space, useTheme } from '@/core/theme';
-import { Avatar, Button, Pressable, Screen, seatOf, Text } from '@/core/ui';
+import { Avatar, Button, Pressable, Screen, seatOf, Text, useNoScreenCapture } from '@/core/ui';
 
 import { CardBack } from '../components/CardBack';
 import { RoleCard } from '../components/RoleCard';
@@ -52,7 +51,7 @@ export default function Reveal({
   const name = customName(names, player) || t('common:players.defaultName', { n: player + 1 });
 
   // Android: FLAG_SECURE blanks the recents thumbnail and screenshots. iOS: blocks recording.
-  usePreventScreenCapture('spy-card');
+  useNoScreenCapture('spy-card');
   // iOS snapshots the app on "inactive", so cover the card as soon as we leave "active".
   useEffect(() => {
     const sub = AppState.addEventListener('change', (s) => setBackgrounded(s !== 'active'));

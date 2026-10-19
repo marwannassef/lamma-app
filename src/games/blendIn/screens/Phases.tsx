@@ -468,7 +468,12 @@ export function Escape({
           </Text>
         ) : (
           <>
-            <Text variant="title" align="center" style={styles.secret}>
+            <Text
+              variant="title"
+              align="center"
+              style={styles.secret}
+              accessibilityLabel={t('escape.pick')}
+            >
               {`🦎 ${t('escape.pick')}`}
             </Text>
             <WordGrid

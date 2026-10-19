@@ -1,0 +1,43 @@
+# With a development build (`-e DEV_URL=http://10.0.2.2:8081`), connect the launcher to Metro and skip
+# the dev-tools intro. Store and preview builds have the app bundled, so this does nothing there.
+appId: com.anventureslabs.lamma
+---
+- runFlow:
+    when:
+      true: ${typeof DEV_URL !== 'undefined' && DEV_URL !== ''}
+    commands:
+      # A cold start shows the launcher; a relaunch may go straight back into the app. Wait for
+      # whichever comes first ("Lamma" / "لمّة" is on the launcher, the welcome screen and Home).
+      - extendedWaitUntil:
+          visible: '.*(Development Build|Lamma|لمّة|Who.s playing).*'
+          timeout: 60000
+- runFlow:
+    when:
+      visible: 'Development Build'
+    commands:
+      - tapOn: 'http://'
+      - inputText: ${DEV_URL}
+      - hideKeyboard
+      - tapOn: 'Connect'
+      - extendedWaitUntil:
+          visible: 'Continue'
+          timeout: 60000
+          optional: true
+      - tapOn:
+          text: 'Continue'
+          optional: true
+      # The developer menu stays open after its intro. Hide its floating Tools button (it sits on top
+      # of Lamma's settings gear), then close the menu.
+      - runFlow:
+          when:
+            visible: 'Runtime version.*'
+          commands:
+            - scrollUntilVisible:
+                element: 'Tools button'
+                direction: DOWN
+            - tapOn: 'Tools button'
+            - pressKey: back
+- extendedWaitUntil:
+    visible:
+      id: '(audience-teen|open-settings)'
+    timeout: 60000

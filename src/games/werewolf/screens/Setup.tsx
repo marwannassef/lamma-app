@@ -658,7 +658,9 @@ export default function Setup() {
         />
       </Panel>
 
-      <Text variant="heading">{`🃏 ${t('setup.setups')}`}</Text>
+      <Text variant="heading" accessibilityRole="header" accessibilityLabel={t('setup.setups')}>
+        {`🃏 ${t('setup.setups')}`}
+      </Text>
       {cards.map((c) => (
         <SetupCard
           key={c.tier}
@@ -745,7 +747,13 @@ export default function Setup() {
         : null}
       {current.kind === 'custom'
         ? check.warnings.map((w) => (
-            <Text key={w} variant="caption" tone="muted" align="center">
+            <Text
+              key={w}
+              variant="caption"
+              tone="muted"
+              align="center"
+              accessibilityLabel={t(`setup.warnings.${w}`)}
+            >
               {`⚠️ ${t(`setup.warnings.${w}`)}`}
             </Text>
           ))

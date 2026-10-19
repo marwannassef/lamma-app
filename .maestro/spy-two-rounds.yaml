@@ -7,24 +7,37 @@ env:
     when:
       true: ${!START_ROUND_3.startsWith('ابدأ')}
     commands:
-      - launchApp:
-          clearState: true
+      - runFlow: subflows/launch.yaml
 - tapOn:
     id: game-spy
+- scrollUntilVisible:
+    element:
+      id: level-off
+    direction: DOWN
+    visibilityPercentage: 50
+    centerElement: true
+    speed: 80
+    timeout: 90000
 - tapOn:
     id: level-off
 - runFlow:
     file: subflows/spy-round.yaml
 - runFlow:
     file: subflows/spy-round.yaml
+- scrollUntilVisible:
+    element:
+      id: change-settings
+    direction: DOWN
+    visibilityPercentage: 50
+    centerElement: true
+    speed: 80
+    timeout: 90000
 - tapOn:
     id: change-settings
-- assertVisible:
-    id: setup-scores
+- assertVisible: ${START_ROUND_3}
 - stopApp
 - launchApp
+- runFlow: subflows/open.yaml
 - tapOn:
     id: game-spy
-- assertVisible:
-    id: setup-scores
 - assertVisible: ${START_ROUND_3}

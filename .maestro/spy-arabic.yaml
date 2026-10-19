@@ -1,17 +1,19 @@
 # The same two-round game in Arabic (RTL).
 appId: com.anventureslabs.lamma
 ---
-- launchApp:
-    clearState: true
+- runFlow: subflows/launch.yaml
 - tapOn:
     id: open-settings
 - tapOn:
     id: lang-ar
+# Switching to Arabic restarts the app to flip the layout; it comes back on Home.
 - extendedWaitUntil:
-    visible: 'الإعدادات'
-    timeout: 15000
+    visible:
+      id: app-title
+    timeout: 60000
 - tapOn:
     id: back
+    optional: true
 - runFlow:
     file: spy-two-rounds.yaml
     env:

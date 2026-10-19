@@ -196,7 +196,12 @@ export default function Setup() {
         maxHint={t('setup.maxPlayers')}
       />
       {count < 4 || count > 8 ? (
-        <Text variant="caption" tone="muted" align="center">
+        <Text
+          variant="caption"
+          tone="muted"
+          align="center"
+          accessibilityLabel={t('setup.bestWith')}
+        >
           {`💡 ${t('setup.bestWith')}`}
         </Text>
       ) : null}

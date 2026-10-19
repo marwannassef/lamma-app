@@ -11,7 +11,9 @@ function Steps({ title, icon, steps }: { title: string; icon: string; steps: rea
   const { colors } = useTheme();
   return (
     <View style={styles.section}>
-      <Text variant="label" tone="secondary">{`${icon} ${title}`}</Text>
+      <Text variant="label" tone="secondary" accessibilityRole="header" accessibilityLabel={title}>
+        {`${icon} ${title}`}
+      </Text>
       {steps.map((step, i) => (
         <View key={i} style={styles.step}>
           <View style={[styles.num, { backgroundColor: colors.surfaceRaised }]}>

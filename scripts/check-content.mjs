@@ -20,13 +20,14 @@ const readDir = (dir) =>
     : [];
 
 const packsDir = path.join(root, 'content', 'packs');
-const files = [
-  ...readDir(packsDir).map(([p, f]) => ({ p, f, adultDir: false })),
-  ...readDir(path.join(packsDir, 'adult')).map(([p, f]) => ({ p, f, adultDir: true })),
-];
+const files = readDir(packsDir).map(([p, f]) => ({ p, f }));
+const CONTENT_LEVELS = ['kids', 'teen'];
+const TIERS = ['free', 'premium'];
+if (fs.existsSync(path.join(packsDir, 'adult')))
+  err('content/packs/adult', 'adult content never ships in Lamma');
 const packIds = new Set();
 
-for (const { p, f, adultDir } of files) {
+for (const { p, f } of files) {
   const where = path.relative(root, p);
   let pack;
   try {
@@ -35,18 +36,32 @@ for (const { p, f, adultDir } of files) {
     err(where, `invalid JSON (${e.message})`);
     continue;
   }
-  for (const key of ['id', 'region', 'game', 'emoji', 'name', 'display', 'words']) {
+  for (const key of [
+    'id',
+    'region',
+    'game',
+    'emoji',
+    'name',
+    'level',
+    'tier',
+    'display',
+    'words',
+  ]) {
     if (pack[key] == null) err(where, `missing "${key}"`);
   }
   if (!pack.words) continue;
   if (`${pack.id}.json` !== f) err(where, `id "${pack.id}" does not match the file name`);
   if (packIds.has(pack.id)) err(where, `duplicate pack id "${pack.id}"`);
   packIds.add(pack.id);
-  if (adultDir !== Boolean(pack.adult)) {
-    err(
-      where,
-      adultDir ? 'packs in adult/ need "adult": true' : '"adult": true packs belong in adult/',
-    );
+  // Every pack has a level and a tier; no pack or word is ever adult (BRIEF §5–6).
+  if (pack.level != null && !CONTENT_LEVELS.includes(pack.level))
+    err(where, `level "${pack.level}" is not kids or teen`);
+  if (pack.tier != null && !TIERS.includes(pack.tier))
+    err(where, `tier "${pack.tier}" is not free or premium`);
+  if ('adult' in pack) err(where, 'the "adult" flag was removed; use level');
+  for (const w of pack.words) {
+    if (w.level != null && !CONTENT_LEVELS.includes(w.level))
+      err(where, `word "${w.id}" level "${w.level}" is not kids or teen`);
   }
   for (const code of uiLocales) if (!pack.name?.[code]) err(where, `name missing "${code}"`);
 
@@ -108,6 +123,20 @@ for (const code of uiLocales) {
       err(where, `"${level}" has ${items.length} items, en has ${pun.en?.[level]?.length}`);
     } else if (items.some((s) => typeof s !== 'string' || !s.trim())) {
       err(where, `"${level}" has an empty item`);
+    }
+  }
+}
+
+// Punishment levels: Teen indices must exist in every level's deck.
+const levelsPath = path.join(root, 'content', 'punishment-levels.json');
+if (!fs.existsSync(levelsPath)) err('content/punishment-levels.json', 'missing');
+else {
+  const lv = JSON.parse(fs.readFileSync(levelsPath, 'utf8'));
+  for (const [level, ids] of Object.entries(lv.teen ?? {})) {
+    for (const i of ids) {
+      if (!Number.isInteger(i) || i < 0 || i >= (pun.en?.[level]?.length ?? 0)) {
+        err('content/punishment-levels.json', `teen ${level}[${i}] is not a punishment`);
+      }
     }
   }
 }

@@ -11,6 +11,8 @@
     "en": "7ayawanat",
     "ar": "7ayawanat"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "en",
     "secondary": "translit",

@@ -11,6 +11,8 @@
     "en": "Mehan",
     "ar": "Mehan"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

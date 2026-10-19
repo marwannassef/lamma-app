@@ -7,6 +7,8 @@
     "en": "Sports",
     "ar": "رياضة"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "ui",
     "secondary": "en",

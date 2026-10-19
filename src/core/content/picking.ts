@@ -8,7 +8,8 @@ export type CategoryChoice = string;
 
 /**
  * The pack for this round. Random mode never repeats the previous round's pack when there is
- * another option, and never picks adult packs: those are only played when chosen explicitly.
+ * another option, and never picks Teen packs: those are only played when chosen explicitly
+ * (after the table confirms cheeky words are OK).
  * A chosen pack that is no longer available (filtered out) falls back to random.
  */
 export function chooseCategory(
@@ -19,7 +20,7 @@ export function chooseCategory(
 ): Pack {
   const chosen = choice === RANDOM ? undefined : packs.find((p) => p.id === choice);
   if (chosen) return chosen;
-  const pool = packs.filter((p) => !p.adult);
+  const pool = packs.filter((p) => p.level !== 'teen');
   const fresh = pool.filter((p) => p.id !== lastPackId);
   return pick(rng, fresh.length > 0 ? fresh : pool);
 }

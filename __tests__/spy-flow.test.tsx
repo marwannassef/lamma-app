@@ -44,7 +44,7 @@ describe('Spy', () => {
   });
 
   it('plays a full round: pass, cards, reveal, score, punish', () => {
-    const packs = filterPacks(allPacks, { game: 'spy', regions: ['global'], adult: false });
+    const packs = filterPacks(allPacks, { game: 'spy', regions: ['global'], level: 'kids' });
     act(() => useSpy.getState().start({ players: 3, spies: 1, packs, no: 1 }));
     const round = useSpy.getState().round!;
     render(<Play />);

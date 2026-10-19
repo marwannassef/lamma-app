@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { clampPlayers, MAX_NAME_LENGTH, usePlayerName, usePlayers } from '@/core/players';
+import { openPaywall, useTier } from '@/core/entitlements';
+import { useRemoteConfig } from '@/core/remoteConfig';
 import { mathRng } from '@/core/rng';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
 import {
@@ -30,6 +32,7 @@ import {
   balance,
   CORE_ROLES,
   dealRoles,
+  DEFAULT_RULES,
   estimatedMinutes,
   fillVillagers,
   maxRounds,
@@ -100,6 +103,7 @@ function SetupCard({
   onPick,
   onEdit,
   discussion,
+  locked,
 }: {
   tier: Tier;
   roles: RoleCounts;
@@ -108,17 +112,27 @@ function SetupCard({
   onPick(): void;
   onEdit(): void;
   discussion: number | null;
+  /** Premium-only setup: visible with a 🔒; every button opens the paywall. */
+  locked: boolean;
 }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useTranslation(['werewolf', 'common']);
   const { colors } = useTheme();
+  const pick = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onPick;
+  const editOrPay = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onEdit;
   return (
     <Pressable
       testID={`setup-${tier}`}
       haptic={false}
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
-      accessibilityLabel={`${t(`setup.tiers.${tier}.name`)}, ${t(`setup.tiers.${tier}.pitch`)}`}
-      onPress={onPick}
+      accessibilityLabel={[
+        t(`setup.tiers.${tier}.name`),
+        t(`setup.tiers.${tier}.pitch`),
+        locked && t('common:premium.lockedTag'),
+      ]
+        .filter(Boolean)
+        .join(', ')}
+      onPress={pick}
       style={[
         styles.setupCard,
         {
@@ -131,7 +145,8 @@ function SetupCard({
         <Text variant="heading" style={styles.flex}>
           {selected ? `✓ ${t(`setup.tiers.${tier}.name`)}` : t(`setup.tiers.${tier}.name`)}
         </Text>
-        {nudge ? <Badge tone="primary" label={t('setup.tryNext')} /> : null}
+        {locked ? <Badge tone="gold" icon="🔒" label={t('common:premium.lockedTag')} /> : null}
+        {nudge && !locked ? <Badge tone="primary" label={t('setup.tryNext')} /> : null}
         <Text variant="caption" tone="muted" accessible={false}>
           {'●'.repeat(COMPLEXITY[tier]) + '○'.repeat(3 - COMPLEXITY[tier])}
         </Text>
@@ -153,11 +168,11 @@ function SetupCard({
             size="md"
             variant={selected ? 'secondary' : 'ghost'}
             label={selected ? t('setup.selected') : t('setup.playThis')}
-            onPress={onPick}
+            onPress={pick}
           />
         </View>
         <View style={styles.flex}>
-          <Button size="md" variant="ghost" icon="✏️" label={t('setup.edit')} onPress={onEdit} />
+          <Button size="md" variant="ghost" icon="✏️" label={t('setup.edit')} onPress={editOrPay} />
         </View>
       </View>
     </Pressable>
@@ -215,12 +230,15 @@ function Options<T extends string | number | null>({
   onChange,
   label,
   testID,
+  locked = false,
 }: {
   options: { value: T; label: string }[];
   value: T;
   onChange(v: T): void;
   label: string;
   testID: string;
+  /** House rules are Premium: other choices show a 🔒 and open the paywall. */
+  locked?: boolean;
 }) {
   return (
     <View style={styles.stack}>
@@ -233,6 +251,7 @@ function Options<T extends string | number | null>({
               testID={`${testID}-${String(o.value)}`}
               title={o.label}
               selected={o.value === value}
+              locked={locked && o.value !== value}
               onPress={() => onChange(o.value)}
             />
           </View>
@@ -248,7 +267,11 @@ export default function Setup() {
   const { count, names, setCount, setName, move } = usePlayers();
   const nameOf = usePlayerName();
   const store = useWerewolf();
-  const rules = store.rules;
+  const free = useTier() === 'free';
+  const caps = useRemoteConfig().caps.werewolf;
+  const tierLocked = (tier: Tier) => free && !caps.setupTiers.includes(tier);
+  // Free games use the default house rules (monetization §3: "all house rules" is Premium).
+  const rules = free ? DEFAULT_RULES : store.rules;
 
   // The roster is shared with Spy (3+); Werewolf needs 4–16.
   useEffect(() => {
@@ -258,12 +281,15 @@ export default function Setup() {
   const cards = useMemo(() => recommendedSetups(count, AVAILABLE), [count]);
   const nudge = tryNextTier(store.recentTiers, cards);
   const [choice, setChoice] = useState<SetupChoice | null>(null);
-  const preselected = preselect(cards, { lastTier: store.lastTierByCount[count] ?? null });
+  const preselected = preselect(
+    cards.filter((c) => !tierLocked(c.tier)),
+    { lastTier: store.lastTierByCount[count] ?? null },
+  );
   // Keep the chosen tier across player-count changes when it still exists (§5.4).
   const current: SetupChoice =
     choice?.kind === 'custom'
       ? choice
-      : choice && cards.some((c) => c.tier === choice.tier)
+      : choice && cards.some((c) => c.tier === choice.tier) && !tierLocked(choice.tier)
         ? choice
         : { kind: 'curated', tier: preselected?.tier ?? 'basic' };
   const roles: RoleCounts =
@@ -280,13 +306,17 @@ export default function Setup() {
   };
 
   const start = () => {
+    if (free && count > caps.players) {
+      return openPaywall('cap', { game: 'werewolf', max: module.maxPlayers });
+    }
     if (check.errors.length > 0) return setShowErrors(true);
     const dealt = dealRoles(roles, count, mathRng);
     store.start(newGame(dealt, rules), current.kind === 'curated' ? current.tier : null);
     router.push('/games/werewolf/play');
   };
 
-  const setRules = (patch: Partial<HouseRules>) => store.setRules(patch);
+  const setRules = (patch: Partial<HouseRules>) =>
+    free ? openPaywall('locked', { game: 'werewolf' }) : store.setRules(patch);
 
   return (
     <Screen
@@ -331,10 +361,15 @@ export default function Setup() {
         testID="players"
         icon="👥"
         label={t('setup.players')}
+        sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
         value={count}
         min={module.minPlayers}
         max={module.maxPlayers}
-        onChange={(n) => setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))}
+        onChange={(n) =>
+          free && n > caps.players
+            ? openPaywall('cap', { game: 'werewolf', max: module.maxPlayers })
+            : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
+        }
         decreaseLabel={t('setup.fewerPlayers')}
         increaseLabel={t('setup.morePlayers')}
         minHint={t('setup.minPlayers')}
@@ -412,6 +447,7 @@ export default function Setup() {
           onPick={() => setChoice({ kind: 'curated', tier: c.tier })}
           onEdit={() => edit(c.roles)}
           discussion={rules.discussionSeconds}
+          locked={tierLocked(c.tier)}
         />
       ))}
 
@@ -421,8 +457,10 @@ export default function Setup() {
         accessibilityRole="radio"
         accessibilityState={{ checked: current.kind === 'custom' }}
         onPress={() =>
-          current.kind !== 'custom' &&
-          edit(store.customRoles ?? cards[0]?.roles ?? { werewolf: 1, seer: 1 })
+          free
+            ? openPaywall('locked', { game: 'werewolf' })
+            : current.kind !== 'custom' &&
+              edit(store.customRoles ?? cards[0]?.roles ?? { werewolf: 1, seer: 1 })
         }
         style={[
           styles.setupCard,
@@ -433,7 +471,11 @@ export default function Setup() {
         ]}
       >
         <Text variant="heading">
-          {current.kind === 'custom' ? `✓ ✏️ ${t('setup.custom')}` : `✏️ ${t('setup.custom')}`}
+          {free
+            ? `🔒 ✏️ ${t('setup.custom')}`
+            : current.kind === 'custom'
+              ? `✓ ✏️ ${t('setup.custom')}`
+              : `✏️ ${t('setup.custom')}`}
         </Text>
         <Text variant="caption" tone="muted">
           {t('setup.customPitch')}
@@ -464,6 +506,7 @@ export default function Setup() {
       <Panel title={t('setup.rules')} icon="📜">
         <Options
           testID="discussion"
+          locked={free}
           label={t('setup.discussion')}
           value={rules.discussionSeconds}
           onChange={(v) => setRules({ discussionSeconds: v })}
@@ -476,6 +519,7 @@ export default function Setup() {
         />
         <Options
           testID="glance"
+          locked={free}
           label={t('setup.glance')}
           value={rules.glanceSeconds}
           onChange={(v) => setRules({ glanceSeconds: v })}
@@ -483,6 +527,7 @@ export default function Setup() {
         />
         <Options
           testID="min-turn"
+          locked={free}
           label={t('setup.minTurn')}
           value={rules.minTurnSeconds}
           onChange={(v) => setRules({ minTurnSeconds: v })}
@@ -490,6 +535,7 @@ export default function Setup() {
         />
         <Options
           testID="doctor-self"
+          locked={free}
           label={t('setup.doctorSelf')}
           value={rules.doctorSelfProtect}
           onChange={(v) => setRules({ doctorSelfProtect: v })}
@@ -500,6 +546,7 @@ export default function Setup() {
         />
         <Options
           testID="mayor"
+          locked={free}
           label={t('setup.mayor')}
           value={rules.mayor === 'elected' ? 'elected' : 'off'}
           onChange={(v) => setRules({ mayor: v })}

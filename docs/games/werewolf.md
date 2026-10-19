@@ -270,6 +270,8 @@ These are the built-in recommendations. Use the curated table; don't generate th
 
 A setup that uses roles not yet shipped (Party/Chaos roles before milestone W5) is **hidden**. It's never shown greyed out.
 
+**Free tier** (`docs/monetization.md` §3): up to 8 players and the **Basic** setups only. Classic, Party, Chaos, Gentle, Surprise me and Custom cards stay visible with a 🔒 and open the paywall. Narration lines tagged Teen are skipped in Kids mode.
+
 ### 5.3 What each card shows
 
 - Tier name and a one-line pitch, e.g. _Classic: "The Hunter takes someone down with them."_

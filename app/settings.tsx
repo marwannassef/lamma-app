@@ -4,11 +4,23 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { allRegions } from '@/core/content';
+import { openPaywall, useEntitlements, useIsPremium } from '@/core/entitlements';
+import { restorePurchases } from '@/core/entitlements/purchases';
 import { localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
 import { useRegions } from '@/core/settings/content';
 import { useSettings, type Appearance, type LanguagePref } from '@/core/settings/store';
 import { radius, space, useTheme } from '@/core/theme';
-import { BackHeader, Hint, Panel, Pressable, Screen, Text, Toggle } from '@/core/ui';
+import {
+  AudiencePicker,
+  BackHeader,
+  Button,
+  Hint,
+  Panel,
+  Pressable,
+  Screen,
+  Text,
+  Toggle,
+} from '@/core/ui';
 
 // The dark variant has the brown script recoloured to cream so it stays readable.
 const LOGO_LIGHT = require('@/assets/images/publisher-logo-light.png');
@@ -81,6 +93,9 @@ export default function Settings() {
 
   const regions = useRegions();
   const [lastRegionHint, setLastRegionHint] = useState(false);
+  const [restoreMsg, setRestoreMsg] = useState<string | null>(null);
+  const isPremium = useIsPremium();
+  const { devPremium, setDevPremium } = useEntitlements();
 
   const toggleRegion = (region: string, on: boolean) => {
     const next = on ? [...regions, region] : regions.filter((r) => r !== region);
@@ -106,6 +121,41 @@ export default function Settings() {
         <Text variant="caption" tone="muted">
           {t('settings.directionNote')}
         </Text>
+      </Panel>
+
+      <Panel title={t('age.settingsTitle')} icon="👨‍👩‍👧" testID="audience">
+        <AudiencePicker />
+      </Panel>
+
+      <Panel title={t('settings.premium')} icon="👑" testID="premium">
+        <Button
+          size="md"
+          variant="secondary"
+          icon="✨"
+          testID="open-premium"
+          label={isPremium ? `✓ ${t('settings.premium')}` : t('settings.premium')}
+          onPress={() => openPaywall('settings')}
+        />
+        <Button
+          size="md"
+          variant="ghost"
+          testID="restore"
+          label={t('premium.restore')}
+          onPress={async () => {
+            const r = await restorePurchases();
+            setRestoreMsg(r.ok ? null : t('premium.unavailable'));
+          }}
+        />
+        {restoreMsg ? <Hint>{restoreMsg}</Hint> : null}
+        {__DEV__ ? (
+          <Toggle
+            surface={false}
+            testID="dev-premium"
+            label={t('premium.devPremium')}
+            value={devPremium}
+            onChange={setDevPremium}
+          />
+        ) : null}
       </Panel>
 
       <Panel title={t('regions.title')} icon="🗺️">

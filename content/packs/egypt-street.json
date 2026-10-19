@@ -11,6 +11,8 @@
     "en": "El share3",
     "ar": "El share3"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

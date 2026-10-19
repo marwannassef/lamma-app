@@ -22,7 +22,7 @@ import {
   type Settings,
 } from './logic';
 
-const packs = filterPacks(allPacks, { game: 'spy', regions: ['global', 'eg'], adult: false });
+const packs = filterPacks(allPacks, { game: 'spy', regions: ['global', 'eg'], level: 'kids' });
 const pack = packs.find((p) => p.id === 'global-food') as Pack;
 const memory = { usedByPack: {}, lastPackId: null, lastChameleon: null };
 

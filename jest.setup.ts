@@ -20,9 +20,6 @@ jest.mock('@/core/i18n/localeFiles', () => ({
 jest.mock('@/core/content/packFiles', () => ({
   packFiles: require('./test/fsContext').fsContext('content/packs', false, /\.json$/),
 }));
-jest.mock('@/core/content/adultPackFiles', () => ({
-  adultPackFiles: require('./test/fsContext').fsContext('content/packs/adult', false, /\.json$/),
-}));
 jest.mock('@/core/punishments/punishmentFiles', () => ({
   punishmentFiles: require('./test/fsContext').fsContext('content/punishments', false, /\.json$/),
 }));

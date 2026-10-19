@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { useEntitlements } from '../src/core/entitlements';
 import { i18n, initI18n } from '../src/core/i18n';
 import { usePlayers } from '../src/core/players';
 import { storage } from '../src/core/storage';
@@ -105,6 +106,7 @@ describe('Werewolf screens', () => {
   });
 
   it('custom setup explains why it cannot start', () => {
+    useEntitlements.setState({ devPremium: true });
     render(<Setup />);
     fireEvent.press(screen.getByTestId('setup-custom'));
     fireEvent.press(screen.getByTestId('custom-werewolf-minus'));

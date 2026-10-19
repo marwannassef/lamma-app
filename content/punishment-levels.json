@@ -1,0 +1,8 @@
+{
+  "_note": "Indices into content/punishments/<locale>.json that are Teen level; every other item is Kids.",
+  "teen": {
+    "medium": [6],
+    "hard": [9, 12],
+    "public": [12, 18]
+  }
+}

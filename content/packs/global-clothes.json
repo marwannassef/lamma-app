@@ -7,6 +7,8 @@
     "en": "Clothes",
     "ar": "ملابس"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "ui",
     "secondary": "en",

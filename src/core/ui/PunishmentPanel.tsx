@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FlipInEasyX } from 'react-native-reanimated';
 
+import { useContentLevel } from '@/core/age';
 import { usePlayerName } from '@/core/players';
 import { punishmentText, usePunishments, type PunishmentCard } from '@/core/punishments';
 import { radius, space, useTheme } from '@/core/theme';
@@ -25,6 +26,7 @@ export function PunishmentPanel({ losers }: { losers: readonly number[] }) {
   const { colors } = useTheme();
   const nameOf = usePlayerName();
   const punishments = usePunishments();
+  const content = useContentLevel();
   const [cards, setCards] = useState<PunishmentCard[] | null>(null);
   const join = (ids: readonly number[]) => ids.map(nameOf).join(t('list.and'));
 
@@ -40,7 +42,7 @@ export function PunishmentPanel({ losers }: { losers: readonly number[] }) {
           variant="danger"
           icon="🎁"
           label={t('punishments.draw')}
-          onPress={() => setCards(punishments.deal(losers))}
+          onPress={() => setCards(punishments.deal(losers, content))}
         />
       ) : (
         cards.map((card, i) => (
@@ -82,7 +84,7 @@ export function PunishmentPanel({ losers }: { losers: readonly number[] }) {
                   accessibilityLabel={t('punishments.swap')}
                   onPress={() =>
                     setCards((cs) =>
-                      (cs ?? []).map((c) => (c.id === card.id ? punishments.swap(c) : c)),
+                      (cs ?? []).map((c) => (c.id === card.id ? punishments.swap(c, content) : c)),
                     )
                   }
                   style={styles.swap}

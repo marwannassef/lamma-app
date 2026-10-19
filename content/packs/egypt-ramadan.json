@@ -11,6 +11,8 @@
     "en": "Ramadan w el 3eed",
     "ar": "Ramadan w el 3eed"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

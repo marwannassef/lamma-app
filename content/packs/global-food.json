@@ -7,6 +7,8 @@
     "en": "Food",
     "ar": "أكل"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "ui",
     "secondary": "en",

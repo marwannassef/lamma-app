@@ -4,6 +4,8 @@
 >
 > - `docs/reference/spy-prototype.html` is a working single-file prototype of the first game. It's the source of truth for Spy's **behavior**, its Egypt word pack and the punishments. Don't copy its visuals; §8 replaces them.
 > - `docs/brand/an-ventures-labs.jpg` is the publisher logo, and the source of the palette in §8.
+> - Game specs: `docs/games/werewolf.md` (game 2) and `docs/games/blend-in.md` (game 3).
+> - **`docs/monetization.md`** covers prices, free limits, paywalls, ads, content levels and age, the offline pass, the backend and anti-piracy. Where it differs from older lines here, it wins.
 
 ---
 
@@ -19,38 +21,46 @@
 | Bundle / package id | `com.anventureslabs.lamma`                                                                                                     |
 | Markets             | Worldwide. Launch locales are **English** and **Arabic**; the architecture must let us add a locale by adding files, not code. |
 
-**What it is:** a collection of offline pass-the-phone party games. One phone gets passed around the group and everyone plays in person. Game 1 is **Spy**; later games (Werewolf, Heads Up, Taboo, Charades and others) are modules inside the same app.
+**What it is:** a collection of pass-the-phone party games. One phone gets passed around the group and everyone plays in person. Launch games: **Spy**, **Werewolf** and **Blend In**; later games (Heads Up, Taboo, Charades and others) are modules inside the same app.
 
-**Audience:** families and friend groups, ages 7+. The default content is family-safe in every locale.
+**Audience and rating:** teens, adults and families. Store rating **Teen** (Apple 13+, Google Teen). Content has two levels inside the app, **Kids** and **Teen**, decided by platform age signals, a "Who's playing?" choice and a parent PIN (`docs/monetization.md` §7). Adult content never ships in Lamma.
+
+**Business model:** every game is free with limits and ads; **Party Pass**, **Annual** and **Lifetime** unlock everything (`docs/monetization.md`).
 
 **Non-negotiables**
 
-- Fully offline. No accounts and no backend in v1. **No data is collected**: no analytics, no ads, no tracking SDKs.
+- Plays offline within a signed offline pass (72 h free, 30 days Premium); a friendly limited mode after that. No accounts. A small backend handles purchases, content delivery, integrity checks and remote config.
+- Data collection is minimal, consented where required and disclosed exactly in the store privacy forms.
 - One codebase for iOS and Android, with a native feel at 60fps on mid-range Android.
 - First card on screen within 10 seconds of a cold start.
 - Full RTL support (not just mirrored text). Accessible: dynamic type, screen reader labels, reduced motion.
-- Adult content is excluded from store builds at build time (§6).
+- Adult-level content is never bundled in Lamma builds (§6).
 
 ---
 
 ## 2. Tech stack
 
-| Concern                   | Choice                                                                                                      |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Framework                 | **Expo** (latest stable SDK) + React Native + **TypeScript strict**                                         |
-| Navigation                | **Expo Router** (file-based)                                                                                |
-| State                     | **Zustand** slices with `persist`                                                                           |
-| Storage                   | **react-native-mmkv** behind a `storage` adapter (so a dev build is needed; that's fine)                    |
-| Animation                 | **react-native-reanimated** + react-native-gesture-handler                                                  |
-| i18n                      | **i18next** + react-i18next + **expo-localization**; ICU plurals                                            |
-| Native                    | expo-haptics, expo-keep-awake, expo-font, expo-splash-screen, expo-screen-orientation, expo-av (sfx, later) |
-| Fonts                     | Bundled locally (§8)                                                                                        |
-| Unit tests                | Jest + @testing-library/react-native                                                                        |
-| E2E                       | **Maestro** flows                                                                                           |
-| Lint / format             | ESLint (expo config + strict TS rules) + Prettier                                                           |
-| Build / release           | **EAS Build**, **EAS Submit**, **EAS Update** (OTA updates for JS and content fixes)                        |
-| CI                        | GitHub Actions: typecheck, lint, tests on PRs; EAS builds triggered on tags                                 |
-| Purchases (later, not v1) | RevenueCat; keep `isLocked` hooks only                                                                      |
+| Concern             | Choice                                                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Framework           | **Expo** (latest stable SDK) + React Native + **TypeScript strict**                                                        |
+| Navigation          | **Expo Router** (file-based)                                                                                               |
+| State               | **Zustand** slices with `persist`                                                                                          |
+| Storage             | **react-native-mmkv** behind a `storage` adapter (so a dev build is needed; that's fine)                                   |
+| Animation           | **react-native-reanimated** + react-native-gesture-handler                                                                 |
+| i18n                | **i18next** + react-i18next + **expo-localization**; ICU plurals                                                           |
+| Native              | expo-haptics, expo-keep-awake, expo-font, expo-splash-screen, expo-screen-orientation, expo-av (sfx, later)                |
+| Fonts               | Bundled locally (§8)                                                                                                       |
+| Unit tests          | Jest + @testing-library/react-native                                                                                       |
+| E2E                 | **Maestro** flows                                                                                                          |
+| Lint / format       | ESLint (expo config + strict TS rules) + Prettier                                                                          |
+| Build / release     | **EAS Build**, **EAS Submit**, **EAS Update** (OTA updates for JS and content fixes)                                       |
+| CI                  | GitHub Actions: typecheck, lint, tests on PRs; EAS builds triggered on tags                                                |
+| Purchases           | **RevenueCat** (Party Pass, Annual, Lifetime)                                                                              |
+| Ads                 | **react-native-google-mobile-ads** (AdMob) + Google UMP consent; iOS ATT                                                   |
+| Age signals         | Native module for Apple **Declared Age Range** and Google **Play Age Signals**                                             |
+| Integrity           | Native module for **Play Integrity** and **App Attest**                                                                    |
+| Analytics / crashes | **Firebase Analytics** + **Crashlytics** (consent-aware)                                                                   |
+| Backend             | **Cloud Run** (TypeScript) + **Firestore** + **Cloud Storage** + Secret Manager, **Terraform**, deployed by GitHub Actions |
 
 Why Expo and not Flutter or Capacitor: it uses the owner's React/TS skills, has native animation and sensors (needed by future games like Heads Up), and EAS takes care of cloud builds, store submission and OTA updates.
 
@@ -71,9 +81,9 @@ src/
     players/                  # roster (count, names)
     session/                  # scoreboard, round counter
     punishments/              # levels, decks, draw/swap engine
-    content/                  # pack types, loader, filters (locale, adult)
+    content/                  # pack types, loader, filters (locale, region, level, tier)
     i18n/                     # i18next setup, locale detection, RTL handling
-    settings/                 # language, content region, adult mode, haptics, sound
+    settings/                 # language, content region, content level, haptics, sound
     storage/                  # MMKV adapter
     rng/                      # injectable RNG: shuffle, pick, int
     ui/                       # design-system components (§8)
@@ -85,6 +95,13 @@ src/
       logic.ts                # pure rules
       store.ts                # spy-specific state
       screens/                # Setup, Pass, Card, Round
+    entitlements/             # tier, caps, paywall triggers, offline pass
+    ads/                      # AdMob wrapper, frequency rules, rewarded flow
+    age/                      # age signals, content level, parent PIN
+    protection/               # attestation, encrypted content store, min version
+    remoteConfig/
+server/                       # Cloud Run service (TypeScript) + Terraform in server/infra
+shared/                       # types shared by app and server (entitlements, packs, config)
 locales/
   en/{common,spy}.json
   ar/{common,spy}.json
@@ -125,7 +142,7 @@ export interface GameModule {
 
 ### Players
 
-3 to 12 players (default 5), with optional names (max 14 characters) defaulting to "Player N" localized. They're persisted and shared by every game.
+Up to 16 players (each game sets its own min/max; free-tier caps in `docs/monetization.md` §3), default 5. Optional names (max 14 characters) default to "Player N" localized. The list can be **drag-reordered into seating order** (Werewolf needs it). It's persisted and shared by every game.
 
 ### Scoreboard
 
@@ -144,7 +161,7 @@ export interface GameModule {
 
 ### Settings
 
-Language (system / en / ar), **content region** (§5), haptics, sound, adult mode (only exists in builds where it's enabled), and an About screen (publisher, version, privacy statement).
+Language (system / en / ar), **content region** (§5), **who's playing / content level** with the parent PIN (§6), haptics, sound, Lamma Premium and Restore purchases, privacy choices (consent), and an About screen (publisher, version, privacy policy).
 
 ---
 
@@ -162,7 +179,8 @@ interface Pack {
   emoji: string;
   name: Record<LocaleCode, string>;
   subtitle?: Record<LocaleCode, string>; // e.g. Franco name "Akl masry"
-  adult?: boolean;
+  level: 'kids' | 'teen'; // adult is never allowed in Lamma
+  tier: 'free' | 'premium'; // default; the server can override which packs are free
   display: {
     primary: LocaleCode | 'ui'; // big line on the card ("ui" = the user's UI language)
     secondary?: LocaleCode | 'translit'; // medium line
@@ -172,6 +190,7 @@ interface Pack {
     id: string;
     text: Record<LocaleCode, string>;
     translit?: string; // Franco/Arabizi, romaji, etc.
+    level?: 'kids' | 'teen'; // optional per-word override (stricter or looser than the pack)
   }>;
 }
 ```
@@ -181,20 +200,24 @@ interface Pack {
 - **Global** (region `global`, `en` + `ar` text): universal categories such as Food, Animals, Jobs, School, Transport, Home, Sports, Places (world landmarks), Games & toys, Beach & summer. On the card: the UI language is primary and the other language is secondary.
 - **Egypt** (region `eg`): port **every** category from the prototype (Egyptian food, Things at home, Places in Egypt, Animals, Jobs, School, Transport, Fruits & veggies, Games & toys, Ramadan & Eid, Beach & summer). Card display: **English big, Franco medium, Arabic small**, exactly like the prototype, because many Egyptian kids read English/Franco more easily than Arabic script.
 
-**Region selection:** the default comes from the device region (Egypt → Global + Egypt; anywhere else → Global). The user can change it in Settings, and random mode picks only from enabled regions.
+**Region selection:** the default comes from the device region (Egypt → Global + Egypt; anywhere else → Global). The user can change it in Settings, and random mode picks only from enabled regions and only from packs the user's tier and content level allow.
 
-**Validation script** (`npm run content:check`, run in CI): every word has text for each locale the pack declares; at least 20 words per pack; unique ids; no duplicate words inside a pack; adult packs flagged correctly.
+**Where packs live:** free packs are bundled in the app. Premium packs are downloaded from the server and stored encrypted (`docs/monetization.md` §9).
+
+**Validation script** (`npm run content:check`, run in CI): every word has text for each locale the pack declares; at least 20 words per pack; unique ids; no duplicate words inside a pack; every pack has a level and a tier; no pack or word at an adult level.
 
 **Writing guidelines:** words a 7–12-year-old knows, but not so obvious that the spy guesses them instantly. Franco uses the common numerals (2 = ء/ق, 3 = ع, 5 = خ, 7 = ح) with the most common spelling (e.g. `ta3meya`, `ma7shy`, `tok tok`).
 
 ---
 
-## 6. Adult content
+## 6. Content levels and the Cheeky pack
 
-- The prototype has a `🔥 +18 Spicy` pack ("Kalam kharg", Egypt region). Port it to `content/packs/adult/` as an **adult** pack.
-- Gate it behind `EXPO_PUBLIC_ENABLE_ADULT`, which is **false in every store profile**. When it's false, the adult packs and the setting are **not bundled at all** (exclude them at build time, not just hide them).
-- When it's enabled (internal/dev builds), turning it on asks for inline 18+ confirmation, and confirming selects the pack. Turning it off hides the pack, removes it from random mode, and resets the selection to random.
-- Reason: the store age rating (Apple and IARC on Google Play) covers everything in the binary. Whether adult content ever ships, for example as a separate app, is a later business decision.
+- Two levels ship in Lamma: **Kids** and **Teen**. How the level is chosen (age signals, "Who's playing?", parent PIN) is in `docs/monetization.md` §7.
+- The prototype's `🔥 +18 Spicy` pack is **split**:
+  - **Cheeky** (`level: "teen"`, region `eg`, subtitle "Kalam kharg"): Diaper (bambers), Always pad, Panty (kalout), Bra (sentian), Boxers, Undershirt (fanella dakhleya), Shapewear (mashad), Toilet paper, Bidet sprayer (shattaf), Smelly socks, Armpit, Sweat, Burp (tekree3a), Silent fart (faswa), Laxative (molayyen), Razor, Waxing, Beer belly (kersh), Bald spot (sal3a), Dentures, Wig (barouka), Fake lashes, Mother-in-law (7amatak), Marriage officiant (ma2zoon), Bathrobe, Honeymoon, Kiss (bousa). Write a Global Cheeky pack in the same spirit.
+  - **Not shipped in Lamma:** Wedding night, Condom and Nightgown (قميص نوم). Remove them from the repo's content; they belong to a possible future "After Dark" app with its own content.
+- Teen packs keep the in-game confirmation ("Everyone at the table OK with cheeky words?") the first time per session.
+- The old `EXPO_PUBLIC_ENABLE_ADULT` flag is removed.
 
 ---
 
@@ -213,10 +236,11 @@ Port the prototype's behavior exactly; only the visuals change (§8).
 - Punishment level.
 - `Spy sees category` (default on).
 - Primary button: `Start round N`.
+- Free-tier limits (6 players, 1 spy, free categories, Light punishments) and the paywall moments are in `docs/monetization.md` §3–4.
 
 ### Round setup (pure)
 
-1. Choose the category (respecting region and adult filters).
+1. Choose the category (respecting region, content level and tier).
 2. Choose a word with **no repeats inside a pack** until it's exhausted. The used ids are persisted per pack.
 3. Pick the spies by shuffling the players.
 4. Pick a random first asker.
@@ -314,13 +338,13 @@ export const gradients = {
 
 ## 9. Release, privacy and compliance
 
-- **Privacy:** no data collected. App Store privacy label "Data Not Collected"; Play Data safety "No data collected or shared". Add a simple privacy policy page (required by both stores). Mention it in About.
-- **Age rating:** answer the Apple questionnaire and IARC truthfully for the store build without adult content; expect a low rating.
-- **Don't enroll in Apple's Kids Category or Google's Designed for Families in v1.** Their extra requirements limit future monetization. Revisit later.
-- **Store listings:** localized title, subtitle and description for en and ar, and screenshots for both (Arabic screenshots must show the RTL UI).
-- **Regional pricing:** free in v1.
-- **Versioning:** semver; `1.0.0` = Spy. JS and content fixes go out through EAS Update channels (`production`, `preview`).
-- **Crash reporting:** off in v1, so the "Data Not Collected" label stays true. Reconsider later with an opt-in.
+- **Privacy, consent, data collected, store privacy forms:** `docs/monetization.md` §8. Publish a privacy policy page and link it in About.
+- **Age rating:** answer the Apple questionnaire and IARC honestly for **Teen** content (crude humor). Expect Apple 13+ and Google Teen.
+- **Don't enroll in Apple's Kids Category or Google's Designed for Families.** Store text and screenshots target teens, adults and families, never young children specifically.
+- **Store listings:** localized title, subtitle and description for en and ar, and screenshots for both (Arabic screenshots must show the RTL UI). In-app purchases listed with localized names.
+- **Pricing:** `docs/monetization.md` §2.
+- **Launch timing:** a few weeks before Ramadan, when family gatherings peak.
+- **Versioning:** semver; `1.0.0` = Spy, Werewolf and Blend In with monetization. JS and content fixes go out through EAS Update channels (`production`, `preview`). A server-side minimum version can force updates.
 
 ---
 
@@ -329,11 +353,11 @@ export const gradients = {
 Stop after each milestone and summarize the work for review before continuing.
 
 **M1: Scaffold**
-Expo + TS strict, Expo Router, ESLint/Prettier, Jest, Maestro, MMKV, Zustand, i18next with en/ar and RTL switching, theme tokens and fonts, CI workflow, EAS config (`development`, `preview`, `production` profiles; adult flag false outside `development`).
+Expo + TS strict, Expo Router, ESLint/Prettier, Jest, Maestro, MMKV, Zustand, i18next with en/ar and RTL switching, theme tokens and fonts, CI workflow, EAS config (`development`, `preview`, `production` profiles).
 ✅ The dev build runs on an iOS simulator and an Android emulator, the home screen renders in en and ar (RTL), and CI is green.
 
 **M2: Core**
-Storage adapter, players, session/scoreboard, RNG, punishment engine, content loader with region/locale/adult filters, the `content:check` script, and the UI kit (Button, Card, Stepper, Toggle, Chip, Panel, ConfirmInline, Scoreboard).
+Storage adapter, players, session/scoreboard, RNG, punishment engine, content loader with region/locale/level/tier filters, the `content:check` script, and the UI kit (Button, Card, Stepper, Toggle, Chip, Panel, ConfirmInline, Scoreboard).
 ✅ Unit tests: deck no-repeat, mix, group punishment when there are more than 3 losers, swap once, filters, persistence round-trip. Every UI kit component renders in both themes and both directions.
 
 **M3: Spy logic**
@@ -345,23 +369,25 @@ Setup, Pass, Card, Round, the Who won? panel, results and punishments; app-switc
 ✅ A Maestro flow plays 5 players through 2 rounds and checks that the scores persist after relaunch. The same flow passes in Arabic.
 
 **M5: Content**
-Port the Egypt packs, adult pack and punishments from the prototype, write the Global packs (en + ar), and Arabic punishments.
-✅ `content:check` passes. The adult pack is absent from a production build (verify the bundle).
+Port the Egypt packs, the **Cheeky** pack (§6) and punishments from the prototype, write the Global packs (en + ar, including a Global Cheeky pack) and Arabic punishments. Tag every pack with a level and a tier.
+✅ `content:check` passes. No adult-level word exists anywhere in the repo.
 
 **M6: Polish**
 App icon, splash, sound effects (toggleable), animations, accessibility audit (VoiceOver/TalkBack), and dynamic type up to 200% without clipping.
 
+**After M6:** Werewolf (`docs/games/werewolf.md`, W1–W6), Blend In (`docs/games/blend-in.md`), then monetization P1–P6 (`docs/monetization.md` §11).
+
 **M7: Release**
-EAS production builds, store metadata for en and ar, screenshots, privacy policy, and submission with EAS Submit.
+EAS production builds, store metadata for en and ar, in-app products, screenshots, privacy policy and forms, and submission with EAS Submit.
 
 ---
 
 ## 11. Roadmap (keep the core flexible for these)
 
-- **Werewolf / Mafia:** secret roles by pass-the-phone, a guided narrator for night/day phases with timers and audio cues, elimination tracking.
 - **Heads Up:** phone on the forehead, tilt to answer (expo-sensors), timed rounds, reuses the word packs.
 - **Taboo:** describe the word without the forbidden words; teams.
 - **Charades:** act it out, timer, team scores.
 - **Who am I?:** region packs of famous people and things.
-- Monetization: premium packs and a "game night pass" via RevenueCat.
+- **Lamma After Dark:** an 18+ app from the same codebase with adult content and its own store listing (launch after Eid at the earliest).
+- Huawei AppGallery build (Huawei purchases, ads and integrity checks).
 - More locales: es, fr, pt-BR, tr and de are the next candidates by market size for party games.

@@ -1,0 +1,199 @@
+{
+  "id": "global-cheeky",
+  "region": "global",
+  "game": "spy",
+  "emoji": "🙊",
+  "name": {
+    "en": "Cheeky",
+    "ar": "كلام خارج"
+  },
+  "level": "teen",
+  "tier": "premium",
+  "display": {
+    "primary": "ui",
+    "secondary": "en",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "diaper",
+      "text": {
+        "en": "Diaper",
+        "ar": "حفاضة"
+      }
+    },
+    {
+      "id": "underwear",
+      "text": {
+        "en": "Underwear",
+        "ar": "ملابس داخلية"
+      }
+    },
+    {
+      "id": "toilet-paper",
+      "text": {
+        "en": "Toilet paper",
+        "ar": "ورق تواليت"
+      }
+    },
+    {
+      "id": "smelly-socks",
+      "text": {
+        "en": "Smelly socks",
+        "ar": "جوارب ريحتها وحشة"
+      }
+    },
+    {
+      "id": "burp",
+      "text": {
+        "en": "Burp",
+        "ar": "تجشؤ"
+      }
+    },
+    {
+      "id": "fart",
+      "text": {
+        "en": "Fart",
+        "ar": "ضرطة"
+      }
+    },
+    {
+      "id": "hiccups",
+      "text": {
+        "en": "Hiccups",
+        "ar": "زغطة"
+      }
+    },
+    {
+      "id": "snoring",
+      "text": {
+        "en": "Snoring",
+        "ar": "شخير"
+      }
+    },
+    {
+      "id": "bad-breath",
+      "text": {
+        "en": "Bad breath",
+        "ar": "رائحة فم كريهة"
+      }
+    },
+    {
+      "id": "sweat",
+      "text": {
+        "en": "Sweat",
+        "ar": "عرق"
+      }
+    },
+    {
+      "id": "armpit",
+      "text": {
+        "en": "Armpit",
+        "ar": "إبط"
+      }
+    },
+    {
+      "id": "belly-button",
+      "text": {
+        "en": "Belly button",
+        "ar": "سُرّة"
+      }
+    },
+    {
+      "id": "pimple",
+      "text": {
+        "en": "Pimple",
+        "ar": "حبّة شباب"
+      }
+    },
+    {
+      "id": "bald-spot",
+      "text": {
+        "en": "Bald spot",
+        "ar": "صلعة"
+      }
+    },
+    {
+      "id": "wig",
+      "text": {
+        "en": "Wig",
+        "ar": "باروكة"
+      }
+    },
+    {
+      "id": "dentures",
+      "text": {
+        "en": "Dentures",
+        "ar": "طقم أسنان"
+      }
+    },
+    {
+      "id": "beer-belly",
+      "text": {
+        "en": "Beer belly",
+        "ar": "كرش"
+      }
+    },
+    {
+      "id": "drool",
+      "text": {
+        "en": "Drool",
+        "ar": "لعاب"
+      }
+    },
+    {
+      "id": "sneeze",
+      "text": {
+        "en": "Sneeze",
+        "ar": "عطسة"
+      }
+    },
+    {
+      "id": "earwax",
+      "text": {
+        "en": "Earwax",
+        "ar": "شمع الأذن"
+      }
+    },
+    {
+      "id": "toenails",
+      "text": {
+        "en": "Toenails",
+        "ar": "أظافر القدم"
+      }
+    },
+    {
+      "id": "bed-hair",
+      "text": {
+        "en": "Bed hair",
+        "ar": "شعر منكوش"
+      }
+    },
+    {
+      "id": "mother-in-law",
+      "text": {
+        "en": "Mother-in-law",
+        "ar": "حماة"
+      }
+    },
+    {
+      "id": "laxative",
+      "text": {
+        "en": "Laxative",
+        "ar": "ملين"
+      }
+    }
+  ],
+  "pairs": [
+    ["burp", "fart"],
+    ["hiccups", "sneeze"],
+    ["snoring", "drool"],
+    ["sweat", "armpit"],
+    ["bald-spot", "wig"],
+    ["diaper", "underwear"],
+    ["toilet-paper", "laxative"],
+    ["smelly-socks", "toenails"],
+    ["pimple", "earwax"],
+    ["dentures", "bad-breath"]
+  ]
+}

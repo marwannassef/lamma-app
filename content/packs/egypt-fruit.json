@@ -11,6 +11,8 @@
     "en": "Fakha w khodar",
     "ar": "Fakha w khodar"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

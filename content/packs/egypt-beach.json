@@ -11,6 +11,8 @@
     "en": "El masyaf",
     "ar": "El masyaf"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

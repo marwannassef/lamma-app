@@ -16,6 +16,7 @@ export function Screen({
   scrollRef,
   center = false,
   footer,
+  stealthColor,
 }: {
   children: ReactNode;
   scroll?: boolean;
@@ -23,6 +24,8 @@ export function Screen({
   /** Vertically center short content (pass and card screens). */
   center?: boolean;
   footer?: ReactNode;
+  /** Plain dark background with no decoration, for secret pass-the-phone screens. */
+  stealthColor?: string;
 }) {
   const { colors } = useTheme();
   const body = (
@@ -31,8 +34,8 @@ export function Screen({
     </View>
   );
   return (
-    <View style={[styles.fill, { backgroundColor: colors.bg }]}>
-      <GameBackground />
+    <View style={[styles.fill, { backgroundColor: stealthColor ?? colors.bg }]}>
+      {stealthColor ? null : <GameBackground />}
       <SafeAreaView style={styles.fill} edges={['top', 'bottom']}>
         {scroll ? (
           <ScrollView

@@ -10,5 +10,5 @@ export const werewolf: GameModule = {
   usesScores: true,
   usesPunishments: true,
   entryRoute: '/games/werewolf',
-  ready: false,
+  ready: true,
 };

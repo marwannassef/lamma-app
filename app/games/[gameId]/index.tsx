@@ -15,13 +15,19 @@ export default function GameEntry() {
 
   return (
     <Screen>
-      <BackHeader title={t(game.titleKey)} />
+      <BackHeader title={t(game.titleKey)} image={game.icon} />
       <View style={styles.body}>
         <Image source={game.icon} style={styles.icon} accessibilityIgnoresInvertColors />
         <Text variant="body" align="center">
           {game.mystery ? t('games.mystery.reveal') : t(game.blurbKey)}
         </Text>
-        <Badge testID="coming-soon" tone="primary" icon="🔒" label={t('home.comingSoon')} />
+        <Badge
+          testID="coming-soon"
+          tone="primary"
+          icon="🔒"
+          label={t('home.comingSoon')}
+          align="center"
+        />
       </View>
     </Screen>
   );

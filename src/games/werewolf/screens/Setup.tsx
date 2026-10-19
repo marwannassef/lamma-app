@@ -13,6 +13,7 @@ import {
   Button,
   Chip,
   Hint,
+  HowToPlay,
   Panel,
   Pressable,
   Screen,
@@ -291,10 +292,15 @@ export default function Setup() {
     <Screen
       footer={<Button testID="start-game" icon="🌙" label={t('setup.start')} onPress={start} />}
     >
-      <BackHeader title={t('title')} icon="🐺" />
+      <BackHeader title={t('title')} image={module.icon} />
       <Text variant="body" tone="muted" align="center">
         {t('setup.lead')}
       </Text>
+
+      <HowToPlay
+        setup={t('howTo.setup', { returnObjects: true }) as string[]}
+        play={t('howTo.play', { returnObjects: true }) as string[]}
+      />
 
       {store.game && store.game.phase.t !== 'gameOver' ? (
         <Panel title={t('setup.inProgress')} icon="⏯️" testID="in-progress">
@@ -566,5 +572,5 @@ const styles = StyleSheet.create({
   seatInput: { flex: 1, minHeight: 48, fontSize: 16 },
   move: { width: 40, alignItems: 'center', justifyContent: 'center' },
   optionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  option: { width: '23%', minWidth: 72 },
+  option: { width: '23%', minWidth: 72, flexDirection: 'row' },
 });

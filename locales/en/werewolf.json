@@ -290,5 +290,21 @@
   "host": {
     "quit": "End game",
     "quitConfirm": "End this game? The current game will be lost."
+  },
+  "howTo": {
+    "setup": [
+      "Put the phone in the middle of the table and enter the players in seating order, clockwise.",
+      "Pick a recommended setup, or choose every role yourself with Custom.",
+      "Adjust the house rules, like the discussion timer, if you want.",
+      "Tap Start game."
+    ],
+    "play": [
+      "Discovery: each player holds the seal to see their secret role, then passes the phone on.",
+      "Night: everyone closes their eyes. The wolves open theirs and silently agree on a victim.",
+      "Then the phone goes around the table: everyone takes a secret turn, even with no power, so nobody can tell who's who.",
+      "Morning: find out who didn't survive the night.",
+      "Day: talk it over, then point at who you think is a werewolf. The village banishes one player.",
+      "The village wins when every wolf is gone; the wolves win when they equal the rest of the village."
+    ]
   }
 }

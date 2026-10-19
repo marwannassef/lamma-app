@@ -17,6 +17,7 @@ import {
   Chip,
   ConfirmInline,
   Hint,
+  HowToPlay,
   Panel,
   Pressable,
   Scoreboard,
@@ -103,10 +104,15 @@ export default function Setup() {
         />
       }
     >
-      <BackHeader title={t('title')} icon="🕵️" />
+      <BackHeader title={t('title')} image={spyGame.icon} />
       <Text variant="body" tone="muted" align="center">
         {t('setup.lead')}
       </Text>
+
+      <HowToPlay
+        setup={t('howTo.setup', { returnObjects: true }) as string[]}
+        play={t('howTo.play', { returnObjects: true }) as string[]}
+      />
 
       <Stepper
         testID="players"
@@ -357,7 +363,7 @@ const styles = StyleSheet.create({
   randomText: { flex: 1 },
   group: { gap: space.sm },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  cell: { width: '48.5%' },
+  cell: { width: '48.5%', flexDirection: 'row' },
   levels: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  levelCell: { width: '31.5%' },
+  levelCell: { width: '31.5%', flexDirection: 'row' },
 });

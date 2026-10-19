@@ -46,6 +46,7 @@ export function Chip({
       onPress={onPress}
       style={({ pressed }) => [
         styles.shadow,
+        styles.fill,
         { shadowColor: colors.glow, shadowOpacity: selected ? 0.6 : 0 },
         pressed && { transform: [{ scale: 0.97 }] },
       ]}
@@ -54,12 +55,14 @@ export function Chip({
         colors={frame}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.frame}
+        style={[styles.frame, styles.fill]}
       >
         <View
           style={[
             styles.inner,
+            styles.fill,
             compact && styles.compact,
+            compact && emoji ? styles.compactEmoji : null,
             { backgroundColor: selected ? colors.surfaceRaised : colors.surface },
           ]}
         >
@@ -81,11 +84,18 @@ export function Chip({
               tone={selected ? 'secondary' : 'default'}
               align={compact ? 'center' : 'auto'}
               numberOfLines={2}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
             >
               {title}
             </Text>
             {subtitle ? (
-              <Text variant="caption" tone="muted" numberOfLines={1}>
+              <Text
+                variant="caption"
+                tone="muted"
+                align={compact ? 'center' : 'auto'}
+                numberOfLines={1}
+              >
                 {subtitle}
               </Text>
             ) : null}
@@ -105,6 +115,8 @@ export function Chip({
 
 const styles = StyleSheet.create({
   shadow: { shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, borderRadius: radius.md },
+  // Tiles stretch to their grid cell, so every tile in a row is the same height.
+  fill: { flexGrow: 1 },
   frame: { borderRadius: radius.md + 2, padding: 2 },
   inner: {
     flexDirection: 'row',
@@ -113,9 +125,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingVertical: space.sm,
     paddingHorizontal: space.sm,
+    // Room for a two-line name plus a subtitle, so short and long names give equal tiles.
+    minHeight: 76,
+  },
+  compact: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 2,
+    paddingVertical: space.sm,
     minHeight: 56,
   },
-  compact: { flexDirection: 'column', gap: 2, paddingVertical: space.sm },
+  // Emoji plus a two-line label.
+  compactEmoji: { minHeight: 96 },
   bubble: {
     width: 40,
     height: 40,

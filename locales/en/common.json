@@ -90,5 +90,10 @@
       "teaser": "🤫 Top secret",
       "reveal": "Shh… this one is still a secret. Keep playing — it’s coming soon!"
     }
+  },
+  "howTo": {
+    "title": "How to play",
+    "setup": "Setting up",
+    "play": "Playing"
   }
 }

@@ -10,6 +10,10 @@ import { useSettings, type Appearance, type LanguagePref } from '@/core/settings
 import { radius, space, useTheme } from '@/core/theme';
 import { BackHeader, Hint, Panel, Pressable, Screen, Text, Toggle } from '@/core/ui';
 
+// The dark variant has the brown script recoloured to cream so it stays readable.
+const LOGO_LIGHT = require('@/assets/images/publisher-logo-light.png');
+const LOGO_DARK = require('@/assets/images/publisher-logo-dark.png');
+
 interface Option<T extends string> {
   value: T;
   label: string;
@@ -58,6 +62,7 @@ function OptionGroup<T extends string>({
 
 export default function Settings() {
   const { t } = useTranslation();
+  const { scheme } = useTheme();
   const s = useSettings();
 
   const languages: Option<LanguagePref>[] = [
@@ -152,7 +157,7 @@ export default function Settings() {
 
       <Panel title={t('settings.about')} icon="ℹ️">
         <Image
-          source={require('@/assets/images/publisher-logo.jpg')}
+          source={scheme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
           style={styles.logo}
           resizeMode="contain"
           accessibilityLabel={t('publisher')}
@@ -168,7 +173,8 @@ export default function Settings() {
 }
 
 const styles = StyleSheet.create({
-  logo: { width: '100%', height: 180, borderRadius: radius.md },
+  // Transparent artwork, so no frame: it sits directly on the panel in both themes.
+  logo: { width: 190, height: 243, alignSelf: 'center' },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   option: {
     borderWidth: 2,

@@ -10,11 +10,13 @@ export function Badge({
   tone = 'neutral',
   icon,
   testID,
+  align = 'start',
 }: {
   label: string;
   tone?: 'neutral' | 'primary' | 'secondary' | 'gold';
   icon?: string;
   testID?: string;
+  align?: 'start' | 'center';
 }) {
   const { colors } = useTheme();
   const bg = {
@@ -30,7 +32,13 @@ export function Badge({
     gold: colors.gold,
   }[tone];
   return (
-    <View testID={testID} style={[styles.badge, { backgroundColor: bg }]}>
+    <View
+      testID={testID}
+      style={[
+        styles.badge,
+        { backgroundColor: bg, alignSelf: align === 'center' ? 'center' : 'flex-start' },
+      ]}
+    >
       <Text variant="caption" style={{ color: fg }}>
         {icon ? `${icon} ${label}` : label}
       </Text>

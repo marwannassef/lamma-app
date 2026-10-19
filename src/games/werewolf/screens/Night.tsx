@@ -15,9 +15,6 @@ export function NightIntro({ game }: { game: GameState }) {
   const dispatch = useWerewolf((s) => s.dispatch);
   return (
     <Screen center>
-      <Text style={styles.big} align="center" accessible={false}>
-        🌙
-      </Text>
       <Text variant="title" align="center">
         {t('night.title', { n: game.night })}
       </Text>

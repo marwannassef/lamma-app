@@ -28,6 +28,7 @@ export function PlayerPicker<P extends PickablePlayer>({
   include = (p) => p.alive,
   disabled = () => false,
   tags = () => undefined,
+  announceTags = true,
   fg,
   muted,
   bg,
@@ -39,6 +40,8 @@ export function PlayerPicker<P extends PickablePlayer>({
   include?: (p: P) => boolean;
   disabled?: (id: PlayerId) => boolean;
   tags?: (id: PlayerId) => PickerTag | undefined;
+  /** False on secret screens, where a tag such as "Pack" must not be read aloud. */
+  announceTags?: boolean;
   fg: string;
   muted: string;
   bg: string;
@@ -59,7 +62,7 @@ export function PlayerPicker<P extends PickablePlayer>({
             haptic={false}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: on, disabled: off }}
-            accessibilityLabel={[name, tag?.label].filter(Boolean).join(', ')}
+            accessibilityLabel={[name, announceTags && tag?.label].filter(Boolean).join(', ')}
             onPress={() => !off && onToggle(p.id)}
             style={[
               styles.cell,

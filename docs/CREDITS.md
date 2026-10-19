@@ -32,3 +32,16 @@ python3 scripts/generate-sounds.py
 
 The narrator uses the device's text-to-speech voice (`expo-speech`). Recorded voice packs will be
 listed here when they ship.
+
+## Werewolf role art
+
+All 17 role icons in `assets/images/roles/` are **original** vector art, drawn in code by
+[`scripts/generate-role-art.py`](../scripts/generate-role-art.py) in the style of the Werewolf game
+logo (a moonlit sky tinted by team, with a dark silhouette). The SVG sources are in
+`assets/source/roles/`. License: same as this repository.
+
+To regenerate (needs `rsvg-convert`, e.g. `brew install librsvg`):
+
+```bash
+python3 scripts/generate-role-art.py
+```

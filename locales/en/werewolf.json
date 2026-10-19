@@ -99,7 +99,16 @@
     "narrator": "Narrator voice",
     "narratorSub": "Reads the night aloud. Turn it off to narrate yourself.",
     "ambience": "Night ambience",
-    "ambienceOff": "Off"
+    "ambienceOff": "Off",
+    "surprise": "Surprise me",
+    "surprisePitch": "A random balanced mix of roles. Nobody knows what's coming.",
+    "reroll": "Shuffle again",
+    "savedTag": "Saved",
+    "save": "Save",
+    "saveName": "Name this setup",
+    "savedDone": "Saved. You'll find it with the setups for this many players.",
+    "delete": "Delete",
+    "deleteConfirm": "Delete \"{{name}}\"?"
   },
   "teams": {
     "village": "Village",
@@ -228,7 +237,8 @@
     "serialKiller": "Tap your victim.",
     "bitten": "You were bitten. You are now a Werewolf.",
     "dead": "You're out, but take your turn so nobody can tell.",
-    "you": "You"
+    "you": "You",
+    "promoted": "Your teacher is gone. You are now the Seer."
   },
   "morning": {
     "title": "Morning",

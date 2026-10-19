@@ -9,7 +9,7 @@ import { ThemeProvider } from '../src/core/theme';
 import { newGame, type GameState } from '../src/games/werewolf/engine';
 import Play from '../src/games/werewolf/screens/Play';
 import Setup from '../src/games/werewolf/screens/Setup';
-import { useWerewolf } from '../src/games/werewolf/store';
+import { MAX_SAVED, useWerewolf } from '../src/games/werewolf/store';
 
 jest.mock('expo-keep-awake', () => ({ useKeepAwake: jest.fn() }));
 jest.mock('expo-screen-capture', () => ({ usePreventScreenCapture: jest.fn() }));
@@ -157,5 +157,96 @@ describe('Werewolf audio', () => {
       </ThemeProvider>,
     );
     expect(screen.queryByTestId('audio-pause')).toBeNull();
+  });
+});
+
+describe('Werewolf W5 setup', () => {
+  beforeEach(() => {
+    useEntitlements.setState({ devPremium: true });
+    useWerewolf.setState({ savedSetups: [], customRoles: null });
+  });
+  afterAll(() => useEntitlements.setState({ devPremium: false }));
+
+  it('offers the expansion setups and every expansion role in Custom', () => {
+    usePlayers.setState({ count: 12, names: [] });
+    render(<Setup />);
+    expect(screen.getByTestId('setup-party')).toBeTruthy();
+    expect(screen.getByTestId('setup-chaos')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('setup-custom'));
+    for (const r of [
+      'wolfCub',
+      'loneWolf',
+      'sorcerer',
+      'apprenticeSeer',
+      'mayor',
+      'lycan',
+      'cursed',
+      'serialKiller',
+    ]) {
+      expect(screen.getByTestId(`custom-${r}-plus`)).toBeTruthy();
+    }
+  });
+
+  it('rolls a balanced Surprise me setup and starts it', () => {
+    usePlayers.setState({ count: 9, names: [] });
+    render(<Setup />);
+    fireEvent.press(screen.getByTestId('setup-surprise'));
+    expect(screen.getByTestId('surprise-reroll')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('surprise-reroll'));
+    fireEvent.press(screen.getByTestId('start-game'));
+    expect(useWerewolf.getState().game?.players).toHaveLength(9);
+  });
+
+  it('only offers Surprise me from 7 players, and locks it on the free tier', () => {
+    usePlayers.setState({ count: 6, names: [] });
+    const { unmount } = render(<Setup />);
+    expect(screen.queryByTestId('setup-surprise')).toBeNull();
+    unmount();
+    useEntitlements.setState({ devPremium: false });
+    usePlayers.setState({ count: 7, names: [] });
+    render(<Setup />);
+    fireEvent.press(screen.getByTestId('setup-surprise'));
+    expect(router.push).toHaveBeenCalledWith(expect.objectContaining({ pathname: '/paywall' }));
+    expect(screen.queryByTestId('surprise-reroll')).toBeNull();
+  });
+
+  it('saves a custom setup as a card for that player count and deletes it after asking', () => {
+    usePlayers.setState({ count: 6, names: [] });
+    render(<Setup />);
+    fireEvent.press(screen.getByTestId('setup-custom'));
+    fireEvent.changeText(screen.getByTestId('save-name'), 'Friday night');
+    fireEvent.press(screen.getByTestId('save-setup'));
+    const [saved] = useWerewolf.getState().savedSetups;
+    expect(saved).toMatchObject({ name: 'Friday night', players: 6 });
+    expect(screen.getByText('✓ ⭐ Friday night')).toBeTruthy();
+    fireEvent.press(screen.getByTestId(`saved-delete-${saved?.id}`));
+    expect(useWerewolf.getState().savedSetups).toHaveLength(1);
+    fireEvent.press(screen.getByText('Delete'));
+    expect(useWerewolf.getState().savedSetups).toHaveLength(0);
+  });
+
+  it('keeps only the newest saved setups', () => {
+    const { saveSetup } = useWerewolf.getState();
+    for (let i = 0; i < MAX_SAVED + 3; i++)
+      saveSetup(`S${i}`, 6, { werewolf: 1, seer: 1, villager: 4 });
+    const all = useWerewolf.getState().savedSetups;
+    expect(all).toHaveLength(MAX_SAVED);
+    expect(all[0]?.name).toBe('S3');
+    expect(new Set(all.map((x) => x.id)).size).toBe(MAX_SAVED);
+  });
+
+  it('tells a promoted Apprentice Seer they are now the Seer', () => {
+    const g = newGame(['werewolf', 'apprenticeSeer', 'villager', 'villager', 'doctor', 'hunter']);
+    const players = g.players.map((p) => (p.id === 1 ? { ...p, role: 'seer' as const } : p));
+    useWerewolf.setState({
+      game: {
+        ...g,
+        players,
+        night: 2,
+        phase: { t: 'pass', seat: 1, step: 'action', startedAt: 0, turn: 1 },
+      },
+    });
+    render(<Play />);
+    expect(screen.getByTestId('promoted')).toBeTruthy();
   });
 });

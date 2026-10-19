@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { minTouch, radius, space, useTheme } from '@/core/theme';
@@ -11,7 +11,8 @@ import { Text } from './Text';
 export interface StepperProps {
   label: string;
   sublabel?: string;
-  icon?: string;
+  /** An emoji, or an image element. */
+  icon?: string | ReactNode;
   value: number;
   min: number;
   max: number;
@@ -70,11 +71,13 @@ export function Stepper(p: StepperProps) {
   return (
     <View style={[styles.wrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.row}>
-        {p.icon ? (
+        {typeof p.icon === 'string' ? (
           <Text style={styles.icon} accessible={false}>
             {p.icon}
           </Text>
-        ) : null}
+        ) : (
+          (p.icon ?? null)
+        )}
         <View style={styles.labels}>
           <Text variant="label">{p.label}</Text>
           {p.sublabel ? (

@@ -15,7 +15,22 @@ import {
   type Tier,
 } from './engine';
 
-export type SetupChoice = { kind: 'curated'; tier: Tier } | { kind: 'custom'; roles: RoleCounts };
+export type SetupChoice =
+  | { kind: 'curated'; tier: Tier }
+  | { kind: 'custom'; roles: RoleCounts }
+  | { kind: 'surprise'; roles: RoleCounts }
+  | { kind: 'saved'; id: string };
+
+/** A named custom setup (§5.6), offered again as a card at the same player count. */
+export interface SavedSetup {
+  id: string;
+  name: string;
+  players: number;
+  roles: RoleCounts;
+}
+
+/** The most saved setups kept; the oldest goes first. */
+export const MAX_SAVED = 20;
 
 interface WerewolfState {
   /** The game in progress. Persisted after every event so a relaunch can resume. */
@@ -29,8 +44,12 @@ interface WerewolfState {
   recentTiers: Tier[];
   /** Last custom roles, so Custom reopens where it was left. */
   customRoles: RoleCounts | null;
+  savedSetups: SavedSetup[];
   setRules(patch: Partial<HouseRules>): void;
   setCustomRoles(roles: RoleCounts): void;
+  /** Saves a setup and returns its id. */
+  saveSetup(name: string, players: number, roles: RoleCounts): string;
+  deleteSetup(id: string): void;
   start(game: GameState, tier: Tier | null): void;
   dispatch(e: GameEvent): void;
   markScored(): void;
@@ -46,8 +65,19 @@ export const useWerewolf = create<WerewolfState>()(
       lastTierByCount: {},
       recentTiers: [],
       customRoles: null,
+      savedSetups: [],
       setRules: (patch) => set((s) => ({ rules: { ...s.rules, ...patch } })),
       setCustomRoles: (customRoles) => set({ customRoles }),
+      saveSetup: (name, players, roles) => {
+        const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+        set((s) => ({
+          savedSetups: [...s.savedSetups, { id, name: name.trim(), players, roles }].slice(
+            -MAX_SAVED,
+          ),
+        }));
+        return id;
+      },
+      deleteSetup: (id) => set((s) => ({ savedSetups: s.savedSetups.filter((x) => x.id !== id) })),
       start: (game, tier) =>
         set((s) => ({
           game,

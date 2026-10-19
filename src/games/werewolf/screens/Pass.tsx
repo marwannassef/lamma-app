@@ -102,6 +102,7 @@ function Action({ game, phase }: { game: GameState; phase: PassPhase }) {
 
   const lover = game.lovers?.includes(seat) ? game.lovers.find((id) => id !== seat) : undefined;
   const bitten = me.dealtRole === 'cursed' && me.role === 'werewolf';
+  const promoted = me.dealtRole === 'apprenticeSeer' && me.role === 'seer';
   const alphaPick = game.players.find((p) => p.role === 'alpha' && p.alive);
 
   const prompt = !me.alive
@@ -167,6 +168,11 @@ function Action({ game, phase }: { game: GameState; phase: PassPhase }) {
       {bitten ? (
         <Text variant="label" align="center" style={styles.banner}>
           {`🩸 ${t('pass.bitten')}`}
+        </Text>
+      ) : null}
+      {promoted ? (
+        <Text variant="label" align="center" style={styles.banner} testID="promoted">
+          {`🔮 ${t('pass.promoted')}`}
         </Text>
       ) : null}
       {lover != null ? (

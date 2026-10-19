@@ -3,6 +3,7 @@ appId: com.anventureslabs.lamma
 ---
 - launchApp:
     clearState: true
+- runFlow: subflows/welcome.yaml
 - tapOn:
     id: open-settings
 - tapOn:

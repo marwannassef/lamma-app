@@ -1,0 +1,25 @@
+# Everyone peeks at their Blend In card, then the clue circle starts.
+appId: com.anventureslabs.lamma
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/welcome.yaml
+- tapOn:
+    id: game-blend-in
+- tapOn:
+    id: start
+- repeat:
+    while:
+      visible:
+        id: im-player
+    commands:
+      - tapOn:
+          id: im-player
+      - longPressOn:
+          id: peek-hold
+- assertVisible:
+    id: speaker
+- tapOn:
+    id: next-clue
+- assertVisible:
+    id: speaker

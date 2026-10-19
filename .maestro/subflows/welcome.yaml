@@ -1,0 +1,10 @@
+# First launch asks "Who's playing tonight?"; pick Teens and adults when it shows.
+appId: com.anventureslabs.lamma
+---
+- runFlow:
+    when:
+      visible:
+        id: audience-teen
+    commands:
+      - tapOn:
+          id: audience-teen

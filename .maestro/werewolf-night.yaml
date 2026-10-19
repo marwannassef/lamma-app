@@ -1,0 +1,23 @@
+# Everyone meets their Werewolf role behind the wax seal, then night falls.
+appId: com.anventureslabs.lamma
+---
+- launchApp:
+    clearState: true
+- runFlow: subflows/welcome.yaml
+- tapOn:
+    id: game-werewolf
+- tapOn:
+    id: start-game
+- repeat:
+    while:
+      visible:
+        id: im-player
+    commands:
+      - tapOn:
+          id: im-player
+      - longPressOn:
+          id: seal
+- assertVisible:
+    id: wake-wolves
+- assertVisible:
+    id: audio-pause

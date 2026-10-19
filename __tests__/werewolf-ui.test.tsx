@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
 import { useEntitlements } from '../src/core/entitlements';
@@ -265,41 +265,42 @@ describe('Werewolf W6 polish', () => {
     expect(litTicks(2)).toBe(60);
   });
 
-  it('flips the role card in behind the wax seal and keeps it from screen readers', () => {
-    jest.useFakeTimers();
+  // Real timers on purpose: an animation started on Jest's fake clock keeps running in the worker
+  // after the test and starves the test files that run next (CI timeouts).
+  it('flips the role card in behind the wax seal and keeps it from screen readers', async () => {
     useWerewolf.setState({
       game: { ...wolfFirst(), phase: { t: 'discovery', seat: 0, revealed: false } },
     });
     render(<Play />);
     fireEvent.press(screen.getByTestId('im-player'));
     fireEvent(screen.getByTestId('seal'), 'pressIn');
-    act(() => jest.advanceTimersByTime(600));
     // Rendered for sighted players, but invisible to screen readers (so nobody hears it).
-    expect(screen.getByTestId('role-werewolf', { includeHiddenElements: true })).toBeTruthy();
+    await waitFor(() =>
+      expect(screen.getByTestId('role-werewolf', { includeHiddenElements: true })).toBeTruthy(),
+    );
     expect(screen.queryByTestId('role-werewolf')).toBeNull();
     expect(screen.queryByText('Werewolf')).toBeNull();
     expect(screen.getByLabelText('Hold the seal to see your role')).toBeTruthy();
-    jest.useRealTimers();
   });
 
   it('never reads pack tags aloud on the wolves’ night screen, and pulses after 15 s', () => {
-    jest.useFakeTimers();
     const g = wolfFirst();
-    useWerewolf.setState({
-      game: {
-        ...g,
-        night: 1,
-        phase: { t: 'pass', seat: 0, step: 'action', startedAt: Date.now(), turn: 0 },
-      },
+    const turn = (startedAt: number): GameState => ({
+      ...g,
+      night: 1,
+      phase: { t: 'pass', seat: 0, step: 'action', startedAt, turn: 0 },
     });
-    render(<Play />);
+    useWerewolf.setState({ game: turn(Date.now()) });
+    const { unmount } = render(<Play />);
     expect(screen.getByLabelText('Player 2')).toBeTruthy();
     expect(screen.queryByLabelText(/Pack/)).toBeNull();
     expect(screen.getByText('Pack', { includeHiddenElements: true })).toBeTruthy();
-    expect(screen.queryByTestId('soft-max')).toBeNull();
-    act(() => jest.advanceTimersByTime(15_500));
-    expect(screen.getByTestId('soft-max')).toBeTruthy();
-    jest.useRealTimers();
+    expect(screen.queryByTestId('soft-max', { includeHiddenElements: true })).toBeNull();
+    unmount();
+    // A turn that started 16 s ago is past the soft maximum.
+    useWerewolf.setState({ game: turn(Date.now() - 16_000) });
+    render(<Play />);
+    expect(screen.getByTestId('soft-max', { includeHiddenElements: true })).toBeTruthy();
   });
 
   it('draws public screens on the moonlit backdrop and secret ones on plain black', () => {

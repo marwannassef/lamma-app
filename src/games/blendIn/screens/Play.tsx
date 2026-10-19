@@ -1,4 +1,3 @@
-import { useKeepAwake } from 'expo-keep-awake';
 import { Redirect, router, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +8,7 @@ import { HostAudioControls, usePhaseAudio } from '@/core/audio';
 import { allPacks, localized, type Pack } from '@/core/content';
 import { usePlayerName } from '@/core/players';
 import { space, useTheme } from '@/core/theme';
-import { ConfirmInline, Pressable, Text } from '@/core/ui';
+import { ConfirmInline, Pressable, Text, useStayAwake } from '@/core/ui';
 
 import { audioCue, audioKey } from '../audio';
 import { useBlendIn } from '../store';
@@ -56,7 +55,7 @@ function QuitButton() {
 
 /** Runs a Blend In game; the phone sits in the middle of the table between peeks. */
 export default function Play() {
-  useKeepAwake();
+  useStayAwake();
   const game = useBlendIn((s) => s.game);
   const { i18n } = useTranslation();
   const nameOf = usePlayerName();

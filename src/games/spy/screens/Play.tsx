@@ -1,4 +1,3 @@
-import { useKeepAwake } from 'expo-keep-awake';
 import { Redirect, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
@@ -8,6 +7,7 @@ import { usePlayers } from '@/core/players';
 import { useSession } from '@/core/session';
 import { usePacks } from '@/core/settings/content';
 import { ThemeProvider } from '@/core/theme';
+import { useStayAwake } from '@/core/ui';
 
 import { clampSpies } from '../logic';
 import { useSpy } from '../store';
@@ -18,7 +18,7 @@ type Phase = { name: 'reveal'; player: number } | { name: 'round' };
 
 /** Runs one round: each player flips their secret card → round screen. */
 export default function Play() {
-  useKeepAwake();
+  useStayAwake();
   const round = useSpy((s) => s.round);
   const spySeesCategory = useSpy((s) => s.spySeesCategory);
   const startRound = useSpy((s) => s.start);

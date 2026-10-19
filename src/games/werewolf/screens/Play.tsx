@@ -1,4 +1,3 @@
-import { useKeepAwake } from 'expo-keep-awake';
 import { Redirect, router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -9,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HostAudioControls, usePhaseAudio } from '@/core/audio';
 import { usePlayerName } from '@/core/players';
 import { space, ThemeProvider, useTheme } from '@/core/theme';
-import { ConfirmInline, Pressable, SecretGuard, Text } from '@/core/ui';
+import { ConfirmInline, Pressable, SecretGuard, Text, useStayAwake } from '@/core/ui';
 
 import { audioCue, audioKey } from '../audio';
 import type { GameState } from '../engine';
@@ -106,7 +105,7 @@ function HostBar() {
 
 /** Runs a Werewolf game from discovery to game over. The phone sits in the middle of the table. */
 export default function Play() {
-  useKeepAwake();
+  useStayAwake();
   const game = useWerewolf((s) => s.game);
   const { t } = useTranslation('werewolf');
   const nameOf = usePlayerName();

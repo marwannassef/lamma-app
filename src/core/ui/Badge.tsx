@@ -39,7 +39,7 @@ export function Badge({
         { backgroundColor: bg, alignSelf: align === 'center' ? 'center' : 'flex-start' },
       ]}
     >
-      <Text variant="caption" style={{ color: fg }}>
+      <Text variant="caption" style={{ color: fg }} accessibilityLabel={label}>
         {icon ? `${icon} ${label}` : label}
       </Text>
     </View>

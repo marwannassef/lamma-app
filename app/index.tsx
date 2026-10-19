@@ -159,7 +159,9 @@ export default function Home() {
         ) : null}
       </View>
 
-      <Text variant="heading">{`🎮 ${t('home.pickGame')}`}</Text>
+      <Text variant="heading" accessibilityRole="header" accessibilityLabel={t('home.pickGame')}>
+        {`🎮 ${t('home.pickGame')}`}
+      </Text>
 
       {games.map((game) => (
         <GameCard key={game.id} game={game} />

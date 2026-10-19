@@ -106,7 +106,12 @@ export default function Discovery({ game, seat }: { game: GameState; seat: Playe
           />
         }
       >
-        <Text variant="title" align="center" style={styles.text}>
+        <Text
+          variant="title"
+          align="center"
+          style={styles.text}
+          accessibilityLabel={t('discovery.cupidPick')}
+        >
           {`💘 ${t('discovery.cupidPick')}`}
         </Text>
         <Text variant="body" align="center" style={styles.muted}>

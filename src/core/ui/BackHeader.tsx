@@ -45,7 +45,13 @@ export function BackHeader({
           accessibilityIgnoresInvertColors
         />
       ) : null}
-      <Text variant="title" style={styles.title} numberOfLines={1}>
+      <Text
+        variant="title"
+        style={styles.title}
+        numberOfLines={1}
+        accessibilityRole="header"
+        accessibilityLabel={title}
+      >
         {icon && !image ? `${icon} ${title}` : title}
       </Text>
     </View>

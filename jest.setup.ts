@@ -40,3 +40,19 @@ jest.mock(
   'react-native-safe-area-context',
   () => require('react-native-safe-area-context/jest/mock').default,
 );
+
+// Native audio and text-to-speech; tests assert on these calls.
+jest.mock('expo-audio', () => ({
+  createAudioPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    remove: jest.fn(),
+    setPlaybackRate: jest.fn(),
+    addListener: jest.fn(() => ({ remove: jest.fn() })),
+    playing: false,
+    volume: 1,
+    loop: false,
+  })),
+  setAudioModeAsync: jest.fn(() => Promise.resolve()),
+}));
+jest.mock('expo-speech', () => ({ speak: jest.fn(), stop: jest.fn(() => Promise.resolve()) }));

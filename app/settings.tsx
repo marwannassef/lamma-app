@@ -203,6 +203,16 @@ export default function Settings() {
           value={s.sound}
           onChange={s.setSound}
         />
+        {s.sound ? (
+          <Toggle
+            surface={false}
+            testID="narration"
+            label={t('settings.narration')}
+            sublabel={t('settings.narrationSub')}
+            value={s.narration}
+            onChange={s.setNarration}
+          />
+        ) : null}
       </Panel>
 
       <Panel title={t('settings.about')} icon="ℹ️">

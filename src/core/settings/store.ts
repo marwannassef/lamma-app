@@ -13,12 +13,18 @@ interface SettingsState {
   appearance: Appearance;
   haptics: boolean;
   sound: boolean;
+  /** The narrator voice (text-to-speech). */
+  narration: boolean;
+  /** Host volume for music, ambience and the narrator, 0–1. */
+  volume: number;
   /** Enabled content regions; null means "pick from the device region". */
   regions: string[] | null;
   setLanguage(language: LanguagePref): void;
   setAppearance(appearance: Appearance): void;
   setHaptics(on: boolean): void;
   setSound(on: boolean): void;
+  setNarration(on: boolean): void;
+  setVolume(v: number): void;
   setRegions(regions: string[]): void;
 }
 
@@ -29,11 +35,15 @@ export const useSettings = create<SettingsState>()(
       appearance: 'system',
       haptics: true,
       sound: true,
+      narration: true,
+      volume: 1,
       regions: null,
       setLanguage: (language) => set({ language }),
       setAppearance: (appearance) => set({ appearance }),
       setHaptics: (haptics) => set({ haptics }),
       setSound: (sound) => set({ sound }),
+      setNarration: (narration) => set({ narration }),
+      setVolume: (volume) => set({ volume }),
       setRegions: (regions) => set({ regions }),
     }),
     { name: 'settings', version: 1, storage: createJSONStorage(() => storage) },

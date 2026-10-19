@@ -6,9 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HostAudioControls, usePhaseAudio } from '@/core/audio';
+import { usePlayerName } from '@/core/players';
 import { space, ThemeProvider, useTheme } from '@/core/theme';
 import { ConfirmInline, Pressable, SecretGuard, Text } from '@/core/ui';
 
+import { audioCue, audioKey } from '../audio';
 import type { GameState } from '../engine';
 import { useWerewolf } from '../store';
 import {
@@ -83,16 +86,19 @@ function HostBar() {
           onCancel={() => setAsk(false)}
         />
       ) : (
-        <Pressable
-          testID="quit"
-          accessibilityLabel={t('host.quit')}
-          onPress={() => setAsk(true)}
-          style={[styles.quit, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        >
-          <Text variant="label" tone="muted" accessible={false}>
-            ✖
-          </Text>
-        </Pressable>
+        <View style={styles.hostRow}>
+          <HostAudioControls />
+          <Pressable
+            testID="quit"
+            accessibilityLabel={t('host.quit')}
+            onPress={() => setAsk(true)}
+            style={[styles.quit, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          >
+            <Text variant="label" tone="muted" accessible={false}>
+              ✖
+            </Text>
+          </Pressable>
+        </View>
       )}
     </View>
   );
@@ -102,6 +108,11 @@ function HostBar() {
 export default function Play() {
   useKeepAwake();
   const game = useWerewolf((s) => s.game);
+  const { t } = useTranslation('werewolf');
+  const nameOf = usePlayerName();
+  usePhaseAudio('werewolf', game ? audioKey(game) : 'none', () =>
+    game ? audioCue(game, nameOf, (r) => t(`roles.${r}.name` as never)) : {},
+  );
 
   // The game is saved after every step; leaving by accident must not drop out of it.
   useEffect(() => {
@@ -133,8 +144,8 @@ export default function Play() {
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   host: { position: 'absolute', top: 0, start: space.lg, end: space.lg },
+  hostRow: { flexDirection: 'row', justifyContent: 'space-between' },
   quit: {
-    alignSelf: 'flex-end',
     width: 40,
     height: 40,
     borderRadius: 20,

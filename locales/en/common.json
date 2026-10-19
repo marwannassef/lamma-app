@@ -31,7 +31,9 @@
     "feedback": "Sound & vibration",
     "appearanceAuto": "Day & night",
     "appearanceAutoNote": "Light from sunrise to sunset where you are, estimated from your phone's time zone. No location access needed.",
-    "premium": "Lamma Premium"
+    "premium": "Lamma Premium",
+    "narration": "Narrator voice",
+    "narrationSub": "Reads the game aloud with your phone's voice."
   },
   "a11y": {
     "back": "Back",
@@ -169,5 +171,12 @@
     "linkSoon": "This link isn't ready yet.",
     "close": "Close",
     "priceNote": "Prices are confirmed by the store before you pay."
+  },
+  "audio": {
+    "pause": "Pause sound",
+    "resume": "Resume sound",
+    "replay": "Replay the last line",
+    "skip": "Skip the line",
+    "volume": "Volume {{n}}%"
   }
 }

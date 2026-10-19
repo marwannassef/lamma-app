@@ -94,7 +94,12 @@
     "tryNext": "✨ Try next",
     "inProgress": "A game is in progress",
     "resume": "Resume game",
-    "discard": "End it"
+    "discard": "End it",
+    "sound": "Sound",
+    "narrator": "Narrator voice",
+    "narratorSub": "Reads the night aloud. Turn it off to narrate yourself.",
+    "ambience": "Night ambience",
+    "ambienceOff": "Off"
   },
   "teams": {
     "village": "Village",
@@ -306,5 +311,83 @@
       "Day: talk it over, then point at who you think is a werewolf. The village banishes one player.",
       "The village wins when every wolf is gone; the wolves win when they equal the rest of the village."
     ]
+  },
+  "say": {
+    "nightFall": [
+      "Night falls upon the village… Everyone, close your eyes.",
+      "The sun sinks behind the hills. Close your eyes, villagers.",
+      "Darkness creeps over the rooftops… Eyes closed, everyone."
+    ],
+    "wolvesWake": [
+      "Werewolves, open your eyes. Find your pack and silently agree on your victim.",
+      "Wolves, wake up. Look around, and choose your prey without a sound."
+    ],
+    "wolvesTwice": [
+      "Werewolves, open your eyes. Tonight the pack hunts twice. Agree on two victims."
+    ],
+    "wolvesSleep": [
+      "Werewolves, close your eyes… Everyone, open your eyes and pass the phone around the table.",
+      "Wolves, back to sleep… Village, open your eyes. Pass the phone along."
+    ],
+    "passStart": [
+      "Pass the phone around. Everyone takes a turn, so nobody can tell who did what.",
+      "One by one, take the phone. Act quietly, then pass it on."
+    ],
+    "morningSingle": [
+      "The church bells toll… {{name}} did not survive the night.",
+      "A scream at dawn… {{name}} was found this morning.",
+      "The village wakes to bad news. {{name}} is gone."
+    ],
+    "morningMulti": [
+      "A bloodbath in the shadows… {{names}} did not survive the night.",
+      "Dawn brings grief. {{names}} were lost in the night."
+    ],
+    "morningNone": [
+      "A violent struggle in the dark… but no one was harmed.",
+      "The village wakes, and everyone is still here. Lucky… for now.",
+      "Howls in the night, yet not a single victim. Someone was watching over you."
+    ],
+    "voteCountdown": [
+      "Three… two… one… Point!"
+    ],
+    "banished": [
+      "The village has banished {{name}}!"
+    ],
+    "nobody": [
+      "Nobody was banished today. The wolves smile in the shadows."
+    ],
+    "reveal": {
+      "wolves": [
+        "The village has banished {{name}}… and they were the {{role}}! A wolf is down.",
+        "{{name}} is dragged out of town… the {{role}}! Well hunted, villagers."
+      ],
+      "village": [
+        "The village has banished {{name}}… but they were the {{role}}. An innocent soul.",
+        "{{name}} leaves the village forever… they were the {{role}}. Oh no."
+      ],
+      "neutral": [
+        "The village has banished {{name}}… the {{role}}! Nobody saw that coming."
+      ]
+    },
+    "win": {
+      "village": [
+        "The last wolf has fallen. The village is safe! Villagers win!"
+      ],
+      "wolves": [
+        "The wolves outnumber the village. The howling never stops. Werewolves win!"
+      ],
+      "tanner": [
+        "The Tanner wanted out all along… and you gave it to them. The Tanner wins!"
+      ],
+      "serialKiller": [
+        "When the dust settles, only the Serial Killer is smiling. The Serial Killer wins!"
+      ],
+      "lovers": [
+        "Love conquers all. The lovers win together!"
+      ],
+      "draw": [
+        "Silence over an empty village. Nobody survived. It's a draw."
+      ]
+    }
   }
 }

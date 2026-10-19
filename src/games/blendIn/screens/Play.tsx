@@ -5,10 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { allPacks, type Pack } from '@/core/content';
+import { HostAudioControls, usePhaseAudio } from '@/core/audio';
+import { allPacks, localized, type Pack } from '@/core/content';
+import { usePlayerName } from '@/core/players';
 import { space, useTheme } from '@/core/theme';
 import { ConfirmInline, Pressable, Text } from '@/core/ui';
 
+import { audioCue, audioKey } from '../audio';
 import { useBlendIn } from '../store';
 import { Circle, Discuss, Escape, Over, Peek, Result, Vote } from './Phases';
 
@@ -33,16 +36,19 @@ function QuitButton() {
           onCancel={() => setAsk(false)}
         />
       ) : (
-        <Pressable
-          testID="quit"
-          accessibilityLabel={t('host.quit')}
-          onPress={() => setAsk(true)}
-          style={[styles.quit, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        >
-          <Text variant="label" tone="muted" accessible={false}>
-            ✖
-          </Text>
-        </Pressable>
+        <View style={styles.hostRow}>
+          <HostAudioControls />
+          <Pressable
+            testID="quit"
+            accessibilityLabel={t('host.quit')}
+            onPress={() => setAsk(true)}
+            style={[styles.quit, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          >
+            <Text variant="label" tone="muted" accessible={false}>
+              ✖
+            </Text>
+          </Pressable>
+        </View>
       )}
     </View>
   );
@@ -52,6 +58,14 @@ function QuitButton() {
 export default function Play() {
   useKeepAwake();
   const game = useBlendIn((s) => s.game);
+  const { i18n } = useTranslation();
+  const nameOf = usePlayerName();
+  const pack = game
+    ? (allPacks.find((p) => p.id === game.round.packId) as Pack | undefined)
+    : undefined;
+  usePhaseAudio('blendIn', game ? audioKey(game) : 'none', () =>
+    game && pack ? audioCue(game, nameOf, localized(pack.name, i18n.language)) : {},
+  );
 
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
@@ -59,7 +73,6 @@ export default function Play() {
   }, []);
 
   if (!game) return <Redirect href="/games/blend-in" />;
-  const pack = allPacks.find((p) => p.id === game.round.packId) as Pack | undefined;
   if (!pack) return <Redirect href="/games/blend-in" />;
   const ph = game.phase;
   const key = `${game.round.no}-${ph.t}`;
@@ -120,8 +133,8 @@ export default function Play() {
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   host: { position: 'absolute', top: 0, start: space.lg, end: space.lg },
+  hostRow: { flexDirection: 'row', justifyContent: 'space-between' },
   quit: {
-    alignSelf: 'flex-end',
     width: 40,
     height: 40,
     borderRadius: 20,

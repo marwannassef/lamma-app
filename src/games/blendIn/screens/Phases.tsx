@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
+import { mixer } from '@/core/audio';
 import { localized, wordLines, type Pack } from '@/core/content';
 import { usePlayerName } from '@/core/players';
 import { usePacks } from '@/core/settings/content';
@@ -265,6 +266,15 @@ export function Discuss() {
       dispatch({ t: 'startVote' });
     }
   }, [dispatch, left]);
+  // A ticking clock in the last 10 seconds that doubles its pace for the last 5 (§10).
+  const secs = Math.ceil(left / 1000);
+  useEffect(() => {
+    if (secs <= 0 || secs > 10) return;
+    mixer.sfx('tick');
+    if (secs > 5) return;
+    const id = setTimeout(() => mixer.sfx('tick'), 500);
+    return () => clearTimeout(id);
+  }, [secs]);
   return (
     <Screen
       center
@@ -287,7 +297,7 @@ export function Discuss() {
         {t('discuss.sub')}
       </Text>
       <Text variant="hero" align="center" tone="secondary">
-        {String(Math.ceil(left / 1000))}
+        {String(secs)}
       </Text>
     </Screen>
   );
@@ -309,6 +319,7 @@ export function Vote({ game, among }: { game: BlendInState; among: number[] | nu
 
   useEffect(() => {
     if (count <= 0) return;
+    mixer.sfx('tick');
     const id = setTimeout(() => setCount((c) => c - 1), 1000);
     return () => clearTimeout(id);
   }, [count]);

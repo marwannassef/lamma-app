@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAge } from '@/core/age';
+import { useAudioSettings } from '@/core/audio';
 import { initI18n, syncLayoutDirection } from '@/core/i18n';
 import { useSettings } from '@/core/settings/store';
 import { fontAssets, ThemeProvider, useTheme } from '@/core/theme';
@@ -41,6 +42,7 @@ function AppStack() {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fontAssets);
   const ready = (fontsLoaded || fontError != null) && !reloadingForDirection;
+  useAudioSettings();
 
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync();

@@ -4,6 +4,8 @@ import { Image, StyleSheet, View } from 'react-native';
 import { gradients, radius, space } from '@/core/theme';
 import { Text } from '@/core/ui';
 
+import { spy } from '..';
+
 const MARKS = ['?', '✦', '?', '✧', '?', '✦', '?', '✧', '?', '✦', '?', '✧'];
 
 /** Patterned back of a secret card: question marks, sparkles and the Lamma mark. */
@@ -27,11 +29,7 @@ export function CardBack({ hint }: { hint: string }) {
       </View>
       <View style={styles.inset} pointerEvents="none" />
       <View style={styles.center}>
-        <Image
-          source={require('@/assets/images/lamma-logo.png')}
-          style={styles.logo}
-          accessible={false}
-        />
+        <Image source={spy.icon} style={styles.logo} accessible={false} />
         <Text variant="heading" align="center" style={styles.hint}>
           {hint}
         </Text>

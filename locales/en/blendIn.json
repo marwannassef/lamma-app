@@ -42,14 +42,6 @@
     "neverFirstSub": "Going first with no clues to hear is nearly impossible.",
     "start": "Start game",
     "noPacks": "No topics are available for this mode. Turn on a region in Settings.",
-    "howTo": "How to play",
-    "rules": [
-      "Everyone gets the secret word except the Chameleon.",
-      "Take turns saying exactly one word as a clue.",
-      "No gestures, no sound effects, no repeating a clue.",
-      "Never say the secret word, part of it, or a translation.",
-      "Point at the Chameleon. If caught, they can still escape by guessing the word."
-    ],
     "inProgress": "A game is in progress",
     "resume": "Resume game",
     "options": "Options"
@@ -119,5 +111,19 @@
   "host": {
     "quit": "End game",
     "quitConfirm": "End this game? The current game will be lost."
+  },
+  "howTo": {
+    "setup": [
+      "Choose the players and add names if you like.",
+      "Pick Classic or Undercover, a topic, and how long to play.",
+      "Tap Start game and hand the phone to the first player."
+    ],
+    "play": [
+      "Everyone gets the secret word except the Chameleon.",
+      "Take turns saying exactly one word as a clue.",
+      "No gestures, no sound effects, no repeating a clue.",
+      "Never say the secret word, part of it, or a translation.",
+      "Point at the Chameleon. If caught, they can still escape by guessing the word."
+    ]
   }
 }

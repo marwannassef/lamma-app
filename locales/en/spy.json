@@ -67,5 +67,20 @@
     },
     "next": "Next round",
     "settings": "Change settings"
+  },
+  "howTo": {
+    "setup": [
+      "Choose how many players and spies, and add names if you like.",
+      "Pick a category, or keep 🎲 Random for a new one every round.",
+      "Choose a punishment level for the losers.",
+      "Tap Start and hand the phone to the first player."
+    ],
+    "play": [
+      "Each player taps the card to see the secret word, then hides it and passes the phone on.",
+      "The spy only sees “You're the spy!” (and the category, if that option is on).",
+      "Take turns asking each other questions about the word, without making it too obvious.",
+      "When you're ready, point at who you think the spy is, then reveal the answer.",
+      "Spy not caught: spy +2. Caught but guessed the word: spy +1. Caught and wrong: everyone else +1."
+    ]
   }
 }

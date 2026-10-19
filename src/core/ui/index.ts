@@ -8,6 +8,7 @@ export { ConfirmInline } from './ConfirmInline';
 export { GameBackground } from './GameBackground';
 export { Hint } from './Hint';
 export { HoldButton, useCountdown } from './HoldButton';
+export { HowToPlay } from './HowToPlay';
 export { Panel } from './Panel';
 export { PlayerPicker, type PickablePlayer, type PickerTag } from './PlayerPicker';
 export { Pressable } from './Pressable';

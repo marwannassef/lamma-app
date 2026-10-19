@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
 import { localized, wordLines, type Pack } from '@/core/content';
@@ -24,6 +24,7 @@ import {
   useCountdown,
 } from '@/core/ui';
 
+import { blendIn } from '..';
 import { WordGrid } from '../components/WordGrid';
 import { isOver, playable, type BlendInState, type Outcome } from '../logic';
 import { useBlendIn } from '../store';
@@ -141,9 +142,7 @@ export function Peek({ game, pack, seat }: { game: BlendInState; pack: Pack; sea
               }}
               style={({ pressed }) => [styles.seal, pressed && styles.sealPressed]}
             >
-              <Text style={styles.sealGlyph} accessible={false}>
-                🦎
-              </Text>
+              <Image source={blendIn.icon} style={styles.sealLogo} accessible={false} />
             </Pressable>
             {showing ? (
               <Text variant="caption" align="center" style={styles.muted}>
@@ -660,7 +659,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sealPressed: { transform: [{ scale: 0.94 }], borderColor: LEAF },
-  sealGlyph: { fontSize: 52, lineHeight: 66 },
+  sealLogo: { width: 84, height: 84, borderRadius: 42 },
   speaker: { alignItems: 'center', gap: space.xs, paddingTop: space.md },
   ring: { borderWidth: 6, borderRadius: 50, padding: 4 },
 });

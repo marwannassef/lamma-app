@@ -16,6 +16,7 @@ import {
   Chip,
   ConfirmInline,
   Hint,
+  HowToPlay,
   Panel,
   Pressable,
   Screen,
@@ -82,7 +83,6 @@ export default function Setup() {
   const regions = useRegions();
   const packs = playable(usePacks('spy'), settings.mode);
   const [askAdultFor, setAskAdultFor] = useState<Pack | null>(null);
-  const [showRules, setShowRules] = useState(false);
   const [noPacksHint, setNoPacksHint] = useState(false);
 
   // The roster is shared (up to 16); Blend In plays with 3–12.
@@ -105,7 +105,7 @@ export default function Setup() {
 
   return (
     <Screen footer={<Button testID="start" icon="🦎" label={t('setup.start')} onPress={begin} />}>
-      <BackHeader title={t('title')} icon="🦎" />
+      <BackHeader title={t('title')} image={module.icon} />
       <Text variant="body" tone="muted" align="center">
         {t('setup.lead')}
       </Text>
@@ -135,21 +135,10 @@ export default function Setup() {
         </Panel>
       ) : null}
 
-      <Pressable
-        testID="how-to"
-        onPress={() => setShowRules((v) => !v)}
-        accessibilityState={{ expanded: showRules }}
-        style={[styles.howTo, { backgroundColor: colors.surface, borderColor: colors.border }]}
-      >
-        <Text variant="label">{`📖 ${t('setup.howTo')} ${showRules ? '▲' : '▼'}`}</Text>
-        {showRules
-          ? (t('setup.rules', { returnObjects: true }) as string[]).map((r, i) => (
-              <Text key={i} variant="body" tone="muted">
-                {`${i + 1}. ${r}`}
-              </Text>
-            ))
-          : null}
-      </Pressable>
+      <HowToPlay
+        setup={t('howTo.setup', { returnObjects: true }) as string[]}
+        play={t('howTo.play', { returnObjects: true }) as string[]}
+      />
 
       <Stepper
         testID="players"
@@ -390,9 +379,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   stack: { gap: space.sm },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  option: { width: '23%', minWidth: 70 },
-  level: { width: '31.5%' },
-  howTo: { borderWidth: 1.5, borderRadius: radius.lg, padding: space.lg, gap: space.xs },
+  option: { width: '23%', minWidth: 70, flexDirection: 'row' },
+  level: { width: '31.5%', flexDirection: 'row' },
   names: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   nameCell: {
     width: '48.5%',
@@ -415,5 +403,5 @@ const styles = StyleSheet.create({
   },
   dice: { fontSize: 40, lineHeight: 50 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  cell: { width: '48.5%' },
+  cell: { width: '48.5%', flexDirection: 'row' },
 });

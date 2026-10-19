@@ -201,5 +201,16 @@
       },
       "translit": "bank el 7azz"
     }
+  ],
+  "pairs": [
+    ["chess", "dominoes"],
+    ["playing-cards", "monopoly"],
+    ["hide-and-seek", "cops-and-robbers"],
+    ["jump-rope", "tug-of-war"],
+    ["marbles", "seven-stones"],
+    ["kite", "balloon"],
+    ["swings", "slide"],
+    ["playstation", "rc-car"],
+    ["puzzle", "building-blocks"]
   ]
 }

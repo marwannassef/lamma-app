@@ -174,5 +174,16 @@
         "ar": "مسدس مياه"
       }
     }
+  ],
+  "pairs": [
+    ["ball", "balloon"],
+    ["doll", "teddy-bear"],
+    ["chess", "dominoes"],
+    ["playing-cards", "board-game"],
+    ["swing", "slide"],
+    ["marbles", "yo-yo"],
+    ["video-game", "robot"],
+    ["puzzle", "rubik-s-cube"],
+    ["toy-car", "water-gun"]
   ]
 }

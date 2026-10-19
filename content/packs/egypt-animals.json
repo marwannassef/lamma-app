@@ -217,5 +217,16 @@
       },
       "translit": "deek"
     }
+  ],
+  "pairs": [
+    ["camel", "horse"],
+    ["water-buffalo", "cow"],
+    ["goat", "sheep"],
+    ["chicken", "duck"],
+    ["pigeon", "crow"],
+    ["cat", "dog"],
+    ["rabbit", "mouse"],
+    ["cockroach", "mosquito"],
+    ["giraffe", "elephant"]
   ]
 }

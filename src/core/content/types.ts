@@ -24,4 +24,6 @@ export interface Pack {
     tertiary?: LocaleCode;
   };
   words: Word[];
+  /** Close but different word pairs (word ids) for "odd one out" modes like Blend In Undercover. */
+  pairs?: [string, string][];
 }

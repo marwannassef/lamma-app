@@ -177,5 +177,15 @@
       },
       "translit": "scooter"
     }
+  ],
+  "pairs": [
+    ["microbus", "bus"],
+    ["tuk-tuk", "cargo-tricycle"],
+    ["taxi", "car"],
+    ["metro", "tram"],
+    ["bike", "motorcycle"],
+    ["boat", "felucca"],
+    ["ambulance", "fire-truck"],
+    ["tow-truck", "ferry"]
   ]
 }

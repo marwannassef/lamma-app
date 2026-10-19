@@ -201,5 +201,16 @@
       },
       "translit": "foota"
     }
+  ],
+  "pairs": [
+    ["beach-umbrella", "beach-chair"],
+    ["fish", "shrimp"],
+    ["crab", "jellyfish"],
+    ["sunglasses", "sunscreen"],
+    ["freska", "ice-cream"],
+    ["grilled-corn", "lupini-beans"],
+    ["seashells", "starfish"],
+    ["swimsuit", "towel"],
+    ["swim-ring", "swimming-pool"]
   ]
 }

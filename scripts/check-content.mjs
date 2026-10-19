@@ -9,6 +9,7 @@ const uiLocales = fs
 const errors = [];
 const err = (where, msg) => errors.push(`${where}: ${msg}`);
 const MIN_WORDS = 20;
+const MIN_PAIRS = 8;
 
 const readDir = (dir) =>
   fs.existsSync(dir)
@@ -77,6 +78,14 @@ for (const { p, f, adultDir } of files) {
       seen.add(text.toLowerCase());
     }
     if (needsTranslit && !w.translit?.trim()) err(where, `word "${w.id}" missing translit`);
+  }
+  if (pack.pairs) {
+    if (pack.pairs.length < MIN_PAIRS)
+      err(where, `${pack.pairs.length} pairs (need ${MIN_PAIRS}+)`);
+    for (const [a, b] of pack.pairs) {
+      if (!ids.has(a) || !ids.has(b)) err(where, `pair ${a}/${b} uses an unknown word id`);
+      if (a === b) err(where, `pair ${a}/${b} repeats the same word`);
+    }
   }
 }
 

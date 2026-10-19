@@ -7,9 +7,8 @@ import { BackHandler, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { space, ThemeProvider, useTheme } from '@/core/theme';
-import { ConfirmInline, Pressable, Text } from '@/core/ui';
+import { ConfirmInline, Pressable, SecretGuard, Text } from '@/core/ui';
 
-import { SecretGuard } from '../components/SecretGuard';
 import type { GameState } from '../engine';
 import { useWerewolf } from '../store';
 import {

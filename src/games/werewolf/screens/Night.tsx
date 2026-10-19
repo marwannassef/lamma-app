@@ -2,9 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { radius, space, useTheme } from '@/core/theme';
-import { Button, Screen, Text } from '@/core/ui';
+import { Button, Screen, Text, useCountdown } from '@/core/ui';
 
-import { useCountdown } from '../components/HoldButton';
 import type { GameState } from '../engine';
 import { useWerewolf } from '../store';
 

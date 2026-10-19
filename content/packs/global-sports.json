@@ -167,5 +167,17 @@
         "ar": "تجديف"
       }
     }
+  ],
+  "pairs": [
+    ["football", "basketball"],
+    ["tennis", "table-tennis"],
+    ["swimming", "diving"],
+    ["running", "cycling"],
+    ["volleyball", "handball"],
+    ["boxing", "wrestling"],
+    ["karate", "fencing"],
+    ["skiing", "ice-skating"],
+    ["surfing", "rowing"],
+    ["golf", "archery"]
   ]
 }

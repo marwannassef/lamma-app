@@ -181,5 +181,16 @@
         "ar": "عصير"
       }
     }
+  ],
+  "pairs": [
+    ["pizza", "pasta"],
+    ["burger", "hot-dog"],
+    ["cake", "cookies"],
+    ["chocolate", "ice-cream"],
+    ["rice", "bread"],
+    ["soup", "salad"],
+    ["chicken", "fish"],
+    ["honey", "yogurt"],
+    ["popcorn", "french-fries"]
   ]
 }

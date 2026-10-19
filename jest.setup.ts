@@ -14,7 +14,7 @@ jest.mock('@/core/i18n/localeFiles', () => ({
   localeFiles: require('./test/fsContext').fsContext(
     'locales',
     true,
-    /^\.\/[A-Za-z-]+\/[a-z]+\.json$/,
+    /^\.\/[A-Za-z-]+\/[A-Za-z]+\.json$/,
   ),
 }));
 jest.mock('@/core/content/packFiles', () => ({

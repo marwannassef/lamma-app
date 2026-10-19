@@ -3,5 +3,5 @@
 export const localeFiles = require.context(
   '../../../locales',
   true,
-  /^\.\/[A-Za-z-]+\/[a-z]+\.json$/,
+  /^\.\/[A-Za-z-]+\/[A-Za-z]+\.json$/,
 );

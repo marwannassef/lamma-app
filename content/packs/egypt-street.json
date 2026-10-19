@@ -1,0 +1,217 @@
+{
+  "id": "egypt-street",
+  "region": "eg",
+  "game": "spy",
+  "emoji": "🛺",
+  "name": {
+    "en": "Street life",
+    "ar": "حياة الشارع"
+  },
+  "subtitle": {
+    "en": "El share3",
+    "ar": "El share3"
+  },
+  "display": {
+    "primary": "en",
+    "secondary": "translit",
+    "tertiary": "ar"
+  },
+  "words": [
+    {
+      "id": "kiosk",
+      "text": {
+        "en": "Kiosk",
+        "ar": "كشك"
+      },
+      "translit": "kushk"
+    },
+    {
+      "id": "small-shop",
+      "text": {
+        "en": "Small shop",
+        "ar": "دكان"
+      },
+      "translit": "dokkan"
+    },
+    {
+      "id": "traffic-jam",
+      "text": {
+        "en": "Traffic jam",
+        "ar": "زحمة"
+      },
+      "translit": "za7ma"
+    },
+    {
+      "id": "car-horn",
+      "text": {
+        "en": "Car horn",
+        "ar": "كلاكس"
+      },
+      "translit": "klaks"
+    },
+    {
+      "id": "speed-bump",
+      "text": {
+        "en": "Speed bump",
+        "ar": "مطب"
+      },
+      "translit": "matabb"
+    },
+    {
+      "id": "traffic-light",
+      "text": {
+        "en": "Traffic light",
+        "ar": "إشارة مرور"
+      },
+      "translit": "esharet morour"
+    },
+    {
+      "id": "sidewalk",
+      "text": {
+        "en": "Sidewalk",
+        "ar": "رصيف"
+      },
+      "translit": "raseef"
+    },
+    {
+      "id": "bridge",
+      "text": {
+        "en": "Bridge",
+        "ar": "كوبري"
+      },
+      "translit": "kobry"
+    },
+    {
+      "id": "fava-bean-cart",
+      "text": {
+        "en": "Fava bean cart",
+        "ar": "عربية فول"
+      },
+      "translit": "3arabeyet fool"
+    },
+    {
+      "id": "liver-cart",
+      "text": {
+        "en": "Liver cart",
+        "ar": "عربية كبدة"
+      },
+      "translit": "3arabeyet kebda"
+    },
+    {
+      "id": "licorice-seller",
+      "text": {
+        "en": "Licorice seller",
+        "ar": "بياع عرقسوس"
+      },
+      "translit": "baya3 3er2sous"
+    },
+    {
+      "id": "lupini-seller",
+      "text": {
+        "en": "Lupini seller",
+        "ar": "بياع ترمس"
+      },
+      "translit": "baya3 termes"
+    },
+    {
+      "id": "parking-attendant",
+      "text": {
+        "en": "Parking attendant",
+        "ar": "سايس"
+      },
+      "translit": "sayes"
+    },
+    {
+      "id": "street-cafe",
+      "text": {
+        "en": "Street café",
+        "ar": "قهوة بلدي"
+      },
+      "translit": "ahwa balady"
+    },
+    {
+      "id": "balcony",
+      "text": {
+        "en": "Balcony",
+        "ar": "بلكونة"
+      },
+      "translit": "balakona"
+    },
+    {
+      "id": "hanging-laundry",
+      "text": {
+        "en": "Hanging laundry",
+        "ar": "غسيل منشور"
+      },
+      "translit": "ghaseel manshour"
+    },
+    {
+      "id": "market",
+      "text": {
+        "en": "Market",
+        "ar": "سوق"
+      },
+      "translit": "souq"
+    },
+    {
+      "id": "newspaper-seller",
+      "text": {
+        "en": "Newspaper seller",
+        "ar": "بياع جرايد"
+      },
+      "translit": "baya3 garayed"
+    },
+    {
+      "id": "bakery",
+      "text": {
+        "en": "Bakery",
+        "ar": "فرن عيش"
+      },
+      "translit": "forn 3eish"
+    },
+    {
+      "id": "delivery-bike",
+      "text": {
+        "en": "Delivery bike",
+        "ar": "موتوسيكل ديليفري"
+      },
+      "translit": "motosykl delivery"
+    },
+    {
+      "id": "street-cat",
+      "text": {
+        "en": "Street cat",
+        "ar": "قطة في الشارع"
+      },
+      "translit": "otta fel share3"
+    },
+    {
+      "id": "bus-stop",
+      "text": {
+        "en": "Bus stop",
+        "ar": "محطة أتوبيس"
+      },
+      "translit": "ma7atet otobees"
+    },
+    {
+      "id": "atm",
+      "text": {
+        "en": "ATM",
+        "ar": "ماكينة ATM"
+      },
+      "translit": "makanet ATM"
+    }
+  ],
+  "pairs": [
+    ["kiosk", "small-shop"],
+    ["traffic-jam", "car-horn"],
+    ["speed-bump", "traffic-light"],
+    ["sidewalk", "bridge"],
+    ["fava-bean-cart", "liver-cart"],
+    ["licorice-seller", "lupini-seller"],
+    ["parking-attendant", "delivery-bike"],
+    ["street-cafe", "bakery"],
+    ["balcony", "hanging-laundry"],
+    ["market", "newspaper-seller"]
+  ]
+}

@@ -83,6 +83,12 @@
     "werewolf": {
       "title": "Werewolf",
       "blurb": "Villagers against hidden werewolves. The app narrates the night; the day decides who is out."
+    },
+    "mystery": {
+      "title": "Mystery game",
+      "blurb": "Something new is coming to the table… Can you guess what it is?",
+      "teaser": "🤫 Top secret",
+      "reveal": "Shh… this one is still a secret. Keep playing — it’s coming soon!"
     }
   }
 }

@@ -3,11 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName } from '@/core/players';
-import { radius, space } from '@/core/theme';
-import { Avatar, Button, Pressable, Screen, Text } from '@/core/ui';
+import { radius, space, STEALTH } from '@/core/theme';
+import { Avatar, Button, PlayerPicker, Pressable, Screen, Text } from '@/core/ui';
 
-import { STEALTH } from '../components/meta';
-import { PlayerPicker } from '../components/PlayerPicker';
 import { RoleCard } from '../components/RoleCard';
 import { isPackWolf, packOf, type GameState, type PlayerId } from '../engine';
 import { useWerewolf } from '../store';
@@ -104,7 +102,7 @@ export default function Discovery({ game, seat }: { game: GameState; seat: Playe
           {t('discovery.cupidHint')}
         </Text>
         <PlayerPicker
-          game={game}
+          players={game.players}
           selected={lovers}
           onToggle={(id) =>
             setLovers((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id].slice(-2)))

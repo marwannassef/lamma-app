@@ -181,5 +181,16 @@
         "ar": "تمساح"
       }
     }
+  ],
+  "pairs": [
+    ["lion", "tiger"],
+    ["dolphin", "whale"],
+    ["owl", "parrot"],
+    ["frog", "turtle"],
+    ["bee", "butterfly"],
+    ["camel", "horse"],
+    ["panda", "bear"],
+    ["crocodile", "snake"],
+    ["monkey", "kangaroo"]
   ]
 }

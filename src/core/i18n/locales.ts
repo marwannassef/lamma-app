@@ -15,7 +15,7 @@ export const resources: Resource = {};
 export const localeMeta: Record<string, LocaleMeta> = {};
 
 for (const key of ctx.keys()) {
-  const match = /^\.\/([A-Za-z-]+)\/([a-z]+)\.json$/.exec(key);
+  const match = /^\.\/([A-Za-z-]+)\/([A-Za-z]+)\.json$/.exec(key);
   if (!match) continue;
   const [, code = '', ns = ''] = match;
   const json = ctx(key) as Record<string, unknown>;
@@ -28,5 +28,5 @@ for (const key of ctx.keys()) {
 }
 
 export const supportedLanguages = Object.keys(localeMeta).sort();
-export const namespaces = ['common', 'spy', 'werewolf'] as const;
+export const namespaces = ['common', 'spy', 'werewolf', 'blendIn'] as const;
 export const fallbackLanguage = 'en';

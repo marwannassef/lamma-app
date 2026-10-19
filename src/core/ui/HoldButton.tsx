@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   cancelAnimation,
@@ -12,7 +12,8 @@ import Animated, {
 
 import { useSettings } from '@/core/settings/store';
 import { radius, space } from '@/core/theme';
-import { Pressable, Text } from '@/core/ui';
+import { Pressable } from './Pressable';
+import { Text } from './Text';
 
 const HOLD_MS = 900;
 
@@ -74,17 +75,17 @@ export function HoldButton({
   );
 }
 
-/** Seconds left until `enabledAt`, ticking down (for the minimum turn time). */
+/**
+ * Milliseconds left until `until`, re-rendering a few times a second. Computed from the latest
+ * `until`, so a new deadline never reads as 0 before the next tick.
+ */
 export function useCountdown(until: number) {
-  const [left, setLeft] = useState(() => Math.max(0, until - Date.now()));
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    timer.current = setInterval(() => setLeft(Math.max(0, until - Date.now())), 200);
-    return () => {
-      if (timer.current) clearInterval(timer.current);
-    };
+    const id = setInterval(() => setNow(Date.now()), 200);
+    return () => clearInterval(id);
   }, [until]);
-  return left;
+  return Math.max(0, until - now);
 }
 
 const styles = StyleSheet.create({

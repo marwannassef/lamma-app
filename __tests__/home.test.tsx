@@ -13,9 +13,11 @@ describe('Home', () => {
     render(<Home />);
     expect(screen.getByText('Lamma')).toBeTruthy();
     expect(screen.getByText('Spy')).toBeTruthy();
-    expect(screen.getByText(/3–12 players/)).toBeTruthy();
+    expect(screen.getAllByText(/3–12 players/)).toHaveLength(2); // Spy and Blend In
     expect(screen.getByText('Werewolf')).toBeTruthy();
-    expect(screen.queryByText('Coming soon')).toBeNull();
+    expect(screen.getByText('Blend In')).toBeTruthy();
+    expect(screen.getByText('Mystery game')).toBeTruthy();
+    expect(screen.getAllByText('Coming soon')).toHaveLength(1);
     expect(screen.getByText(/4–16 players/)).toBeTruthy();
   });
 

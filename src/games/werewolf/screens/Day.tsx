@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { mixer } from '@/core/audio';
 import { usePlayerName } from '@/core/players';
 import { radius, space, useTheme } from '@/core/theme';
 import { Avatar, Button, Panel, PlayerPicker, Screen, Text, useCountdown } from '@/core/ui';
@@ -197,6 +198,9 @@ export function Discussion({
       dispatch({ t: 'endDiscussion' });
     }
   }, [dispatch, endsAt, live]);
+  // The tavern music speeds up in the last 30 seconds (§10).
+  const hurry = endsAt != null && live > 0 && live <= 30_000;
+  useEffect(() => mixer.setRate('music', hurry ? 1.25 : 1), [hurry]);
   const secs = left == null ? null : Math.ceil(left / 1000);
   const late = secs != null && secs <= 30;
   const clock =
@@ -274,6 +278,7 @@ export function Vote({ game }: { game: GameState }) {
   const [picked, setPicked] = useState<PlayerId[]>([]);
   useEffect(() => {
     if (count <= 0) return;
+    mixer.sfx('countdown');
     const id = setTimeout(() => setCount((c) => c - 1), 1000);
     return () => clearTimeout(id);
   }, [count]);

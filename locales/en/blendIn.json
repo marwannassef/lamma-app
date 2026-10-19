@@ -125,5 +125,38 @@
       "Never say the secret word, part of it, or a translation.",
       "Point at the Chameleon. If caught, they can still escape by guessing the word."
     ]
+  },
+  "say": {
+    "roundStart": [
+      "The topic is {{topic}}. {{name}}, you start. One word.",
+      "Today's topic: {{topic}}. {{name}} goes first. Just one word!",
+      "{{topic}} it is. {{name}}, kick us off. One word only."
+    ],
+    "countdown": [
+      "Three… two… one… Point at the Chameleon!",
+      "Three… two… one… Who's the Chameleon? Point!"
+    ],
+    "caught": [
+      "Caught! But can the Chameleon escape?",
+      "Gotcha! Now, can the Chameleon guess the word and slip away?"
+    ],
+    "escaped": [
+      "Sneaky! {{name}} blended in and escaped!",
+      "{{name}} guessed the word and vanished into the crowd!"
+    ],
+    "town": [
+      "The Chameleon is exposed! The town wins!",
+      "No escape this time. The town wins!"
+    ],
+    "wrongPerson": [
+      "Wrong person! It was {{name}} all along.",
+      "Oops! The real Chameleon was {{name}}."
+    ],
+    "ruleBroken": [
+      "A rule was broken! The Chameleon gets a point."
+    ],
+    "over": [
+      "That's the game! Let's see who blended in best."
+    ]
   }
 }

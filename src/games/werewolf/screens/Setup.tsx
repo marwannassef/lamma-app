@@ -7,6 +7,7 @@ import { clampPlayers, MAX_NAME_LENGTH, usePlayerName, usePlayers } from '@/core
 import { openPaywall, useTier } from '@/core/entitlements';
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { mathRng } from '@/core/rng';
+import { useSettings } from '@/core/settings/store';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
 import {
   Avatar,
@@ -267,6 +268,8 @@ export default function Setup() {
   const { count, names, setCount, setName, move } = usePlayers();
   const nameOf = usePlayerName();
   const store = useWerewolf();
+  const narration = useSettings((st) => st.narration);
+  const setNarration = useSettings((st) => st.setNarration);
   const free = useTier() === 'free';
   const caps = useRemoteConfig().caps.werewolf;
   const tierLocked = (tier: Tier) => free && !caps.setupTiers.includes(tier);
@@ -502,6 +505,27 @@ export default function Setup() {
             </Text>
           ))
         : null}
+
+      <Panel title={t('setup.sound')} icon="🔊">
+        <Toggle
+          surface={false}
+          testID="narrator"
+          label={t('setup.narrator')}
+          sublabel={t('setup.narratorSub')}
+          value={narration}
+          onChange={setNarration}
+        />
+        <Options
+          testID="ambience"
+          label={t('setup.ambience')}
+          value={rules.ambienceVolume}
+          onChange={(v) => store.setRules({ ambienceVolume: v })}
+          options={[0, 0.4, 0.7, 1].map((v) => ({
+            value: v,
+            label: v === 0 ? t('setup.ambienceOff') : `${Math.round(v * 100)}%`,
+          }))}
+        />
+      </Panel>
 
       <Panel title={t('setup.rules')} icon="📜">
         <Options

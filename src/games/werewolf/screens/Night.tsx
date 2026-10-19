@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { mixer, useNarrate } from '@/core/audio';
 import { radius, space, useTheme } from '@/core/theme';
 import { Button, Screen, Text, useCountdown } from '@/core/ui';
 
@@ -39,6 +41,12 @@ export function Glance({ game, endsAt }: { game: GameState; endsAt: number }) {
   const dispatch = useWerewolf((s) => s.dispatch);
   const left = useCountdown(endsAt);
   const over = left === 0;
+  const narrate = useNarrate('werewolf');
+  useEffect(() => {
+    if (!over) return;
+    mixer.stopLoop('music');
+    narrate('say.wolvesSleep');
+  }, [narrate, over]);
   return (
     <Screen center>
       {over ? (

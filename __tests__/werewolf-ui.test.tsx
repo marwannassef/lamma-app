@@ -123,3 +123,39 @@ describe('Werewolf screens', () => {
     await act(() => i18n.changeLanguage('en'));
   });
 });
+
+describe('Werewolf audio', () => {
+  const Speech = jest.requireMock('expo-speech') as { speak: jest.Mock; stop: jest.Mock };
+  beforeEach(() => Speech.speak.mockClear());
+
+  it('narrates the night and offers host audio controls on public screens', () => {
+    useWerewolf.setState({ game: { ...base(), night: 1, phase: { t: 'nightIntro', night: 1 } } });
+    render(
+      <ThemeProvider>
+        <Play />
+      </ThemeProvider>,
+    );
+    expect(Speech.speak).toHaveBeenCalledWith(
+      expect.stringMatching(/eyes/i),
+      expect.objectContaining({ language: 'en-US' }),
+    );
+    fireEvent.press(screen.getByTestId('audio-replay'));
+    expect(Speech.speak).toHaveBeenCalledTimes(2);
+    fireEvent.press(screen.getByTestId('audio-pause'));
+    expect(Speech.stop).toHaveBeenCalled();
+    expect(screen.getByLabelText('Resume sound')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('audio-pause'));
+    fireEvent.press(screen.getByTestId('audio-volume'));
+    expect(screen.getByLabelText('Volume 60%')).toBeTruthy();
+  });
+
+  it('keeps the host controls off secret screens', () => {
+    useWerewolf.setState({ game: base() });
+    render(
+      <ThemeProvider>
+        <Play />
+      </ThemeProvider>,
+    );
+    expect(screen.queryByTestId('audio-pause')).toBeNull();
+  });
+});

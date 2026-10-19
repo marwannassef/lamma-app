@@ -326,6 +326,94 @@ def kebab(rid):
     return ''.join('-' + c.lower() if c.isupper() else c for c in rid)
 
 
+# ---- Werewolf scenery ---------------------------------------------------------------------------
+
+def seal():
+    """The wax seal players hold to reveal their role: red wax with an embossed wolf's head."""
+    import math
+    # An irregular, soft-edged blob of wax: smooth curves through jittered points.
+    n = 14
+    pts = []
+    for i in range(n):
+        a = 2 * math.pi * i / n
+        r = 226 + 14 * math.sin(i * 2.3) + 8 * math.cos(i * 3.1)
+        pts.append((256 + r * math.cos(a), 256 + r * math.sin(a)))
+    mids = [((x1 + x2) / 2, (y1 + y2) / 2) for (x1, y1), (x2, y2) in zip(pts, pts[1:] + pts[:1])]
+    blob = f'M{mids[-1][0]:.1f} {mids[-1][1]:.1f} ' + ' '.join(
+        f'Q{x:.1f} {y:.1f} {mx:.1f} {my:.1f}' for (x, y), (mx, my) in zip(pts, mids)) + ' Z'
+    head = f'<g transform="translate(256 262) scale(.66) translate(-256 -276)">{WOLF_HEAD}</g>'
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="wax" cx=".38" cy=".32" r=".8">
+      <stop offset="0" stop-color="#E0424F"/><stop offset=".55" stop-color="#A3172A"/><stop offset="1" stop-color="#5E0B18"/>
+    </radialGradient>
+  </defs>
+  <path d="{blob}" fill="url(#wax)"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#5E0B18" stroke-width="10" opacity=".7"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#F59AA2" stroke-width="3" opacity=".35" transform="translate(-3 -3)"/>
+  <g fill="#5E0B18" transform="translate(5 6)">{head}</g>
+  <g fill="#B01F31" stroke="#F59AA2" stroke-opacity=".5" stroke-width="4" stroke-linejoin="round">{head}</g>
+  <g fill="#F3C64A" opacity=".85"><path d="M214 268 L244 276 L218 282 Z"/><path d="M298 268 L268 276 L294 282 Z"/></g>
+  <ellipse cx="190" cy="150" rx="60" ry="26" fill="#fff" opacity=".18" transform="rotate(-30 190 150)"/>
+</svg>
+"""
+
+
+def moonlit():
+    """Backdrop for Werewolf's public screens (§11 "moonlit village"): moon top-end, village below."""
+    import random
+    rnd = random.Random(3)
+    w, h = 1080, 2340
+    stars = ''.join(
+        f'<circle cx="{rnd.uniform(0, w):.0f}" cy="{rnd.uniform(0, h * .62):.0f}" r="{rnd.uniform(1.2, 3.2):.1f}" opacity="{rnd.uniform(.25, .8):.2f}"/>'
+        for _ in range(70))
+    # village skyline: houses, a steeple and trees along the bottom
+    base = h - 300
+    houses = []
+    x = -20
+    while x < w:
+        hw = rnd.randint(90, 150)
+        hh = rnd.randint(70, 130)
+        top = base - hh
+        houses.append(f'<path d="M{x} {h} L{x} {top} L{x + hw / 2} {top - hw * .45} L{x + hw} {top} L{x + hw} {h} Z"/>')
+        if rnd.random() < .6:
+            wx = x + hw * rnd.uniform(.25, .6)
+            houses.append(f'<rect x="{wx:.0f}" y="{top + 24}" width="18" height="22" rx="3" fill="#F3C64A" opacity="{rnd.uniform(.35, .7):.2f}"/>')
+        x += hw + rnd.randint(-10, 30)
+    steeple = (f'<path d="M700 {h} L700 {base - 170} L740 {base - 330} L780 {base - 170} L780 {h} Z"/>'
+               f'<rect x="736" y="{base - 380}" width="8" height="60"/><rect x="722" y="{base - 360}" width="36" height="8"/>')
+    trees = ''.join(
+        f'<path d="M{tx} {base + 40} L{tx + 40} {base - 120 - k * 20} L{tx + 80} {base + 40} Z"/>'
+        for k, tx in enumerate((40, 330, 930)))
+    hills = (f'<path d="M0 {base - 40} C240 {base - 120} 420 {base - 60} 600 {base - 90} '
+             f'C800 {base - 120} 960 {base - 70} {w} {base - 100} L{w} {h} L0 {h} Z" fill="#160B30"/>')
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="{h}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B0620"/><stop offset=".55" stop-color="#1A1030"/><stop offset="1" stop-color="#2A1259"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="880" cy="190" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE9B0" stop-opacity=".35"/><stop offset=".5" stop-color="#FFB7E0" stop-opacity=".08"/><stop offset="1" stop-color="#FFB7E0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moon" cx="856" cy="166" r="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFBEA"/><stop offset="1" stop-color="#F3D58E"/>
+    </radialGradient>
+  </defs>
+  <rect width="{w}" height="{h}" fill="url(#sky)"/>
+  <g fill="#fff">{stars}</g>
+  <circle cx="880" cy="190" r="380" fill="url(#halo)"/>
+  <circle cx="880" cy="190" r="96" fill="url(#moon)" opacity=".9"/>
+  <g fill="#E3C27A" opacity=".35"><circle cx="852" cy="162" r="17"/><circle cx="906" cy="210" r="12"/><circle cx="898" cy="146" r="7"/></g>
+  {hills}
+  <g fill="#090415">{''.join(houses)}{steeple}{trees}</g>
+</svg>
+"""
+
+
+SCENERY = {'seal': (seal, 360, 360), 'moonlit': (moonlit, 1080, 2340)}
+SCENERY_OUT = os.path.join(ROOT, 'assets', 'images', 'werewolf')
+
+
 if __name__ == '__main__':
     os.makedirs(SRC, exist_ok=True)
     os.makedirs(OUT, exist_ok=True)
@@ -336,3 +424,11 @@ if __name__ == '__main__':
         subprocess.run(['rsvg-convert', '-w', str(PX), '-h', str(PX), svg, '-o',
                         os.path.join(OUT, kebab(rid) + '.png')], check=True)
         print('wrote', rid)
+    os.makedirs(SCENERY_OUT, exist_ok=True)
+    for name, (fn, w, h) in SCENERY.items():
+        svg = os.path.join(SRC, name + '.svg')
+        with open(svg, 'w') as f:
+            f.write(fn())
+        subprocess.run(['rsvg-convert', '-w', str(w), '-h', str(h), svg, '-o',
+                        os.path.join(SCENERY_OUT, name + '.png')], check=True)
+        print('wrote', name)

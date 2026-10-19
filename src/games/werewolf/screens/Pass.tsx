@@ -4,9 +4,19 @@ import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName } from '@/core/players';
 import { radius, space, STEALTH } from '@/core/theme';
-import { Avatar, HoldButton, PlayerPicker, Screen, Text, Toggle, useCountdown } from '@/core/ui';
+import {
+  Avatar,
+  HiddenFromScreenReader,
+  HoldButton,
+  PlayerPicker,
+  Screen,
+  Text,
+  Toggle,
+  useCountdown,
+} from '@/core/ui';
 
 import { RoleIcon } from '../components/RoleIcon';
+import { SoftPulse } from '../components/SoftPulse';
 import {
   expectedAction,
   isPackWolf,
@@ -146,111 +156,118 @@ function Action({ game, phase }: { game: GameState; phase: PassPhase }) {
         />
       }
     >
-      <View style={styles.header}>
-        {me.alive ? (
-          <RoleIcon role={me.role} size={56} />
-        ) : (
-          <Text style={styles.glyph} accessible={false}>
-            💤
-          </Text>
-        )}
-        <View style={styles.flex}>
-          <Text variant="heading" style={styles.text}>
-            {nameOf(seat)}
-          </Text>
-          {me.alive ? (
-            <Text variant="caption" style={styles.muted}>
-              {t(`roles.${me.role}.name`)}
+      <SoftPulse since={phase.startedAt}>
+        {/* Everything that names a role stays silent for screen readers: the table would hear it (W6). */}
+        <HiddenFromScreenReader style={styles.stack}>
+          <View style={styles.header}>
+            {me.alive ? (
+              <RoleIcon role={me.role} size={56} />
+            ) : (
+              <Text style={styles.glyph} accessible={false}>
+                💤
+              </Text>
+            )}
+            <View style={styles.flex}>
+              <Text variant="heading" style={styles.text}>
+                {nameOf(seat)}
+              </Text>
+              {me.alive ? (
+                <Text variant="caption" style={styles.muted}>
+                  {t(`roles.${me.role}.name`)}
+                </Text>
+              ) : null}
+            </View>
+          </View>
+          {bitten ? (
+            <Text variant="label" align="center" style={styles.banner}>
+              {`🩸 ${t('pass.bitten')}`}
             </Text>
           ) : null}
-        </View>
-      </View>
-      {bitten ? (
-        <Text variant="label" align="center" style={styles.banner}>
-          {`🩸 ${t('pass.bitten')}`}
-        </Text>
-      ) : null}
-      {promoted ? (
-        <Text variant="label" align="center" style={styles.banner} testID="promoted">
-          {`🔮 ${t('pass.promoted')}`}
-        </Text>
-      ) : null}
-      {lover != null ? (
-        <Text variant="label" align="center" style={styles.banner}>
-          {t('discovery.lover', { name: nameOf(lover) })}
-        </Text>
-      ) : null}
+          {promoted ? (
+            <Text variant="label" align="center" style={styles.banner} testID="promoted">
+              {`🔮 ${t('pass.promoted')}`}
+            </Text>
+          ) : null}
+          {lover != null ? (
+            <Text variant="label" align="center" style={styles.banner}>
+              {t('discovery.lover', { name: nameOf(lover) })}
+            </Text>
+          ) : null}
 
-      <Text variant="body" align="center" style={styles.text}>
-        {prompt}
-      </Text>
-
-      {kind === 'witch' ? (
-        <View style={[styles.potions, { backgroundColor: CARD_BG }]}>
-          <Toggle
-            surface={false}
-            testID="witch-heal"
-            label={`🧪 ${t('pass.heal')}${game.witch.healUsed ? ` · ${t('pass.used')}` : ''}`}
-            value={heal}
-            onChange={(v) => !game.witch.healUsed && setHeal(v)}
-          />
-          <Toggle
-            surface={false}
-            testID="witch-poison"
-            label={`☠️ ${t('pass.poison')}${game.witch.poisonUsed ? ` · ${t('pass.used')}` : ''}`}
-            value={poisoning}
-            onChange={(v) => {
-              if (game.witch.poisonUsed) return;
-              setPoisoning(v);
-              if (!v) setPicked([]);
-            }}
-          />
-        </View>
-      ) : null}
-
-      {resultVisible && result ? (
-        <View style={[styles.result, { backgroundColor: CARD_BG }]} testID="turn-result">
-          <Text variant="hero" align="center" style={styles.text}>
-            {result}
+          <Text variant="body" align="center" style={styles.text}>
+            {prompt}
           </Text>
-        </View>
-      ) : showPicker ? (
-        <PlayerPicker
-          players={game.players}
-          selected={picked}
-          include={(p) => kind === 'dummy' || p.alive}
-          disabled={(id) => {
-            if (kind === 'dummy') return false;
-            if (kind === 'wolf') return !wolfTargetable(game, id);
-            if (kind === 'witch') return !validAction(game, seat, { kind, heal, poison: id });
-            if (kind === 'doctor') return !validAction(game, seat, { kind, target: id });
-            return id === seat;
-          }}
-          tags={(id) => {
-            const p = game.players[id];
-            if (id === seat) return { label: t('pass.you') };
-            if (kind === 'wolf' && p && isPackWolf(p.role)) {
-              return { label: p.id === alphaPick?.id ? `👑 ${t('pass.alpha')}` : t('pass.pack') };
-            }
-            if (kind === 'doctor' && id === game.doctorLastTarget)
-              return { label: t('pass.doctorLast') };
-            return undefined;
-          }}
-          onToggle={(id) => {
-            if (kind === 'wolf') {
-              setPicked((cur) =>
-                cur.includes(id)
-                  ? cur.filter((x) => x !== id)
-                  : [...cur, id].slice(-game.wolfKills),
-              );
-            } else single(id);
-          }}
-          fg={TEXT}
-          muted={STEALTH.text}
-          bg={CARD_BG}
-          accent={STEALTH.accent}
-        />
-      ) : null}
+
+          {kind === 'witch' ? (
+            <View style={[styles.potions, { backgroundColor: CARD_BG }]}>
+              <Toggle
+                surface={false}
+                testID="witch-heal"
+                label={`🧪 ${t('pass.heal')}${game.witch.healUsed ? ` · ${t('pass.used')}` : ''}`}
+                value={heal}
+                onChange={(v) => !game.witch.healUsed && setHeal(v)}
+              />
+              <Toggle
+                surface={false}
+                testID="witch-poison"
+                label={`☠️ ${t('pass.poison')}${game.witch.poisonUsed ? ` · ${t('pass.used')}` : ''}`}
+                value={poisoning}
+                onChange={(v) => {
+                  if (game.witch.poisonUsed) return;
+                  setPoisoning(v);
+                  if (!v) setPicked([]);
+                }}
+              />
+            </View>
+          ) : null}
+        </HiddenFromScreenReader>
+        {resultVisible && result ? (
+          <HiddenFromScreenReader style={[styles.result, { backgroundColor: CARD_BG }]}>
+            <View testID="turn-result">
+              <Text variant="hero" align="center" style={styles.text}>
+                {result}
+              </Text>
+            </View>
+          </HiddenFromScreenReader>
+        ) : showPicker ? (
+          <PlayerPicker
+            players={game.players}
+            selected={picked}
+            include={(p) => kind === 'dummy' || p.alive}
+            disabled={(id) => {
+              if (kind === 'dummy') return false;
+              if (kind === 'wolf') return !wolfTargetable(game, id);
+              if (kind === 'witch') return !validAction(game, seat, { kind, heal, poison: id });
+              if (kind === 'doctor') return !validAction(game, seat, { kind, target: id });
+              return id === seat;
+            }}
+            tags={(id) => {
+              const p = game.players[id];
+              if (id === seat) return { label: t('pass.you') };
+              if (kind === 'wolf' && p && isPackWolf(p.role)) {
+                return { label: p.id === alphaPick?.id ? `👑 ${t('pass.alpha')}` : t('pass.pack') };
+              }
+              if (kind === 'doctor' && id === game.doctorLastTarget)
+                return { label: t('pass.doctorLast') };
+              return undefined;
+            }}
+            onToggle={(id) => {
+              if (kind === 'wolf') {
+                setPicked((cur) =>
+                  cur.includes(id)
+                    ? cur.filter((x) => x !== id)
+                    : [...cur, id].slice(-game.wolfKills),
+                );
+              } else single(id);
+            }}
+            announceTags={false}
+            fg={TEXT}
+            muted={STEALTH.text}
+            bg={CARD_BG}
+            accent={STEALTH.accent}
+          />
+        ) : null}
+      </SoftPulse>
     </Screen>
   );
 }
@@ -266,6 +283,7 @@ export default function Pass({ game, phase }: { game: GameState; phase: PassPhas
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { alignItems: 'center', gap: space.md },
+  stack: { gap: space.lg },
   text: { color: TEXT },
   muted: { color: STEALTH.text },
   header: { flexDirection: 'row', alignItems: 'center', gap: space.md },

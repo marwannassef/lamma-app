@@ -1,10 +1,19 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import Animated, { FlipInEasyY } from 'react-native-reanimated';
 
 import { usePlayerName } from '@/core/players';
 import { radius, space, STEALTH } from '@/core/theme';
-import { Avatar, Button, PlayerPicker, Pressable, Screen, Text } from '@/core/ui';
+import {
+  Avatar,
+  Button,
+  HiddenFromScreenReader,
+  PlayerPicker,
+  Pressable,
+  Screen,
+  Text,
+} from '@/core/ui';
 
 import { RoleCard } from '../components/RoleCard';
 import { isPackWolf, packOf, type GameState, type PlayerId } from '../engine';
@@ -12,6 +21,8 @@ import { useWerewolf } from '../store';
 
 /** Same hold before the card shows for every role, so timing gives nothing away (§2.2). */
 const SEAL_HOLD_MS = 500;
+const FLIP_MS = 380;
+const SEAL = require('@/assets/images/werewolf/seal.png');
 
 /** Who you can see on your card: the pack for wolves and the Sorcerer, your lover if linked. */
 export function useRoleExtras(game: GameState, seat: PlayerId) {
@@ -128,13 +139,18 @@ export default function Discovery({ game, seat }: { game: GameState; seat: Playe
     <Screen stealthColor={STEALTH.bg} center scroll={false}>
       {showing ? (
         <View style={styles.stack}>
-          <RoleCard role={me.role}>
-            {extras.map((line) => (
-              <Text key={line} variant="label" align="center" style={styles.white}>
-                {line}
-              </Text>
-            ))}
-          </RoleCard>
+          {/* The card flips in (instantly with reduced motion), and is never read aloud (§11, W6). */}
+          <Animated.View entering={FlipInEasyY.duration(FLIP_MS)}>
+            <HiddenFromScreenReader>
+              <RoleCard role={me.role}>
+                {extras.map((line) => (
+                  <Text key={line} variant="label" align="center" style={styles.white}>
+                    {line}
+                  </Text>
+                ))}
+              </RoleCard>
+            </HiddenFromScreenReader>
+          </Animated.View>
           <Text variant="caption" align="center" style={styles.muted}>
             {t('discovery.release')}
           </Text>
@@ -158,9 +174,12 @@ export default function Discovery({ game, seat }: { game: GameState; seat: Playe
         onPressOut={release}
         style={({ pressed }) => [styles.seal, pressed && styles.sealPressed]}
       >
-        <Text style={styles.sealGlyph} accessible={false}>
-          🔴
-        </Text>
+        <Image
+          source={SEAL}
+          style={styles.sealImage}
+          accessible={false}
+          accessibilityIgnoresInvertColors
+        />
       </Pressable>
     </Screen>
   );
@@ -174,16 +193,14 @@ const styles = StyleSheet.create({
   white: { color: '#FFFFFF' },
   seal: {
     alignSelf: 'center',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#3A0D16',
-    borderWidth: 4,
-    borderColor: '#5E1622',
+    width: 132,
+    height: 132,
     alignItems: 'center',
     justifyContent: 'center',
+    // Muted on the stealth screen: no bright colours during secret phases (§4).
+    opacity: 0.8,
   },
-  sealPressed: { transform: [{ scale: 0.94 }], borderColor: '#8E2A36' },
-  sealGlyph: { fontSize: 56, lineHeight: 70 },
+  sealPressed: { transform: [{ scale: 0.92 }], opacity: 1 },
+  sealImage: { width: 132, height: 132 },
   card: { borderRadius: radius.card },
 });

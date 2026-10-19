@@ -7,6 +7,8 @@ import { usePlayerName } from '@/core/players';
 import { radius, space, useTheme } from '@/core/theme';
 import { Avatar, Button, Panel, PlayerPicker, Screen, Text, useCountdown } from '@/core/ui';
 
+import { CountdownRing } from '../components/CountdownRing';
+import { TEAM_COLOR } from '../components/meta';
 import { RoleIcon } from '../components/RoleIcon';
 import { RoleCard } from '../components/RoleCard';
 import type { Effect, GameState, NightReport, PlayerId } from '../engine';
@@ -187,7 +189,6 @@ export function Discussion({
   pausedLeft: number | null;
 }) {
   const { t } = useTranslation('werewolf');
-  const { colors } = useTheme();
   const dispatch = useWerewolf((s) => s.dispatch);
   const live = useCountdown(endsAt ?? 0);
   const left = endsAt != null ? live : pausedLeft;
@@ -203,6 +204,10 @@ export function Discussion({
   useEffect(() => mixer.setRate('music', hurry ? 1.25 : 1), [hurry]);
   const secs = left == null ? null : Math.ceil(left / 1000);
   const late = secs != null && secs <= 30;
+  // The ring's full length is the longest time left seen (the timer can be extended).
+  const [longest, setLongest] = useState((game.rules.discussionSeconds ?? 0) * 1000);
+  if (left != null && left > longest) setLongest(left);
+  const fraction = left == null ? 1 : left / Math.max(1, longest, left);
   const clock =
     secs == null ? '∞' : `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
   return (
@@ -223,18 +228,19 @@ export function Discussion({
         {t('day.discussion')}
       </Text>
       <View
-        style={[styles.timer, { borderColor: late ? colors.primary : colors.secondary }]}
         accessible
         accessibilityRole="timer"
         accessibilityLabel={secs == null ? t('day.untimed') : clock}
       >
-        <Text
-          variant="hero"
-          style={[styles.clock, late && { color: colors.primary }]}
-          testID="timer"
-        >
-          {clock}
-        </Text>
+        <CountdownRing fraction={fraction} late={late}>
+          <Text
+            variant="hero"
+            style={[styles.clock, late && { color: TEAM_COLOR.neutral }]}
+            testID="timer"
+          >
+            {clock}
+          </Text>
+        </CountdownRing>
       </View>
       {secs != null ? (
         <View style={styles.controls}>
@@ -460,15 +466,6 @@ const styles = StyleSheet.create({
   center: { alignItems: 'center', gap: space.md },
   stack: { gap: space.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  timer: {
-    alignSelf: 'center',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    borderWidth: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   clock: { fontSize: 56, lineHeight: 68 },
   controls: { flexDirection: 'row', gap: space.sm },
   countdown: { fontSize: 120, lineHeight: 140 },

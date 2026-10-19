@@ -8,9 +8,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HostAudioControls, usePhaseAudio } from '@/core/audio';
 import { usePlayerName } from '@/core/players';
 import { space, ThemeProvider, useTheme } from '@/core/theme';
-import { ConfirmInline, Pressable, SecretGuard, Text, useStayAwake } from '@/core/ui';
+import {
+  ConfirmInline,
+  Pressable,
+  ScreenBackground,
+  ScreenTopInset,
+  SecretGuard,
+  Text,
+  useStayAwake,
+} from '@/core/ui';
 
 import { audioCue, audioKey } from '../audio';
+import { MoonlitBackground } from '../components/MoonlitBackground';
 import type { GameState } from '../engine';
 import { useWerewolf } from '../store';
 import {
@@ -103,6 +112,10 @@ function HostBar() {
   );
 }
 
+const MOONLIT = <MoonlitBackground />;
+/** Room the overlaid host bar takes at the top of public screens. */
+const HOST_BAR_HEIGHT = 44;
+
 /** Runs a Werewolf game from discovery to game over. The phone sits in the middle of the table. */
 export default function Play() {
   useStayAwake();
@@ -124,18 +137,22 @@ export default function Play() {
 
   return (
     <ThemeProvider scheme="dark">
-      <Stack.Screen options={{ gestureEnabled: false }} />
-      <StatusBar style="light" hidden={secret} />
-      {secret ? (
-        <SecretGuard>
-          <PhaseScreen game={game} />
-        </SecretGuard>
-      ) : (
-        <View style={styles.fill}>
-          <PhaseScreen game={game} />
-          {game.phase.t !== 'gameOver' ? <HostBar /> : null}
-        </View>
-      )}
+      <ScreenBackground.Provider value={MOONLIT}>
+        <Stack.Screen options={{ gestureEnabled: false }} />
+        <StatusBar style="light" hidden={secret} />
+        {secret ? (
+          <SecretGuard>
+            <PhaseScreen game={game} />
+          </SecretGuard>
+        ) : (
+          <View style={styles.fill}>
+            <ScreenTopInset.Provider value={game.phase.t === 'gameOver' ? 0 : HOST_BAR_HEIGHT}>
+              <PhaseScreen game={game} />
+            </ScreenTopInset.Provider>
+            {game.phase.t !== 'gameOver' ? <HostBar /> : null}
+          </View>
+        )}
+      </ScreenBackground.Provider>
     </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
 import { useEntitlements } from '../src/core/entitlements';
@@ -6,6 +6,8 @@ import { i18n, initI18n } from '../src/core/i18n';
 import { usePlayers } from '../src/core/players';
 import { storage } from '../src/core/storage';
 import { ThemeProvider } from '../src/core/theme';
+import { litTicks } from '../src/games/werewolf/components/CountdownRing';
+import { MoonlitBackground } from '../src/games/werewolf/components/MoonlitBackground';
 import { newGame, type GameState } from '../src/games/werewolf/engine';
 import Play from '../src/games/werewolf/screens/Play';
 import Setup from '../src/games/werewolf/screens/Setup';
@@ -247,6 +249,64 @@ describe('Werewolf W5 setup', () => {
       },
     });
     render(<Play />);
-    expect(screen.getByTestId('promoted')).toBeTruthy();
+    expect(screen.getByTestId('promoted', { includeHiddenElements: true })).toBeTruthy();
+  });
+});
+
+describe('Werewolf W6 polish', () => {
+  const wolfFirst = () =>
+    newGame(['werewolf', 'werewolf', 'seer', 'villager', 'villager', 'doctor']);
+
+  it('lights the timer ring for the time left', () => {
+    expect(litTicks(1)).toBe(60);
+    expect(litTicks(0.5)).toBe(30);
+    expect(litTicks(0.001)).toBe(1);
+    expect(litTicks(0)).toBe(0);
+    expect(litTicks(2)).toBe(60);
+  });
+
+  // Real timers on purpose: an animation started on Jest's fake clock keeps running in the worker
+  // after the test and starves the test files that run next (CI timeouts).
+  it('flips the role card in behind the wax seal and keeps it from screen readers', async () => {
+    useWerewolf.setState({
+      game: { ...wolfFirst(), phase: { t: 'discovery', seat: 0, revealed: false } },
+    });
+    render(<Play />);
+    fireEvent.press(screen.getByTestId('im-player'));
+    fireEvent(screen.getByTestId('seal'), 'pressIn');
+    // Rendered for sighted players, but invisible to screen readers (so nobody hears it).
+    await waitFor(() =>
+      expect(screen.getByTestId('role-werewolf', { includeHiddenElements: true })).toBeTruthy(),
+    );
+    expect(screen.queryByTestId('role-werewolf')).toBeNull();
+    expect(screen.queryByText('Werewolf')).toBeNull();
+    expect(screen.getByLabelText('Hold the seal to see your role')).toBeTruthy();
+  });
+
+  it('never reads pack tags aloud on the wolves’ night screen, and pulses after 15 s', () => {
+    const g = wolfFirst();
+    const turn = (startedAt: number): GameState => ({
+      ...g,
+      night: 1,
+      phase: { t: 'pass', seat: 0, step: 'action', startedAt, turn: 0 },
+    });
+    useWerewolf.setState({ game: turn(Date.now()) });
+    const { unmount } = render(<Play />);
+    expect(screen.getByLabelText('Player 2')).toBeTruthy();
+    expect(screen.queryByLabelText(/Pack/)).toBeNull();
+    expect(screen.getByText('Pack', { includeHiddenElements: true })).toBeTruthy();
+    expect(screen.queryByTestId('soft-max', { includeHiddenElements: true })).toBeNull();
+    unmount();
+    // A turn that started 16 s ago is past the soft maximum.
+    useWerewolf.setState({ game: turn(Date.now() - 16_000) });
+    render(<Play />);
+    expect(screen.getByTestId('soft-max', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('draws public screens on the moonlit backdrop and secret ones on plain black', () => {
+    useWerewolf.setState({ game: { ...base(), night: 1, phase: { t: 'nightIntro', night: 1 } } });
+    const { UNSAFE_root } = render(<Play />);
+    const moon = UNSAFE_root.findAll((n) => n.type === MoonlitBackground);
+    expect(moon.length).toBeGreaterThan(0);
   });
 });

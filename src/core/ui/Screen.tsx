@@ -1,10 +1,16 @@
-import type { ReactNode, RefObject } from 'react';
+import { createContext, useContext, type ReactNode, type RefObject } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { space, useTheme } from '@/core/theme';
 
 import { GameBackground } from './GameBackground';
+
+/** Lets a game swap the decorated background behind every Screen it renders (e.g. Werewolf's moonlit village). */
+export const ScreenBackground = createContext<ReactNode>(null);
+
+/** Extra space above a Screen's content, for a game's overlaid host bar. */
+export const ScreenTopInset = createContext(0);
 
 /**
  * Full-screen game background with a centered, scrollable column (max 520dp wide).
@@ -28,14 +34,23 @@ export function Screen({
   stealthColor?: string;
 }) {
   const { colors } = useTheme();
+  const background = useContext(ScreenBackground);
+  const topInset = useContext(ScreenTopInset);
   const body = (
-    <View style={[styles.column, center && styles.center]} collapsable={false}>
+    <View
+      style={[
+        styles.column,
+        center && styles.center,
+        topInset > 0 && { paddingTop: space.xl + topInset },
+      ]}
+      collapsable={false}
+    >
       {children}
     </View>
   );
   return (
     <View style={[styles.fill, { backgroundColor: stealthColor ?? colors.bg }]}>
-      {stealthColor ? null : <GameBackground />}
+      {stealthColor ? null : (background ?? <GameBackground />)}
       <SafeAreaView style={styles.fill} edges={['top', 'bottom']}>
         {scroll ? (
           <ScrollView

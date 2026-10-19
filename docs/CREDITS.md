@@ -38,7 +38,8 @@ listed here when they ship.
 All 17 role icons in `assets/images/roles/` are **original** vector art, drawn in code by
 [`scripts/generate-role-art.py`](../scripts/generate-role-art.py) in the style of the Werewolf game
 logo (a moonlit sky tinted by team, with a dark silhouette). The SVG sources are in
-`assets/source/roles/`. License: same as this repository.
+`assets/source/roles/`. The same script draws the wax seal and the moonlit-village backdrop in
+`assets/images/werewolf/`. License: same as this repository.
 
 To regenerate (needs `rsvg-convert`, e.g. `brew install librsvg`):
 

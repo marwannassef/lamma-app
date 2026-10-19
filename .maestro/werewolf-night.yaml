@@ -1,9 +1,7 @@
 # Everyone meets their Werewolf role behind the wax seal, then night falls.
 appId: com.anventureslabs.lamma
 ---
-- launchApp:
-    clearState: true
-- runFlow: subflows/welcome.yaml
+- runFlow: subflows/launch.yaml
 - tapOn:
     id: game-werewolf
 - tapOn:

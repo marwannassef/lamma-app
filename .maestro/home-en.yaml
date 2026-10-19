@@ -1,9 +1,7 @@
 # Home renders in English and opens Settings.
 appId: com.anventureslabs.lamma
 ---
-- launchApp:
-    clearState: true
-- runFlow: subflows/welcome.yaml
+- runFlow: subflows/launch.yaml
 - tapOn:
     id: open-settings
 - tapOn:

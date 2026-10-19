@@ -1,0 +1,7 @@
+# A fresh install: clear the app's data, open it, and answer "Who's playing tonight?".
+appId: com.anventureslabs.lamma
+---
+- launchApp:
+    clearState: true
+- runFlow: open.yaml
+- runFlow: welcome.yaml

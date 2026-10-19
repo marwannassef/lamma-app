@@ -20,6 +20,7 @@ import {
   HowToPlay,
   Panel,
   Pressable,
+  ReorderList,
   Screen,
   Stepper,
   Text,
@@ -613,60 +614,48 @@ export default function Setup() {
         <Text variant="caption" tone="muted">
           {t('setup.seatingHint')}
         </Text>
-        {Array.from({ length: count }, (_, i) => {
-          const value = names[i] ?? '';
-          const placeholder = t('common:players.defaultName', { n: i + 1 });
-          return (
-            <View
-              key={i}
-              style={[
-                styles.seat,
-                { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
-              ]}
-            >
-              <Text variant="label" tone="muted" style={styles.seatNo}>
-                {String(i + 1)}
-              </Text>
-              <Avatar player={i} size={32} />
-              <TextInput
-                testID={`seat-${i}`}
-                value={value}
-                onChangeText={(v) => setName(i, v)}
-                placeholder={placeholder}
-                placeholderTextColor={colors.textMuted}
-                maxLength={MAX_NAME_LENGTH}
-                accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-                autoCorrect={false}
-                maxFontSizeMultiplier={2}
+        <ReorderList
+          count={count}
+          onMove={move}
+          handleLabel={(i) => t('setup.dragSeat', { name: nameOf(i) })}
+          moveUpLabel={(i) => t('setup.moveUp', { name: nameOf(i) })}
+          moveDownLabel={(i) => t('setup.moveDown', { name: nameOf(i) })}
+          renderRow={(i) => {
+            const value = names[i] ?? '';
+            const placeholder = t('common:players.defaultName', { n: i + 1 });
+            return (
+              <View
                 style={[
-                  styles.seatInput,
-                  {
-                    color: colors.text,
-                    fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                  },
+                  styles.seat,
+                  { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
                 ]}
-              />
-              <Pressable
-                accessibilityLabel={t('setup.moveUp', { name: nameOf(i) })}
-                onPress={() => move(i, i - 1)}
-                style={[styles.move, { opacity: i === 0 ? 0.3 : 1 }]}
               >
-                <Text variant="heading" tone="secondary">
-                  ▲
+                <Text variant="label" tone="muted" style={styles.seatNo}>
+                  {String(i + 1)}
                 </Text>
-              </Pressable>
-              <Pressable
-                accessibilityLabel={t('setup.moveDown', { name: nameOf(i) })}
-                onPress={() => move(i, i + 1)}
-                style={[styles.move, { opacity: i === count - 1 ? 0.3 : 1 }]}
-              >
-                <Text variant="heading" tone="secondary">
-                  ▼
-                </Text>
-              </Pressable>
-            </View>
-          );
-        })}
+                <Avatar player={i} size={32} />
+                <TextInput
+                  testID={`seat-${i}`}
+                  value={value}
+                  onChangeText={(v) => setName(i, v)}
+                  placeholder={placeholder}
+                  placeholderTextColor={colors.textMuted}
+                  maxLength={MAX_NAME_LENGTH}
+                  accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                  autoCorrect={false}
+                  maxFontSizeMultiplier={2}
+                  style={[
+                    styles.seatInput,
+                    {
+                      color: colors.text,
+                      fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                    },
+                  ]}
+                />
+              </View>
+            );
+          }}
+        />
       </Panel>
 
       <Text variant="heading">{`🃏 ${t('setup.setups')}`}</Text>
@@ -897,7 +886,6 @@ const styles = StyleSheet.create({
   },
   seatNo: { width: 22, textAlign: 'center' },
   seatInput: { flex: 1, minHeight: 48, fontSize: 16 },
-  move: { width: 40, alignItems: 'center', justifyContent: 'center' },
   optionRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   option: { width: '23%', minWidth: 72, flexDirection: 'row' },
 });

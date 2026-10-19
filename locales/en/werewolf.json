@@ -8,7 +8,7 @@
     "minPlayers": "Werewolf needs at least 4 players.",
     "maxPlayers": "16 players is the most.",
     "seating": "Seating order",
-    "seatingHint": "Put players in order clockwise around the table.",
+    "seatingHint": "Put players in order clockwise around the table. Drag ≡ to move someone.",
     "moveUp": "Move {{name}} up",
     "moveDown": "Move {{name}} down",
     "nameLabel": "Name for seat {{n}}",
@@ -108,7 +108,8 @@
     "saveName": "Name this setup",
     "savedDone": "Saved. You'll find it with the setups for this many players.",
     "delete": "Delete",
-    "deleteConfirm": "Delete \"{{name}}\"?"
+    "deleteConfirm": "Delete \"{{name}}\"?",
+    "dragSeat": "Drag to move {{name}}"
   },
   "teams": {
     "village": "Village",

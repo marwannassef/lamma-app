@@ -56,3 +56,6 @@ jest.mock('expo-audio', () => ({
   setAudioModeAsync: jest.fn(() => Promise.resolve()),
 }));
 jest.mock('expo-speech', () => ({ speak: jest.fn(), stop: jest.fn(() => Promise.resolve()) }));
+
+// Gesture handler's native module is not available under Jest.
+require('react-native-gesture-handler/jestSetup');

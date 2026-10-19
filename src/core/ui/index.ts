@@ -15,6 +15,7 @@ export { PinInput } from './PinInput';
 export { PlayerPicker, type PickablePlayer, type PickerTag } from './PlayerPicker';
 export { Pressable } from './Pressable';
 export { PunishmentPanel } from './PunishmentPanel';
+export { dropIndex, ReorderList, shiftFor } from './ReorderList';
 export { Scoreboard } from './Scoreboard';
 export { Screen } from './Screen';
 export { SecretGuard } from './SecretGuard';

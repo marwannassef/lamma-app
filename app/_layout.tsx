@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAge } from '@/core/age';
 import { useAudioSettings } from '@/core/audio';
+import { configurePurchases } from '@/core/entitlements/purchases';
 import { initI18n, syncLayoutDirection } from '@/core/i18n';
 import { useSettings } from '@/core/settings/store';
 import { fontAssets, ThemeProvider, useTheme } from '@/core/theme';
@@ -48,9 +49,11 @@ export default function RootLayout() {
     if (ready) void SplashScreen.hideAsync();
   }, [ready]);
 
-  // Platform age signal (monetization §7), refreshed at each launch.
+  // Platform age signal (monetization §7), refreshed at each launch; and what the store says the
+  // user owns (RevenueCat), when purchases are set up in this build.
   useEffect(() => {
     void useAge.getState().refreshSignal();
+    configurePurchases();
   }, []);
 
   if (!ready) return null;

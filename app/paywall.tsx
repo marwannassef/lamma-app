@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
@@ -8,6 +8,7 @@ import type { PaywallTrigger } from '@/core/entitlements';
 import {
   purchase,
   restorePurchases,
+  storePrices,
   watchRewardedAd,
   type ProductId,
 } from '@/core/entitlements/purchases';
@@ -30,11 +31,16 @@ export default function Paywall() {
   const [selected, setSelected] = useState<ProductId>('lifetime');
   const [message, setMessage] = useState<string | null>(null);
 
-  const price = {
-    partyPass: config.prices.partyPass,
-    annual: config.prices.annual,
-    lifetime: config.prices.lifetime,
-  };
+  // The store's localized prices once they load; the configured defaults until then.
+  const [local, setLocal] = useState<Partial<Record<ProductId, string>>>({});
+  useEffect(() => {
+    let live = true;
+    void storePrices().then((p) => live && setLocal(p));
+    return () => {
+      live = false;
+    };
+  }, []);
+  const price = { ...config.prices, ...local };
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const run = async (action: () => Promise<{ ok: boolean }>, unavailable: string) => {
     const r = await action();

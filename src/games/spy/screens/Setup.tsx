@@ -6,7 +6,10 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { localized, type Pack } from '@/core/content';
 import { clampPlayers, MAX_NAME_LENGTH, usePlayers } from '@/core/players';
+import { useAge } from '@/core/age';
+import { openPaywall, usePackLocked, useTier } from '@/core/entitlements';
 import { LEVELS, usePunishments, type PunishmentLevel } from '@/core/punishments';
+import { useRemoteConfig } from '@/core/remoteConfig';
 import { usePacks, useRegions } from '@/core/settings/content';
 import { fitScores, useSession } from '@/core/session';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
@@ -51,6 +54,18 @@ export default function Setup() {
   const punishments = usePunishments();
   const packs = usePacks('spy');
   const regions = useRegions();
+  const tier = useTier();
+  const isLocked = usePackLocked();
+  const caps = useRemoteConfig().caps.spy;
+  const free = tier === 'free';
+  const { teenConfirmed, confirmTeen } = useAge();
+  const playable = packs.filter((p) => !isLocked(p));
+  const levelLocked = (l: PunishmentLevel) => free && !caps.punishmentLevels.includes(l);
+
+  // Free users play Light punishments only (monetization §3).
+  useEffect(() => {
+    if (levelLocked(punishments.level)) punishments.setLevel('light');
+  });
 
   const [confirmReset, setConfirmReset] = useState(false);
   const [noPacksHint, setNoPacksHint] = useState(false);
@@ -60,36 +75,42 @@ export default function Setup() {
     if (count > spyGame.maxPlayers) setCount(spyGame.maxPlayers);
   }, [count, setCount]);
 
-  const spies = clampSpies(spy.spies, count);
+  const spies = Math.min(clampSpies(spy.spies, count), free ? caps.spies : Infinity);
   const scores = fitScores(session.scores, count);
   const hasScores = scores.some((s) => s > 0);
-  const choiceAvailable = packs.some((p) => p.id === spy.choice);
+  const choiceAvailable = playable.some((p) => p.id === spy.choice);
   const randomSelected = spy.choice === RANDOM || !choiceAvailable;
 
   const changePlayers = (n: number) => {
+    if (free && n > caps.players)
+      return openPaywall('cap', { game: 'spy', max: spyGame.maxPlayers });
     const next = clampPlayers(n, spyGame.minPlayers, spyGame.maxPlayers);
     setCount(next);
     if (spy.spies > maxSpies(next)) spy.setSpies(maxSpies(next));
   };
 
   const start = () => {
-    if (packs.length === 0) return setNoPacksHint(true);
-    spy.start({ players: count, spies, packs, no: session.startRound() });
+    if (free && count > caps.players)
+      return openPaywall('cap', { game: 'spy', max: spyGame.maxPlayers });
+    if (playable.length === 0) return setNoPacksHint(true);
+    spy.start({ players: count, spies, packs: playable, no: session.startRound() });
     router.push('/games/spy/play');
   };
 
-  // +18 packs are their own categories: never in random play, and only after confirming 18+.
-  const adultPacks = packs.filter((p) => p.adult);
-  const [askAdultFor, setAskAdultFor] = useState<Pack | null>(null);
-  const chooseAdult = (pack: Pack) => {
-    if (spy.choice === pack.id) return;
-    setAskAdultFor(pack);
+  // Teen packs are their own categories: never in random play, and the table confirms cheeky
+  // words once per session before the first one is used.
+  const teenPacks = packs.filter((p) => p.level === 'teen');
+  const [askTeenFor, setAskTeenFor] = useState<Pack | null>(null);
+  const choosePack = (pack: Pack) => {
+    if (isLocked(pack)) return openPaywall('locked', { game: 'spy' });
+    if (pack.level === 'teen' && !teenConfirmed) return setAskTeenFor(pack);
+    spy.setChoice(pack.id);
   };
 
   const groups = regions
     .map((region) => ({
       region,
-      packs: packs.filter((p) => p.region === region && !p.adult),
+      packs: packs.filter((p) => p.region === region && p.level !== 'teen'),
     }))
     .filter((g) => g.packs.length > 0);
 
@@ -118,6 +139,7 @@ export default function Setup() {
         testID="players"
         icon="👥"
         label={t('setup.players')}
+        sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
         value={count}
         min={spyGame.minPlayers}
         max={spyGame.maxPlayers}
@@ -135,7 +157,9 @@ export default function Setup() {
         value={spies}
         min={1}
         max={maxSpies(count)}
-        onChange={spy.setSpies}
+        onChange={(n) =>
+          free && n > caps.spies ? openPaywall('locked', { game: 'spy' }) : spy.setSpies(n)
+        }
         decreaseLabel={t('setup.fewerSpies')}
         increaseLabel={t('setup.moreSpies')}
         minHint={t('setup.minSpies')}
@@ -275,36 +299,41 @@ export default function Setup() {
                     title={localized(p.name, lang)}
                     subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
                     selected={!randomSelected && spy.choice === p.id}
-                    onPress={() => spy.setChoice(p.id)}
+                    locked={isLocked(p)}
+                    lockedLabel={t('common:premium.lockedTag')}
+                    onPress={() => choosePack(p)}
                   />
                 </View>
               ))}
             </View>
           </View>
         ))}
-        {adultPacks.map((p) => (
+        {teenPacks.map((p) => (
           <Chip
             key={p.id}
             testID={`cat-${p.id}`}
             emoji={p.emoji}
-            title={localized(p.name, lang)}
+            title={`${localized(p.name, lang)} · ${t('common:teen.tag')}`}
             subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
             selected={!randomSelected && spy.choice === p.id}
             warning
-            onPress={() => chooseAdult(p)}
+            locked={isLocked(p)}
+            lockedLabel={t('common:premium.lockedTag')}
+            onPress={() => choosePack(p)}
           />
         ))}
-        {askAdultFor ? (
+        {askTeenFor ? (
           <ConfirmInline
-            testID="adult-confirm"
-            question={t('common:adult.ask')}
-            confirmLabel={t('common:adult.yes')}
+            testID="teen-confirm"
+            question={t('common:teen.ask')}
+            confirmLabel={t('common:teen.yes')}
             cancelLabel={t('common:actions.cancel')}
             onConfirm={() => {
-              spy.setChoice(askAdultFor.id);
-              setAskAdultFor(null);
+              confirmTeen();
+              spy.setChoice(askTeenFor.id);
+              setAskTeenFor(null);
             }}
-            onCancel={() => setAskAdultFor(null)}
+            onCancel={() => setAskTeenFor(null)}
           />
         ) : null}
         {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
@@ -320,7 +349,13 @@ export default function Setup() {
                 emoji={LEVEL_EMOJI[level]}
                 title={t(`common:punishments.levels.${level}`)}
                 selected={punishments.level === level}
-                onPress={() => punishments.setLevel(level)}
+                locked={levelLocked(level)}
+                lockedLabel={t('common:premium.lockedTag')}
+                onPress={() =>
+                  levelLocked(level)
+                    ? openPaywall('locked', { game: 'spy' })
+                    : punishments.setLevel(level)
+                }
               />
             </View>
           ))}

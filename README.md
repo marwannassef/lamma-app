@@ -14,7 +14,6 @@ Requires Node 22+, Xcode (iOS) and/or Android Studio (Android). MMKV is a native
 
 ```bash
 npm install
-cp .env.example .env.local   # dev builds include adult content; store builds never do
 npm run android              # or: npm run ios
 ```
 
@@ -38,7 +37,7 @@ app/              Expo Router routes (thin)
 src/core/         shared core: theme, i18n, settings, storage, ui, players, session, punishments, content, rng
 src/games/        game modules + registry
 locales/<code>/   meta.json, native.json (app name), common.json, spy.json
-content/          word packs (packs/, adult packs in packs/adult/) and punishments/<locale>.json
+content/          word packs (packs/, each tagged kids/teen and free/premium), punishments/<locale>.json and punishment-levels.json
 assets/           fonts (SIL OFL), images; assets/source has the icon SVGs
 docs/             brief, prototype, brand
 ```
@@ -47,7 +46,7 @@ docs/             brief, prototype, brand
 
 ## Builds and releases
 
-EAS profiles in `eas.json`: `development` (dev client, adult content on), `preview` (internal), `production` (store). `EXPO_PUBLIC_ENABLE_ADULT` is `false` outside `development`. Tags `v*` trigger store builds in GitHub Actions (needs the `EXPO_TOKEN` secret). One-time setup: `npx eas-cli@latest init` to link the Expo project and enable EAS Update.
+EAS profiles in `eas.json`: `development` (dev client), `preview` (internal), `production` (store). Adult content never ships in Lamma (docs/BRIEF.md §6). Tags `v*` trigger store builds in GitHub Actions (needs the `EXPO_TOKEN` secret). One-time setup: `npx eas-cli@latest init` to link the Expo project and enable EAS Update.
 
 ## Privacy
 

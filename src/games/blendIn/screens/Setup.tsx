@@ -6,7 +6,10 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { localized, type Pack } from '@/core/content';
 import { clampPlayers, MAX_NAME_LENGTH, usePlayers } from '@/core/players';
+import { useAge } from '@/core/age';
+import { openPaywall, usePackLocked, useTier } from '@/core/entitlements';
 import { LEVELS, usePunishments, type PunishmentLevel } from '@/core/punishments';
+import { useRemoteConfig } from '@/core/remoteConfig';
 import { usePacks, useRegions } from '@/core/settings/content';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
 import {
@@ -45,6 +48,8 @@ function Options<T>({
   onChange,
   testID,
   same = (a, b) => a === b,
+  locked = () => false,
+  lockedLabel,
 }: {
   label: string;
   options: { value: T; label: string; id: string }[];
@@ -52,6 +57,9 @@ function Options<T>({
   onChange(v: T): void;
   testID: string;
   same?: (a: T, b: T) => boolean;
+  /** Premium-only options stay visible with a 🔒 and open the paywall. */
+  locked?: (v: T) => boolean;
+  lockedLabel?: string;
 }) {
   return (
     <View style={styles.stack}>
@@ -64,7 +72,11 @@ function Options<T>({
               testID={`${testID}-${o.id}`}
               title={o.label}
               selected={same(o.value, value)}
-              onPress={() => onChange(o.value)}
+              locked={locked(o.value)}
+              lockedLabel={lockedLabel}
+              onPress={() =>
+                locked(o.value) ? openPaywall('locked', { game: 'blendIn' }) : onChange(o.value)
+              }
             />
           </View>
         ))}
@@ -82,7 +94,20 @@ export default function Setup() {
   const punishments = usePunishments();
   const regions = useRegions();
   const packs = playable(usePacks('spy'), settings.mode);
-  const [askAdultFor, setAskAdultFor] = useState<Pack | null>(null);
+  const isLocked = usePackLocked();
+  const free = useTier() === 'free';
+  const caps = useRemoteConfig().caps.blendIn;
+  const { teenConfirmed, confirmTeen } = useAge();
+  const unlocked = packs.filter((p) => !isLocked(p));
+  const modeLocked = (m: string) => free && !caps.modes.includes(m);
+  const escapeLocked = (d: string) => free && !caps.escape.includes(d);
+  const [askTeenFor, setAskTeenFor] = useState<Pack | null>(null);
+
+  // Free users play Classic at Normal difficulty (monetization §3).
+  useEffect(() => {
+    if (modeLocked(settings.mode)) setSettings({ mode: 'classic' });
+    if (escapeLocked(settings.escape)) setSettings({ escape: 'normal' });
+  });
   const [noPacksHint, setNoPacksHint] = useState(false);
 
   // The roster is shared (up to 16); Blend In plays with 3–12.
@@ -91,15 +116,27 @@ export default function Setup() {
   }, [count, setCount]);
 
   const set = (patch: Partial<Settings>) => setSettings(patch);
-  const randomSelected = settings.choice === RANDOM || !packs.some((p) => p.id === settings.choice);
+  const randomSelected =
+    settings.choice === RANDOM || !unlocked.some((p) => p.id === settings.choice);
   const groups = regions
-    .map((region) => ({ region, packs: packs.filter((p) => p.region === region && !p.adult) }))
+    .map((region) => ({
+      region,
+      packs: packs.filter((p) => p.region === region && p.level !== 'teen'),
+    }))
     .filter((g) => g.packs.length > 0);
-  const adultPacks = packs.filter((p) => p.adult);
+  const teenPacks = packs.filter((p) => p.level === 'teen');
+  const choosePack = (pack: Pack) => {
+    if (isLocked(pack)) return openPaywall('locked', { game: 'blendIn' });
+    if (pack.level === 'teen' && !teenConfirmed) return setAskTeenFor(pack);
+    set({ choice: pack.id });
+  };
 
   const begin = () => {
-    if (packs.length === 0) return setNoPacksHint(true);
-    start(count, packs);
+    if (free && count > caps.players) {
+      return openPaywall('cap', { game: 'blendIn', max: module.maxPlayers });
+    }
+    if (unlocked.length === 0) return setNoPacksHint(true);
+    start(count, unlocked);
     router.push('/games/blend-in/play');
   };
 
@@ -144,10 +181,15 @@ export default function Setup() {
         testID="players"
         icon="👥"
         label={t('setup.players')}
+        sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
         value={count}
         min={module.minPlayers}
         max={module.maxPlayers}
-        onChange={(n) => setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))}
+        onChange={(n) =>
+          free && n > caps.players
+            ? openPaywall('cap', { game: 'blendIn', max: module.maxPlayers })
+            : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
+        }
         decreaseLabel={t('setup.fewerPlayers')}
         increaseLabel={t('setup.morePlayers')}
         minHint={t('setup.minPlayers')}
@@ -206,7 +248,11 @@ export default function Setup() {
             title={t(`setup.modes.${m}.name`)}
             subtitle={t(`setup.modes.${m}.sub`)}
             selected={settings.mode === m}
-            onPress={() => set({ mode: m })}
+            locked={modeLocked(m)}
+            lockedLabel={t('common:premium.lockedTag')}
+            onPress={() =>
+              modeLocked(m) ? openPaywall('locked', { game: 'blendIn' }) : set({ mode: m })
+            }
           />
         ))}
       </Panel>
@@ -264,35 +310,41 @@ export default function Setup() {
                     title={localized(p.name, lang)}
                     subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
                     selected={!randomSelected && settings.choice === p.id}
-                    onPress={() => set({ choice: p.id })}
+                    locked={isLocked(p)}
+                    lockedLabel={t('common:premium.lockedTag')}
+                    onPress={() => choosePack(p)}
                   />
                 </View>
               ))}
             </View>
           </View>
         ))}
-        {adultPacks.map((p) => (
+        {teenPacks.map((p) => (
           <Chip
             key={p.id}
             testID={`topic-${p.id}`}
             emoji={p.emoji}
-            title={localized(p.name, lang)}
+            title={`${localized(p.name, lang)} · ${t('common:teen.tag')}`}
             subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
             selected={!randomSelected && settings.choice === p.id}
             warning
-            onPress={() => settings.choice !== p.id && setAskAdultFor(p)}
+            locked={isLocked(p)}
+            lockedLabel={t('common:premium.lockedTag')}
+            onPress={() => choosePack(p)}
           />
         ))}
-        {askAdultFor ? (
+        {askTeenFor ? (
           <ConfirmInline
-            question={t('common:adult.ask')}
-            confirmLabel={t('common:adult.yes')}
+            testID="teen-confirm"
+            question={t('common:teen.ask')}
+            confirmLabel={t('common:teen.yes')}
             cancelLabel={t('common:actions.cancel')}
             onConfirm={() => {
-              set({ choice: askAdultFor.id });
-              setAskAdultFor(null);
+              confirmTeen();
+              set({ choice: askTeenFor.id });
+              setAskTeenFor(null);
             }}
-            onCancel={() => setAskAdultFor(null)}
+            onCancel={() => setAskTeenFor(null)}
           />
         ) : null}
         {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
@@ -355,6 +407,8 @@ export default function Setup() {
             label={t('setup.escape')}
             value={settings.escape}
             onChange={(escape) => set({ escape })}
+            locked={escapeLocked}
+            lockedLabel={t('common:premium.lockedTag')}
             options={(['easy', 'normal', 'hard'] as const).map((d) => ({
               id: d,
               value: d,

@@ -11,6 +11,8 @@
     "en": "Akl masry",
     "ar": "Akl masry"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "en",
     "secondary": "translit",

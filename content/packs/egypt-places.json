@@ -11,6 +11,8 @@
     "en": "Amaken f masr",
     "ar": "Amaken f masr"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "en",
     "secondary": "translit",

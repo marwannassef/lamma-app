@@ -14,7 +14,8 @@ export const LEVELS: readonly PunishmentLevel[] = [
 
 /** Remaining item indices per level. Indices, not text, so decks survive a language switch. */
 export type Decks = Partial<Record<RealLevel, number[]>>;
-export type DeckSizes = Record<RealLevel, number>;
+/** Item indices allowed per level (all of them for Teen; Kids-level only in Kids mode). */
+export type DeckPool = Record<RealLevel, readonly number[]>;
 
 export interface Draw {
   level: RealLevel;
@@ -28,17 +29,14 @@ export interface Draw {
 export function draw(
   level: Exclude<PunishmentLevel, 'off'>,
   decks: Decks,
-  sizes: DeckSizes,
+  pool: DeckPool,
   rng: Rng,
 ): { draw: Draw; decks: Decks } {
-  const real: RealLevel = level === 'mix' ? pick(rng, REAL_LEVELS) : level;
-  let deck = decks[real];
-  if (!deck || deck.length === 0) {
-    deck = shuffle(
-      rng,
-      Array.from({ length: sizes[real] }, (_, i) => i),
-    );
-  }
+  const usable = REAL_LEVELS.filter((l) => pool[l].length > 0);
+  const real: RealLevel = level === 'mix' ? pick(rng, usable) : level;
+  // A deck started at a looser level drops items the current level doesn't allow.
+  let deck = decks[real]?.filter((i) => pool[real].includes(i));
+  if (!deck || deck.length === 0) deck = shuffle(rng, pool[real]);
   const index = deck[deck.length - 1] as number;
   return { draw: { level: real, index }, decks: { ...decks, [real]: deck.slice(0, -1) } };
 }
@@ -66,12 +64,12 @@ export function deal(
   losers: readonly number[],
   level: Exclude<PunishmentLevel, 'off'>,
   decks: Decks,
-  sizes: DeckSizes,
+  pool: DeckPool,
   rng: Rng,
 ): { cards: PunishmentCard[]; decks: Decks } {
   let current = decks;
   const cards = punishmentTargets(losers).map((players, i) => {
-    const r = draw(level, current, sizes, rng);
+    const r = draw(level, current, pool, rng);
     current = r.decks;
     return { id: `p${i}-${int(rng, 1e9)}`, players, draw: r.draw, swapped: false };
   });
@@ -83,10 +81,10 @@ export function swap(
   card: PunishmentCard,
   level: Exclude<PunishmentLevel, 'off'>,
   decks: Decks,
-  sizes: DeckSizes,
+  pool: DeckPool,
   rng: Rng,
 ): { card: PunishmentCard; decks: Decks } {
   if (card.swapped) return { card, decks };
-  const r = draw(level, decks, sizes, rng);
+  const r = draw(level, decks, pool, rng);
   return { card: { ...card, draw: r.draw, swapped: true }, decks: r.decks };
 }

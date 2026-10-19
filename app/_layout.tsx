@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { useAge } from '@/core/age';
 import { initI18n, syncLayoutDirection } from '@/core/i18n';
 import { useSettings } from '@/core/settings/store';
 import { fontAssets, ThemeProvider, useTheme } from '@/core/theme';
@@ -27,7 +28,12 @@ function AppStack() {
           contentStyle: { backgroundColor: colors.bg },
           animation: 'slide_from_right',
         }}
-      />
+      >
+        <Stack.Screen
+          name="paywall"
+          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+        />
+      </Stack>
     </>
   );
 }
@@ -39,6 +45,11 @@ export default function RootLayout() {
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync();
   }, [ready]);
+
+  // Platform age signal (monetization §7), refreshed at each launch.
+  useEffect(() => {
+    void useAge.getState().refreshSignal();
+  }, []);
 
   if (!ready) return null;
 

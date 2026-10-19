@@ -11,6 +11,8 @@
     "en": "Mowasalat",
     "ar": "Mowasalat"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

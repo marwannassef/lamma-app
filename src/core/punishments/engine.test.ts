@@ -1,9 +1,10 @@
 import { seededRng } from '@/core/rng';
 
 import { deal, draw, losersOf, punishmentTargets, REAL_LEVELS, swap, type Decks } from './engine';
-import { deckSizes, punishmentText, usePunishments } from '.';
+import { poolFor, punishmentText, usePunishments } from '.';
 
-const sizes = { light: 5, medium: 5, hard: 5, public: 5 };
+const five = [0, 1, 2, 3, 4];
+const sizes = { light: five, medium: five, hard: five, public: five };
 
 describe('punishment engine', () => {
   it('does not repeat until the deck runs out, then reshuffles', () => {
@@ -58,7 +59,13 @@ describe('punishment engine', () => {
 
 describe('punishment store and content', () => {
   it('loads 25 items per level and text per locale', () => {
-    expect(deckSizes).toEqual({ light: 25, medium: 25, hard: 25, public: 25 });
+    const teen = poolFor('teen');
+    expect(Object.values(teen).map((l) => l.length)).toEqual([25, 25, 25, 25]);
+    // Kids mode drops the Teen-tagged items (content/punishment-levels.json).
+    const kids = poolFor('kids');
+    expect(kids.medium).not.toContain(6);
+    expect(kids.public).not.toContain(12);
+    expect(kids.light).toHaveLength(25);
     expect(punishmentText('en', 'light', 0)).toMatch(/alphabet/);
     expect(punishmentText('ar', 'light', 0)).toMatch(/الحروف/);
     expect(punishmentText('xx', 'light', 0)).toBe(punishmentText('en', 'light', 0));
@@ -67,19 +74,31 @@ describe('punishment store and content', () => {
   it('deals nothing when off or when nobody lost, and keeps decks between draws', () => {
     const s = usePunishments.getState();
     s.setLevel('off');
-    expect(usePunishments.getState().deal([0])).toEqual([]);
+    expect(usePunishments.getState().deal([0], 'teen')).toEqual([]);
     const off = {
       id: 'x',
       players: [0],
       draw: { level: 'light' as const, index: 0 },
       swapped: false,
     };
-    expect(usePunishments.getState().swap(off)).toBe(off);
+    expect(usePunishments.getState().swap(off, 'teen')).toBe(off);
     s.setLevel('medium');
-    expect(usePunishments.getState().deal([])).toEqual([]);
-    const [card] = usePunishments.getState().deal([1], seededRng(2));
+    expect(usePunishments.getState().deal([], 'teen')).toEqual([]);
+    const [card] = usePunishments.getState().deal([1], 'teen', seededRng(2));
     expect(card?.draw.level).toBe('medium');
     expect(usePunishments.getState().decks.medium).toHaveLength(24);
-    expect(usePunishments.getState().swap(card!, seededRng(3)).swapped).toBe(true);
+    expect(usePunishments.getState().swap(card!, 'teen', seededRng(3)).swapped).toBe(true);
+  });
+});
+
+describe('Kids mode punishments', () => {
+  it('never deals a Teen item, even from a deck started in Teen mode', () => {
+    const pool = poolFor('kids');
+    let decks: Decks = { public: [12, 18, 0] };
+    for (let i = 0; i < 60; i++) {
+      const r = draw('public', decks, pool, seededRng(i));
+      expect([12, 18]).not.toContain(r.draw.index);
+      decks = r.decks;
+    }
   });
 });

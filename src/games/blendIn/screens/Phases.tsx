@@ -20,6 +20,7 @@ import {
   Scoreboard,
   Screen,
   SecretGuard,
+  SoftUpsell,
   Text,
   useCountdown,
 } from '@/core/ui';
@@ -618,6 +619,7 @@ export function Over({ game, winners }: { game: BlendInState; winners: number[] 
         <Panel>
           <Scoreboard scores={game.totals} />
         </Panel>
+        <SoftUpsell />
       </Screen>
       <Confetti />
     </View>

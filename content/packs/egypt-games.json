@@ -11,6 +11,8 @@
     "en": "Le3ab",
     "ar": "Le3ab"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

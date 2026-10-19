@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { useAge, useContentLevel } from '@/core/age';
 import { gradients, radius, space, useTheme } from '@/core/theme';
 import { Badge, Button, Pressable, Screen, Text } from '@/core/ui';
 import { games, type GameModule } from '@/games/registry';
@@ -115,6 +116,11 @@ function GameCard({ game }: { game: GameModule }) {
 export default function Home() {
   const { t } = useTranslation(['common', 'spy', 'werewolf', 'blendIn']);
   const { colors } = useTheme();
+  const audience = useAge((s) => s.audience);
+  const level = useContentLevel();
+
+  // First launch asks "Who's playing tonight?" before anything else.
+  if (audience == null) return <Redirect href="/welcome" />;
 
   return (
     <Screen>
@@ -142,6 +148,15 @@ export default function Home() {
         <Text variant="label" tone="muted" align="center">
           {t('tagline')}
         </Text>
+        {level === 'kids' ? (
+          <Badge
+            testID="kids-badge"
+            tone="secondary"
+            icon="🧒"
+            label={t('age.kidsBadge')}
+            align="center"
+          />
+        ) : null}
       </View>
 
       <Text variant="heading">{`🎮 ${t('home.pickGame')}`}</Text>

@@ -19,6 +19,7 @@ import {
   PunishmentPanel,
   Scoreboard,
   Screen,
+  SoftUpsell,
   Text,
 } from '@/core/ui';
 
@@ -328,6 +329,7 @@ export default function Round({
                 </Animated.View>
 
                 <PunishmentPanel losers={losers} />
+                {round.no % 5 === 0 ? <SoftUpsell /> : null}
               </View>
             )}
           </View>

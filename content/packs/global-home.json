@@ -7,6 +7,8 @@
     "en": "Things at home",
     "ar": "حاجات في البيت"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "ui",
     "secondary": "en",

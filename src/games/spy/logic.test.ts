@@ -22,6 +22,8 @@ const makePack = (id: string, n = 3): Pack => ({
   game: 'spy',
   emoji: '🍕',
   name: { en: id },
+  level: 'kids',
+  tier: 'free',
   display: { primary: 'ui' },
   words: Array.from({ length: n }, (_, i) => ({ id: `${id}-${i}`, text: { en: `${id} ${i}` } })),
 });
@@ -61,8 +63,8 @@ describe('chooseCategory', () => {
     expect(['a', 'c']).toContain(chooseCategory(packs, 'gone', 'b', seededRng(2)).id);
   });
 
-  it('never picks adult packs at random, but plays them when chosen', () => {
-    const adult = { ...makePack('x'), adult: true };
+  it('never picks Teen packs at random, but plays them when chosen', () => {
+    const adult = { ...makePack('x'), level: 'teen' as const };
     const rng = seededRng(8);
     for (let i = 0; i < 100; i++) {
       expect(chooseCategory([...packs, adult], RANDOM, null, rng).id).not.toBe('x');

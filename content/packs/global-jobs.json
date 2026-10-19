@@ -7,6 +7,8 @@
     "en": "Jobs",
     "ar": "مهن"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "ui",
     "secondary": "en",

@@ -7,6 +7,8 @@
     "en": "Beach & summer",
     "ar": "البحر والصيف"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "ui",
     "secondary": "en",

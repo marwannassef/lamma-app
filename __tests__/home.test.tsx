@@ -1,12 +1,16 @@
 import { render, screen } from '@testing-library/react-native';
 
 import Home from '../app/index';
+import { useAge } from '../src/core/age';
 import { i18n, initI18n } from '../src/core/i18n';
 
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 
 describe('Home', () => {
-  beforeAll(() => initI18n('en'));
+  beforeAll(() => {
+    initI18n('en');
+    useAge.setState({ audience: 'teen' });
+  });
 
   it('renders in English', async () => {
     await i18n.changeLanguage('en');

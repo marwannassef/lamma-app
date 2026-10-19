@@ -141,7 +141,7 @@ A twist that makes the game feel fresh after a few rounds:
 
 ## 9. Content
 
-- Reuse Spy's pack system (regions, languages, adult flag) with two additions per topic:
+- Reuse Spy's pack system (regions, languages, content levels, free/premium tier) with two additions per topic:
   - Words that work well in a grid of 16 (at least 16 per topic; 20+ preferred so grids vary).
   - **Pairs** for Undercover mode (at least 8 per topic).
 - Launch with at least 12 topics per region, family-safe by default. Examples:

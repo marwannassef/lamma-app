@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { usePlayerName, usePlayers } from '@/core/players';
 import { fitScores, useSession } from '@/core/session';
 import { space, useTheme } from '@/core/theme';
-import { Avatar, Button, Confetti, Panel, Scoreboard, Screen, Text } from '@/core/ui';
+import { Avatar, Button, Confetti, Panel, Scoreboard, Screen, SoftUpsell, Text } from '@/core/ui';
 
 import { TEAM_COLOR } from '../components/meta';
 import { RoleIcon } from '../components/RoleIcon';
@@ -100,6 +100,7 @@ export default function GameOver({ game, result }: { game: GameState; result: Wi
         <Panel>
           <Scoreboard scores={fitScores(session.scores, count)} gains={session.lastGain} />
         </Panel>
+        <SoftUpsell />
       </Screen>
       {result.winners.length ? <Confetti /> : null}
     </View>

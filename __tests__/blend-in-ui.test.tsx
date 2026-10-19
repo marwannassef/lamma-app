@@ -30,7 +30,7 @@ jest.mock('expo-router', () => ({
   Stack: { Screen: () => null },
 }));
 
-const packs = filterPacks(allPacks, { game: 'spy', regions: ['global'], adult: false });
+const packs = filterPacks(allPacks, { game: 'spy', regions: ['global'], level: 'kids' });
 const memory = { usedByPack: {}, lastPackId: null, lastChameleon: null };
 const base = (): BlendInState => newGame(5, DEFAULT_SETTINGS, packs, memory, seededRng(3));
 const with_ = (phase: Phase): BlendInState => ({ ...base(), phase });

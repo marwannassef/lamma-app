@@ -30,7 +30,8 @@
     "privacy": "Lamma works fully offline. We don't collect, store or share any data about you.",
     "feedback": "Sound & vibration",
     "appearanceAuto": "Day & night",
-    "appearanceAutoNote": "Light from sunrise to sunset where you are, estimated from your phone's time zone. No location access needed."
+    "appearanceAutoNote": "Light from sunrise to sunset where you are, estimated from your phone's time zone. No location access needed.",
+    "premium": "Lamma Premium"
   },
   "a11y": {
     "back": "Back",
@@ -55,10 +56,6 @@
     "global": "Worldwide",
     "eg": "Egypt",
     "needOne": "Keep at least one region on."
-  },
-  "adult": {
-    "ask": "🔞 Is everyone playing 18+?",
-    "yes": "Yes, unlock 🔥"
   },
   "punishments": {
     "title": "Punishment for losers",
@@ -95,5 +92,82 @@
     "title": "How to play",
     "setup": "Setting up",
     "play": "Playing"
+  },
+  "teen": {
+    "ask": "Everyone at the table OK with cheeky words?",
+    "yes": "Yes, let's go 🙊",
+    "tag": "Teen"
+  },
+  "age": {
+    "welcomeTitle": "Who's playing tonight?",
+    "welcomeSub": "This sets which words and punishments appear. You can change it in Settings.",
+    "kids": {
+      "name": "Kids are playing",
+      "sub": "Family-friendly words and punishments only"
+    },
+    "teen": {
+      "name": "Teens and adults",
+      "sub": "Adds cheeky words like burps and bald spots"
+    },
+    "setPin": "Set a parent PIN",
+    "setPinSub": "You'll need these 4 digits to switch out of Kids mode.",
+    "confirmPin": "Enter the same 4 digits again",
+    "pinMismatch": "The PINs don't match. Try again.",
+    "enterPin": "Enter the parent PIN to switch to Teens and adults",
+    "wrongPin": "Wrong PIN. Try again.",
+    "pinLabel": "4-digit PIN",
+    "kidsBadge": "Kids mode",
+    "lockedByAge": "This device is limited to Kids content.",
+    "settingsTitle": "Who's playing",
+    "continue": "Continue",
+    "cancel": "Cancel"
+  },
+  "premium": {
+    "title": "Lamma Premium",
+    "triggers": {
+      "cap": "Your group is big! 🎉 Unlock up to {{max}} players.",
+      "locked": "This is part of Lamma Premium.",
+      "gameEnd": "Loved it? Get everything.",
+      "offline": "Connect to the internet to unlock everything, or go Premium to play offline anywhere.",
+      "settings": "Everything, in every game."
+    },
+    "benefits": [
+      "Bigger groups: up to 16 players in Werewolf, 12 in Spy and Blend In",
+      "Every word pack, including new ones",
+      "Every mode, setup and punishment level",
+      "No ads",
+      "Play offline for 30 days"
+    ],
+    "partyPass": {
+      "name": "Party Pass",
+      "sub": "7 days · Perfect for tonight's gathering"
+    },
+    "annual": {
+      "name": "Annual",
+      "sub": "Per year · renews automatically"
+    },
+    "lifetime": {
+      "name": "Lifetime",
+      "sub": "One payment, yours forever"
+    },
+    "bestValue": "Best value",
+    "buy": "Continue",
+    "restore": "Restore purchases",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "unavailable": "Purchases aren't available in this build yet.",
+    "or": "or",
+    "rewardedCap": "Watch a short ad to play with your whole group this session",
+    "rewardedPack": "Watch an ad to unlock this for 24 hours",
+    "adsUnavailable": "Ads aren't available in this build yet.",
+    "lockedTag": "Premium",
+    "freeCap": "Free: up to {{n}} players",
+    "softTitle": "Loved it?",
+    "softSub": "Get every pack, bigger groups and no ads.",
+    "softCta": "See Premium",
+    "devPremium": "Preview Premium (developer build only)",
+    "linkSoon": "This link isn't ready yet.",
+    "close": "Close",
+    "priceNote": "Prices are confirmed by the store before you pay."
   }
 }

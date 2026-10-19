@@ -11,6 +11,8 @@
     "en": "El madrasa",
     "ar": "El madrasa"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "en",
     "secondary": "translit",

@@ -1,4 +1,4 @@
-import { ADULT_ENABLED } from '@/core/config';
+import { useContentLevel } from '@/core/age';
 import { allPacks, defaultRegions, filterPacks, type Pack } from '@/core/content';
 
 import { useSettings } from './store';
@@ -10,10 +10,12 @@ export function useRegions(): string[] {
 }
 
 /**
- * Packs for a game after the region filter. Adult packs are included whenever the build has
- * them; games keep them out of random play and ask for 18+ confirmation before using one.
+ * Packs for a game in the enabled regions at the current content level. Kids mode removes
+ * Teen packs and Teen words everywhere. Premium packs are included (shown with a lock for free
+ * users); use usePackLocked() to tell which ones can be played.
  */
 export function usePacks(game: string): Pack[] {
   const regions = useRegions();
-  return filterPacks(allPacks, { game, regions, adult: ADULT_ENABLED });
+  const level = useContentLevel();
+  return filterPacks(allPacks, { game, regions, level });
 }

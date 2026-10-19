@@ -19,6 +19,8 @@ export function Chip({
   testID,
   warning = false,
   compact = false,
+  locked = false,
+  lockedLabel,
 }: {
   emoji?: string;
   title: string;
@@ -26,8 +28,12 @@ export function Chip({
   selected: boolean;
   onPress(): void;
   testID?: string;
-  /** Marks adult content with a danger frame. */
+  /** Marks Teen content with a danger frame. */
   warning?: boolean;
+  /** Premium-only: stays visible with a 🔒 and opens the paywall (monetization §3). */
+  locked?: boolean;
+  /** Screen-reader word for the lock, e.g. "Premium". */
+  lockedLabel?: string;
   /** Emoji stacked above a centered title, for narrow grids. */
   compact?: boolean;
 }) {
@@ -42,7 +48,7 @@ export function Chip({
       testID={testID}
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
-      accessibilityLabel={[title, subtitle].filter(Boolean).join(', ')}
+      accessibilityLabel={[title, subtitle, locked && lockedLabel].filter(Boolean).join(', ')}
       onPress={onPress}
       style={({ pressed }) => [
         styles.shadow,
@@ -101,6 +107,13 @@ export function Chip({
             ) : null}
           </View>
         </View>
+        {locked ? (
+          <View style={[styles.check, styles.lock, { backgroundColor: colors.surfaceRaised }]}>
+            <Text variant="caption" accessible={false}>
+              🔒
+            </Text>
+          </View>
+        ) : null}
         {selected ? (
           <View style={[styles.check, { backgroundColor: colors.secondaryGradient[1] }]}>
             <Text variant="caption" style={{ color: colors.onSecondary }} accessible={false}>
@@ -155,6 +168,7 @@ const styles = StyleSheet.create({
   emojiSm: { fontSize: 20, lineHeight: 26 },
   text: { flex: 1 },
   compactText: { flex: 0, alignSelf: 'stretch' },
+  lock: { width: 28, height: 28, borderRadius: 14 },
   check: {
     position: 'absolute',
     top: -6,

@@ -11,6 +11,8 @@
     "en": "7agat fel beit",
     "ar": "7agat fel beit"
   },
+  "level": "kids",
+  "tier": "free",
   "display": {
     "primary": "en",
     "secondary": "translit",

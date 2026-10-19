@@ -7,6 +7,8 @@
     "en": "Instruments",
     "ar": "آلات موسيقية"
   },
+  "level": "kids",
+  "tier": "premium",
   "display": {
     "primary": "ui",
     "secondary": "en",

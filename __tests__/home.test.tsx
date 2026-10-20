@@ -4,12 +4,18 @@ import Home from '../app/index';
 import { useAge } from '../src/core/age';
 import { i18n, initI18n } from '../src/core/i18n';
 
-jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('expo-router', () => {
+  const { Text } = jest.requireActual('react-native');
+  return {
+    router: { push: jest.fn() },
+    Redirect: ({ href }: { href: string }) => <Text>{`redirect:${href}`}</Text>,
+  };
+});
 
 describe('Home', () => {
   beforeAll(() => {
     initI18n('en');
-    useAge.setState({ audience: 'teen' });
+    useAge.setState({ audience: 'teen', pin: '1234' });
   });
 
   it('renders in English', async () => {
@@ -23,6 +29,13 @@ describe('Home', () => {
     expect(screen.getByText('Mystery game')).toBeTruthy();
     expect(screen.getAllByText('Coming soon')).toHaveLength(1);
     expect(screen.getByText(/4–16 players/)).toBeTruthy();
+  });
+
+  it('sends installs without a PIN to the welcome screen first', () => {
+    useAge.setState({ audience: 'teen', pin: null });
+    render(<Home />);
+    expect(screen.getByText('redirect:/welcome')).toBeTruthy();
+    useAge.setState({ pin: '1234' });
   });
 
   it('renders in Arabic', async () => {

@@ -12,8 +12,8 @@ import { PinInput } from './PinInput';
 import { Text } from './Text';
 
 /**
- * "Who's playing" in Settings. Kids → Teen needs the parent PIN; choosing Kids without a PIN
- * sets one first. An under-13 age signal keeps Kids mode on (monetization §7).
+ * "Who's playing" in Settings. Switching to Teen needs the parent PIN; without a PIN (installs
+ * from before it was required) one is set first. An under-13 age signal keeps Kids mode on (§7).
  */
 export function AudiencePicker() {
   const { t } = useTranslation('common');
@@ -22,6 +22,7 @@ export function AudiencePicker() {
   const [value, setValue] = useState('');
   const [first, setFirst] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [target, setTarget] = useState<'kids' | 'teen'>('kids');
   const cappedKids = capFor(signal) === 'kids';
 
   const reset = () => {
@@ -35,11 +36,13 @@ export function AudiencePicker() {
     if (cappedKids) return setError(t('age.lockedByAge'));
     if (audience === 'teen') return;
     if (pin) return setStep('unlock');
-    setAudience('teen');
+    setTarget('teen');
+    setStep('setPin');
   };
   const chooseKids = () => {
     if (audience === 'kids') return;
     if (pin) return setAudience('kids');
+    setTarget('kids');
     setStep('setPin');
   };
 
@@ -61,7 +64,8 @@ export function AudiencePicker() {
       return setError(t('age.pinMismatch'));
     }
     setPin(first);
-    setAudience('kids');
+    if (target === 'teen') unlockTeen(first);
+    else setAudience('kids');
     reset();
   };
 

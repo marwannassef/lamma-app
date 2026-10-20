@@ -1,5 +1,5 @@
+import { reloadAppAsync } from 'expo';
 import { getLocales } from 'expo-localization';
-import * as Updates from 'expo-updates';
 import { createInstance, type ParseKeys } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { DevSettings, I18nManager, Platform } from 'react-native';
@@ -54,8 +54,11 @@ export function syncLayoutDirection(lang: string): boolean {
   if (Platform.OS === 'web' || I18nManager.isRTL === rtl) return false;
   I18nManager.allowRTL(rtl);
   I18nManager.forceRTL(rtl);
-  if (__DEV__) DevSettings.reload();
-  else void Updates.reloadAsync();
+  // reloadAppAsync works in every build. (expo-updates' reloadAsync rejects when updates are off,
+  // which crashed store builds when switching to Arabic.)
+  reloadAppAsync('Layout direction changed').catch(() => {
+    if (__DEV__) DevSettings.reload();
+  });
   return true;
 }
 

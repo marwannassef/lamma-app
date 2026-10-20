@@ -103,8 +103,9 @@ describe('purchases (RevenueCat)', () => {
     const { mod, configured } = withSdk(undefined, sdk);
     expect(configured).toBe(false);
     expect(mod.configurePurchases()).toBe(false);
-    expect(await mod.purchase('lifetime')).toEqual({ ok: false, reason: 'unavailable' });
-    expect(await mod.restorePurchases()).toEqual({ ok: false, reason: 'unavailable' });
+    const noKey = { ok: false, reason: 'unavailable', detail: 'no RevenueCat key in this build' };
+    expect(await mod.purchase('lifetime')).toEqual(noKey);
+    expect(await mod.restorePurchases()).toEqual(noKey);
     expect(await mod.storePrices()).toEqual({});
     expect(sdk.configure).not.toHaveBeenCalled();
   });
@@ -137,11 +138,40 @@ describe('purchases (RevenueCat)', () => {
     sdk.purchasePackage.mockRejectedValueOnce({ userCancelled: true });
     expect(await mod.purchase('lifetime')).toEqual({ ok: false, reason: 'cancelled' });
     sdk.purchasePackage.mockRejectedValueOnce(new Error('store down'));
-    expect(await mod.purchase('lifetime')).toEqual({ ok: false, reason: 'failed' });
+    expect(await mod.purchase('lifetime')).toEqual({
+      ok: false,
+      reason: 'failed',
+      detail: 'store down',
+    });
     sdk.getOfferings.mockResolvedValueOnce({ current: null } as never);
-    expect(await mod.purchase('lifetime')).toEqual({ ok: false, reason: 'unavailable' });
+    expect(await mod.purchase('lifetime')).toEqual({
+      ok: false,
+      reason: 'unavailable',
+      detail: 'the current offering has no Lamma products',
+    });
+    sdk.getOfferings.mockResolvedValueOnce({
+      current: { availablePackages: [pkg('lamma_premium_annual', '$14.99')] },
+    } as never);
+    expect(await mod.purchase('lifetime')).toEqual({
+      ok: false,
+      reason: 'unavailable',
+      detail: 'lamma_premium_lifetime is not in the current offering',
+    });
+    sdk.getOfferings.mockRejectedValueOnce({
+      readableErrorCode: 'CONFIGURATION_ERROR',
+      message: 'None of the products could be fetched',
+    });
+    expect(await mod.purchase('lifetime')).toEqual({
+      ok: false,
+      reason: 'failed',
+      detail: 'CONFIGURATION_ERROR: None of the products could be fetched',
+    });
     sdk.restorePurchases.mockRejectedValueOnce(new Error('offline'));
-    expect(await mod.restorePurchases()).toEqual({ ok: false, reason: 'failed' });
+    expect(await mod.restorePurchases()).toEqual({
+      ok: false,
+      reason: 'failed',
+      detail: 'offline',
+    });
     sdk.getOfferings.mockRejectedValueOnce(new Error('offline'));
     expect(await mod.storePrices()).toEqual({});
   });

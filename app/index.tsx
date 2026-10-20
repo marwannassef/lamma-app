@@ -117,10 +117,12 @@ export default function Home() {
   const { t } = useTranslation(['common', 'spy', 'werewolf', 'blendIn']);
   const { colors } = useTheme();
   const audience = useAge((s) => s.audience);
+  const pin = useAge((s) => s.pin);
   const level = useContentLevel();
 
   // First launch asks "Who's playing tonight?" before anything else.
-  if (audience == null) return <Redirect href="/welcome" />;
+  // First launch, or an install from before the PIN was required (monetization §7).
+  if (audience == null || pin == null) return <Redirect href="/welcome" />;
 
   return (
     <Screen>

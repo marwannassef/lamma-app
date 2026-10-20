@@ -30,9 +30,17 @@ describe('parent PIN', () => {
     const s = useAge.getState();
     s.setPin('4321');
     s.setAudience('kids');
-    useAge.getState().setAudience('teen'); // ignored: the PIN guards it
+    useAge.getState().setAudience('teen'); // ignored: only unlockTeen turns Teen on
     expect(useAge.getState().audience).toBe('kids');
     expect(useAge.getState().unlockTeen('0000')).toBe(false);
+    expect(useAge.getState().unlockTeen('4321')).toBe(true);
+    expect(useAge.getState().audience).toBe('teen');
+  });
+
+  it('with a PIN set, even the first choice of Teen needs it', () => {
+    useAge.getState().setPin('4321');
+    useAge.getState().setAudience('teen');
+    expect(useAge.getState().audience).toBeNull();
     expect(useAge.getState().unlockTeen('4321')).toBe(true);
     expect(useAge.getState().audience).toBe('teen');
   });

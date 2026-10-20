@@ -18,7 +18,8 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "ExpoLocalization_supportsRTL": true
       }
     },
     "android": {
@@ -67,6 +68,9 @@
         "projectId": "5a9efbbe-0096-4f3f-a3cf-0d28780eb0bf"
       }
     },
-    "owner": "mnassef"
+    "owner": "mnassef",
+    "updates": {
+      "url": "https://u.expo.dev/5a9efbbe-0096-4f3f-a3cf-0d28780eb0bf"
+    }
   }
 }

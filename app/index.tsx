@@ -85,7 +85,7 @@ function GameCard({ game }: { game: GameModule }) {
             </View>
             <View style={styles.cardText}>
               <Text variant="title">{title}</Text>
-              <Text variant="caption" tone="muted" numberOfLines={3}>
+              <Text variant="caption" tone="muted">
                 {t(game.blurbKey)}
               </Text>
               <View style={styles.badges}>

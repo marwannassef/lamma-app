@@ -24,6 +24,10 @@ export function PinInput({
       onChangeText={(v) => onChange(v.replace(/\D/g, '').slice(0, 4))}
       keyboardType="number-pad"
       secureTextEntry
+      // A local parent PIN, not an account password: no "AutoFill" bubble or password suggestions.
+      textContentType="none"
+      autoComplete="off"
+      importantForAutofill="no"
       maxLength={4}
       autoFocus={autoFocus}
       accessibilityLabel={label}

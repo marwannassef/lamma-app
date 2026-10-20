@@ -51,7 +51,7 @@ describe('store products', () => {
 
 describe('purchases (RevenueCat)', () => {
   const info = (premium: boolean, passes: string[] = []) => ({
-    entitlements: { active: premium ? { premium: {} } : {} },
+    entitlements: { active: premium ? { lamma_pro: {} } : {} },
     nonSubscriptionTransactions: passes.map(pass),
   });
   const pkg = (identifier: string, priceString: string) => ({

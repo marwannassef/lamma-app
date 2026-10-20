@@ -11,8 +11,11 @@ export const STORE_PRODUCTS: Record<ProductId, string> = {
   lifetime: 'lamma_premium_lifetime',
 };
 
-/** RevenueCat entitlement unlocked by Annual and Lifetime. */
-export const ENTITLEMENT = 'premium';
+/**
+ * RevenueCat entitlement unlocked by Annual and Lifetime (its identifier in the dashboard). The Party
+ * Pass must not be attached to it: a consumable would unlock it forever.
+ */
+export const ENTITLEMENT = 'lamma_pro';
 
 export const PARTY_PASS_DAYS = 7;
 const DAY = 24 * 60 * 60 * 1000;

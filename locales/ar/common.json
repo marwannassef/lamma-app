@@ -23,6 +23,7 @@
     "language": "اللغة",
     "languageSystem": "لغة الموبايل",
     "directionNote": "التطبيق هيعيد التشغيل لما اتجاه الكتابة يتغير.",
+    "directionPending": "اقفل لمّة وافتحها تاني عشان اتجاه الكتابة يتغير خالص.",
     "appearance": "الشكل",
     "appearanceSystem": "زي الموبايل",
     "appearanceLight": "فاتح",

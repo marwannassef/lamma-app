@@ -52,7 +52,8 @@ preview`, or ask Claude to run it.)
    Key ID and Issuer ID) and a Play Store app (package `com.anventureslabs.lamma`, upload the
    service account JSON).
 3. **Products**: import the three products from each store.
-4. **Entitlements**: create `premium` and attach **Annual and Lifetime only**. Don't attach the
+4. **Entitlements**: create `lamma_pro` (the identifier the app checks) and attach **Annual and
+   Lifetime only**. Don't attach the
    Party Pass: RevenueCat would treat a consumable as "forever". The app counts 7 days from each
    Party Pass purchase itself, adding a week when one is bought while another is running.
 5. **Offerings**: the `default` offering (mark it current) with three packages:

@@ -19,6 +19,7 @@
     "language": "Language",
     "languageSystem": "Phone language",
     "directionNote": "The app restarts when the reading direction changes.",
+    "directionPending": "Close Lamma and open it again to finish switching the reading direction.",
     "appearance": "Appearance",
     "appearanceSystem": "Match phone",
     "appearanceLight": "Light",

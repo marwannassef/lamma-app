@@ -55,7 +55,9 @@ export function Text({
     fontSize: v.size,
     lineHeight: Math.round(v.size * (v.role === 'display' ? 1.25 : 1.45)),
     color: color[tone],
-    textAlign: align,
+    // 'left' means "start of the line": React Native flips it to the right in RTL on both platforms.
+    // ('auto' follows each string's own language on iOS, so Arabic UI text landed on the left.)
+    textAlign: align === 'auto' ? 'left' : align,
     writingDirection: 'auto',
   };
   return (

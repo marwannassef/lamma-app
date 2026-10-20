@@ -18,8 +18,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true,
-        "ExpoLocalization_supportsRTL": true
+        "CFBundleAllowMixedLocalizations": true
       }
     },
     "android": {
@@ -33,12 +32,7 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-localization",
-        {
-          "supportsRTL": true
-        }
-      ],
+      "expo-localization",
       [
         "expo-screen-orientation",
         {

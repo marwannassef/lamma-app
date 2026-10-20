@@ -4,7 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { allRegions } from '@/core/content';
-import { openPaywall, useEntitlements, useIsPremium } from '@/core/entitlements';
+import {
+  openPaywall,
+  PREMIUM_PREVIEW_ALLOWED,
+  useEntitlements,
+  useIsPremium,
+} from '@/core/entitlements';
 import { restorePurchases } from '@/core/entitlements/purchases';
 import { directionPending, localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
 import { useRegions } from '@/core/settings/content';
@@ -151,7 +156,7 @@ export default function Settings() {
           }}
         />
         {restoreMsg ? <Hint>{restoreMsg}</Hint> : null}
-        {__DEV__ ? (
+        {PREMIUM_PREVIEW_ALLOWED ? (
           <Toggle
             surface={false}
             testID="dev-premium"

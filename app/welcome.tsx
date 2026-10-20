@@ -29,14 +29,14 @@ export default function Welcome() {
     setStep(next);
   };
 
-  const submit = () => {
-    if (!isValidPin(value)) return setError(t('age.pinLabel'));
+  const submit = (entered = value) => {
+    if (!isValidPin(entered)) return setError(t('age.pinLabel'));
     if (step === 'setPin') {
-      setFirst(value);
+      setFirst(entered);
       return go('confirmPin');
     }
     if (step === 'confirmPin') {
-      if (value !== first) {
+      if (entered !== first) {
         setFirst('');
         go('setPin');
         return setError(t('age.pinMismatch'));
@@ -45,7 +45,7 @@ export default function Welcome() {
       // An install that already chose who's playing only needed the PIN.
       return audience ? done() : go('choose');
     }
-    if (unlockTeen(value)) return done();
+    if (unlockTeen(entered)) return done();
     setValue('');
     setError(t('age.wrongPin'));
   };
@@ -61,7 +61,7 @@ export default function Welcome() {
     return (
       <Screen
         center
-        footer={<Button testID="pin-continue" label={t('age.continue')} onPress={submit} />}
+        footer={<Button testID="pin-continue" label={t('age.continue')} onPress={() => submit()} />}
       >
         <Text style={styles.big} align="center" accessible={false}>
           🔐
@@ -77,7 +77,11 @@ export default function Welcome() {
           testID="pin"
           label={t('age.pinLabel')}
           value={value}
-          onChange={setValue}
+          onChange={(v) => {
+            setValue(v);
+            // The 4th digit moves on by itself: on iOS the number pad covers the Continue button.
+            if (isValidPin(v)) submit(v);
+          }}
         />
         {error ? <Hint>{error}</Hint> : null}
         {step === 'unlock' ? (

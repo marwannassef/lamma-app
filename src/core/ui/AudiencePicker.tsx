@@ -46,20 +46,20 @@ export function AudiencePicker() {
     setStep('setPin');
   };
 
-  const submit = () => {
-    if (!isValidPin(value)) return setError(t('age.pinLabel'));
+  const submit = (entered = value) => {
+    if (!isValidPin(entered)) return setError(t('age.pinLabel'));
     if (step === 'unlock') {
-      if (unlockTeen(value)) return reset();
+      if (unlockTeen(entered)) return reset();
       setValue('');
       return setError(t('age.wrongPin'));
     }
     if (step === 'setPin') {
-      setFirst(value);
+      setFirst(entered);
       setValue('');
       setError(null);
       return setStep('confirmPin');
     }
-    if (value !== first) {
+    if (entered !== first) {
       reset();
       return setError(t('age.pinMismatch'));
     }
@@ -101,7 +101,11 @@ export function AudiencePicker() {
             testID="settings-pin"
             label={t('age.pinLabel')}
             value={value}
-            onChange={setValue}
+            onChange={(v) => {
+              setValue(v);
+              // The 4th digit moves on by itself: on iOS the number pad covers the buttons.
+              if (isValidPin(v)) submit(v);
+            }}
           />
           <View style={styles.row}>
             <View style={styles.flex}>
@@ -109,7 +113,7 @@ export function AudiencePicker() {
                 size="md"
                 testID="settings-pin-ok"
                 label={t('age.continue')}
-                onPress={submit}
+                onPress={() => submit()}
               />
             </View>
             <View style={styles.flex}>

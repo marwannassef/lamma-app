@@ -18,7 +18,7 @@ interface EntitlementState {
   storePremium: boolean;
   partyPassUntil: number | null;
   setStore(s: { storePremium: boolean; partyPassUntil: number | null }): void;
-  /** Developer builds only: preview Premium without a purchase. Ignored in store builds. */
+  /** Preview Premium without a purchase: only where PREMIUM_PREVIEW_ALLOWED. */
   devPremium: boolean;
   /** Last time the soft "Loved it?" card was shown (ms). */
   softShownAt: number;
@@ -42,10 +42,17 @@ export const useEntitlements = create<EntitlementState>()(
   ),
 );
 
+/**
+ * The Premium preview toggle: development builds, plus test builds made with
+ * EXPO_PUBLIC_TESTER_PREMIUM=1 (TestFlight while store purchases can't be tested yet). Store
+ * releases must be built without it; see docs/store-setup.md.
+ */
+export const PREMIUM_PREVIEW_ALLOWED = __DEV__ || process.env.EXPO_PUBLIC_TESTER_PREMIUM === '1';
+
 export const tierOf = (
   s: Pick<EntitlementState, 'passTier' | 'devPremium'> &
     Partial<Pick<EntitlementState, 'storePremium' | 'partyPassUntil'>>,
-  dev = __DEV__,
+  dev = PREMIUM_PREVIEW_ALLOWED,
   now = Date.now(),
 ): Tier =>
   s.passTier === 'premium' ||

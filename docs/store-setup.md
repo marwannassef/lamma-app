@@ -92,3 +92,11 @@ Then rebuild the app (the SDK is native code), open the paywall, and the prices 
 
 Our own backend will take over from RevenueCat's client-side info: RevenueCat webhooks → our server
 → a signed offline pass the app checks.
+
+## Before submitting to the App Store
+
+- **Remove the tester Premium switch.** TestFlight builds are made with `EXPO_PUBLIC_TESTER_PREMIUM=1`
+  (an EAS environment variable on the production environment), which shows "Preview Premium" in
+  Settings so the app can be tested before store purchases work. Delete it before the release build:
+  `bunx eas-cli env:delete --variable-name EXPO_PUBLIC_TESTER_PREMIUM --variable-environment production`
+  (or in the Expo dashboard → Environment variables), then build. Without it the switch doesn't exist.

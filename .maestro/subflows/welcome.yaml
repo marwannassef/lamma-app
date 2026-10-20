@@ -1,4 +1,5 @@
 # First launch: set the parent PIN (1234, twice), then choose Teens and adults, which asks for it.
+# The 4th digit submits by itself.
 appId: com.anventureslabs.lamma
 ---
 - runFlow:
@@ -10,12 +11,8 @@ appId: com.anventureslabs.lamma
           id: pin
       - inputText: '1234'
       - tapOn:
-          id: pin-continue
-      - tapOn:
           id: pin
       - inputText: '1234'
-      - tapOn:
-          id: pin-continue
 - extendedWaitUntil:
     visible:
       id: '(audience-teen|open-settings)'
@@ -30,5 +27,3 @@ appId: com.anventureslabs.lamma
       - tapOn:
           id: pin
       - inputText: '1234'
-      - tapOn:
-          id: pin-continue

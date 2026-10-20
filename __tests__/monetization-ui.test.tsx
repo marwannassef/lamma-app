@@ -113,10 +113,8 @@ describe('paywall (monetization §4)', () => {
 });
 
 describe('first launch and Settings', () => {
-  const enterPin = (pin: string) => {
-    fireEvent.changeText(screen.getByTestId('pin'), pin);
-    fireEvent.press(screen.getByTestId('pin-continue'));
-  };
+  // The 4th digit submits by itself (on iOS the number pad covers the Continue button).
+  const enterPin = (pin: string) => fireEvent.changeText(screen.getByTestId('pin'), pin);
 
   it('first launch sets the parent PIN, then Kids needs nothing more', () => {
     useAge.setState({ audience: null, pin: null });
@@ -168,13 +166,17 @@ describe('first launch and Settings', () => {
     useAge.setState({ audience: 'kids', pin: null });
     render(<Settings />);
     fireEvent.press(screen.getByTestId('audience-teen'));
-    const enter = () => {
-      fireEvent.changeText(screen.getByTestId('settings-pin'), '4321');
-      fireEvent.press(screen.getByTestId('settings-pin-ok'));
-    };
+    const enter = () => fireEvent.changeText(screen.getByTestId('settings-pin'), '4321');
     enter(); // set
     enter(); // confirm
     expect(useAge.getState()).toMatchObject({ audience: 'teen', pin: '4321' });
+  });
+
+  it('the Continue button still works for a typed PIN', () => {
+    useAge.setState({ audience: null, pin: null });
+    render(<Welcome />);
+    fireEvent.press(screen.getByTestId('pin-continue'));
+    expect(screen.getByText('4-digit PIN')).toBeTruthy();
   });
 
   it('switching back to Teen in Settings needs the PIN', () => {
@@ -182,10 +184,8 @@ describe('first launch and Settings', () => {
     render(<Settings />);
     fireEvent.press(screen.getByTestId('audience-teen'));
     fireEvent.changeText(screen.getByTestId('settings-pin'), '1111');
-    fireEvent.press(screen.getByTestId('settings-pin-ok'));
     expect(screen.getByText('Wrong PIN. Try again.')).toBeTruthy();
     fireEvent.changeText(screen.getByTestId('settings-pin'), '2468');
-    fireEvent.press(screen.getByTestId('settings-pin-ok'));
     expect(useAge.getState().audience).toBe('teen');
   });
 

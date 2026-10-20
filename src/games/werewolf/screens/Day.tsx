@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { mixer } from '@/core/audio';
 import { usePlayerName } from '@/core/players';
@@ -279,6 +279,8 @@ export function Vote({ game }: { game: GameState }) {
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
+  // With large text the two side-by-side buttons are too narrow for their labels: stack them.
+  const stacked = useWindowDimensions().fontScale > 1.3;
   const [count, setCount] = useState(3);
   const [tie, setTie] = useState(false);
   const [picked, setPicked] = useState<PlayerId[]>([]);
@@ -328,8 +330,8 @@ export function Vote({ game }: { game: GameState }) {
               }
             />
           )}
-          <View style={styles.controls}>
-            <View style={styles.flex}>
+          <View style={[styles.controls, stacked && styles.stacked]}>
+            <View style={!stacked && styles.flex}>
               <Button
                 size="md"
                 variant="ghost"
@@ -341,7 +343,7 @@ export function Vote({ game }: { game: GameState }) {
                 }}
               />
             </View>
-            <View style={styles.flex}>
+            <View style={!stacked && styles.flex}>
               <Button
                 size="md"
                 variant="ghost"
@@ -468,6 +470,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   clock: { fontSize: 56, lineHeight: 68 },
   controls: { flexDirection: 'row', gap: space.sm },
+  stacked: { flexDirection: 'column' },
   countdown: { fontSize: 120, lineHeight: 140 },
   card: { borderRadius: radius.card },
 });

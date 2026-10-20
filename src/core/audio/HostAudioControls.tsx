@@ -28,7 +28,7 @@ export function HostAudioControls() {
       onPress={onPress}
       style={[styles.button, { backgroundColor: colors.surface, borderColor: colors.border }]}
     >
-      <Text variant="label" accessible={false}>
+      <Text variant="label" accessible={false} maxFontSizeMultiplier={1}>
         {icon}
       </Text>
     </Pressable>

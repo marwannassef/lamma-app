@@ -8,7 +8,7 @@ import { HostAudioControls, usePhaseAudio } from '@/core/audio';
 import { allPacks, localized, type Pack } from '@/core/content';
 import { usePlayerName } from '@/core/players';
 import { space, useTheme } from '@/core/theme';
-import { ConfirmInline, Pressable, Text, useStayAwake } from '@/core/ui';
+import { ConfirmInline, Pressable, ScreenTopInset, Text, useStayAwake } from '@/core/ui';
 
 import { audioCue, audioKey } from '../audio';
 import { useBlendIn } from '../store';
@@ -43,7 +43,7 @@ function QuitButton() {
             onPress={() => setAsk(true)}
             style={[styles.quit, { backgroundColor: colors.surface, borderColor: colors.border }]}
           >
-            <Text variant="label" tone="muted" accessible={false}>
+            <Text variant="label" tone="muted" accessible={false} maxFontSizeMultiplier={1}>
               ✖
             </Text>
           </Pressable>
@@ -52,6 +52,9 @@ function QuitButton() {
     </View>
   );
 }
+
+/** Room the overlaid host bar takes at the top of public screens. */
+const HOST_BAR_HEIGHT = 44;
 
 /** Runs a Blend In game; the phone sits in the middle of the table between peeks. */
 export default function Play() {
@@ -123,7 +126,9 @@ export default function Play() {
   return (
     <View style={styles.fill}>
       <Stack.Screen options={{ gestureEnabled: false }} />
-      {screen}
+      <ScreenTopInset.Provider value={!secret && ph.t !== 'over' ? HOST_BAR_HEIGHT : 0}>
+        {screen}
+      </ScreenTopInset.Provider>
       {!secret && ph.t !== 'over' ? <QuitButton /> : null}
     </View>
   );

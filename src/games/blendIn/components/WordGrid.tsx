@@ -8,8 +8,8 @@ import { Pressable, Text } from '@/core/ui';
 const LEAF = '#6DBE45';
 
 /**
- * The topic's word grid (4 columns). Long words wrap to two lines and shrink to fit; they are
- * never cut off (§5). With `onPick`, tiles are buttons (the escape guess).
+ * The topic's word grid (4 columns). Each word gets its own line and shrinks to fit, so words are
+ * never cut off or split mid-word (§5). With `onPick`, tiles are buttons (the escape guess).
  */
 export function WordGrid({
   pack,
@@ -38,6 +38,8 @@ export function WordGrid({
         if (!word) return null;
         const [main, sub] = wordLines(pack, word, i18n.language);
         const on = id === highlight;
+        // One word per line: a word too wide for its line then shrinks instead of breaking mid-word.
+        const lines = (main ?? '').split(' ');
         const tile = (
           <View
             style={[
@@ -49,12 +51,12 @@ export function WordGrid({
             <Text
               variant={compact ? 'caption' : 'label'}
               align="center"
-              numberOfLines={2}
+              numberOfLines={lines.length}
               adjustsFontSizeToFit
               minimumFontScale={0.55}
               style={{ color: on ? '#10240A' : fg }}
             >
-              {main}
+              {lines.join('\n')}
             </Text>
             {!compact && sub ? (
               <Text

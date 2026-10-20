@@ -21,6 +21,8 @@ export interface ButtonProps {
 }
 
 const LIP = 6;
+/** Labels up to this many characters never wrap. */
+const SHORT_LABEL = 18;
 
 /** Chunky 3D game button: gradient face on a darker lip; it squishes down when pressed. */
 export function Button({
@@ -47,7 +49,11 @@ export function Button({
       <Text
         variant={size === 'lg' ? 'heading' : 'label'}
         align="center"
-        style={[{ color }, size === 'lg' && styles.lgText]}
+        // Short labels stay on one line and shrink a little with large text; long ones wrap.
+        numberOfLines={label.length <= SHORT_LABEL ? 1 : undefined}
+        adjustsFontSizeToFit={label.length <= SHORT_LABEL}
+        minimumFontScale={0.7}
+        style={[styles.label, { color }, size === 'lg' && styles.lgText]}
       >
         {label}
       </Text>
@@ -156,6 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: space.sm,
   },
+  label: { flexShrink: 1 },
   lgText: { fontSize: 24, lineHeight: 32 },
   ghost: {
     borderWidth: 2,

@@ -102,7 +102,7 @@ function HostBar() {
             onPress={() => setAsk(true)}
             style={[styles.quit, { backgroundColor: colors.surface, borderColor: colors.border }]}
           >
-            <Text variant="label" tone="muted" accessible={false}>
+            <Text variant="label" tone="muted" accessible={false} maxFontSizeMultiplier={1}>
               ✖
             </Text>
           </Pressable>

@@ -70,7 +70,7 @@ export default function Setup() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [noPacksHint, setNoPacksHint] = useState(false);
 
-  // The shared roster goes up to 16 (Werewolf); Spy plays with at most 12.
+  // The shared roster goes up to 20 (Werewolf); Spy plays with at most 12.
   useEffect(() => {
     if (count > spyGame.maxPlayers) setCount(spyGame.maxPlayers);
   }, [count, setCount]);

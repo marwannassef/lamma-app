@@ -6,7 +6,7 @@ export const werewolf: GameModule = {
   blurbKey: 'games.werewolf.blurb',
   icon: require('@/assets/images/games/werewolf.png'),
   minPlayers: 4,
-  maxPlayers: 16,
+  maxPlayers: 20,
   usesScores: true,
   usesPunishments: true,
   entryRoute: '/games/werewolf',

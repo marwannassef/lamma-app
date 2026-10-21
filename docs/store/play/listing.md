@@ -22,7 +22,7 @@ Lamma turns any gathering into game night. No cards, no boards, no extra phones:
 🕵️ SPY (3–12 players)
 Everyone gets the same secret word, except the spy. Ask questions, give clues, and find out who's bluffing before the spy guesses the word.
 
-🐺 WEREWOLF (4–16 players)
+🐺 WEREWOLF (4–20 players)
 Villagers against hidden werewolves. Lamma is your narrator: it guides the night, wakes each role in turn and keeps the secrets, so everyone gets to play. Seer, Doctor, Witch, Hunter, Cupid and many more roles.
 
 🦎 BLEND IN (3–12 players)
@@ -37,7 +37,7 @@ WHY LAMMA
 • Narrator voice, sound effects and vibration
 
 LAMMA PREMIUM (optional)
-Bigger groups, every word pack and every mode. Get it as a 7-day Party Pass, a yearly plan or a one-time Lifetime unlock.
+Bigger groups (up to 20 in Werewolf), every word pack and every mode. Get it as a 7-day Party Pass, a yearly plan or a one-time Lifetime unlock.
 
 Lamma (لمّة) means "a get-together" in Arabic. Gather your people and play!
 ```
@@ -62,7 +62,7 @@ Lamma (لمّة) means "a get-together" in Arabic. Gather your people and play!
 🕵️ الجاسوس (من 3 لـ 12 لاعب)
 الكل بياخد نفس الكلمة السرية ما عدا الجاسوس. اسألوا وادّوا تلميحات واكتشفوا مين بيفبرك قبل ما الجاسوس يخمّن الكلمة.
 
-🐺 المستذئب (من 4 لـ 16 لاعب)
+🐺 المستذئب (من 4 لـ 20 لاعب)
 القرية ضد مستذئبين مستخبيين. لمّة هي الراوي: بتحكي الليل وبتصحّي كل دور في وقته وبتحفظ الأسرار، عشان الكل يلعب. العرّاف والدكتور والساحرة والصياد وكيوبيد وأدوار كتير تانية.
 
 🦎 اندمج (من 3 لـ 12 لاعب)

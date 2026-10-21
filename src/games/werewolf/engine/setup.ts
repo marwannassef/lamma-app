@@ -8,7 +8,7 @@ import type { RoleCounts, RoleId } from './types';
 export type { CuratedSetup, Tier };
 
 export const MIN_PLAYERS = 4;
-export const MAX_PLAYERS = 16;
+export const MAX_PLAYERS = 20;
 export const TIERS: readonly Tier[] = ['basic', 'gentle', 'classic', 'party', 'chaos'];
 
 const count = (roles: RoleCounts, r: RoleId) => roles[r] ?? 0;
@@ -120,7 +120,7 @@ const usesOnly = (roles: RoleCounts, available: readonly RoleId[]) =>
 
 /**
  * Curated setups for this table, in tier order. Setups using roles that aren't available yet
- * are hidden (never greyed out). Basic exists for every count from 4 to 16.
+ * are hidden (never greyed out). Basic exists for every count from 4 to 20.
  */
 export function recommendedSetups(
   players: number,

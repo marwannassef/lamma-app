@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360">
+  <g transform="rotate(-12 180 180)">
+    <rect x="30" y="110" width="300" height="140" rx="18" fill="none" stroke="#D23C82" stroke-width="14"/>
+    <rect x="46" y="126" width="268" height="108" rx="10" fill="none" stroke="#D23C82" stroke-width="4" opacity=".7"/>
+    <text x="180" y="174" text-anchor="middle" font-family="Courier New, Courier" font-weight="900" font-size="56" fill="#D23C82">TOP</text>
+    <text x="180" y="226" text-anchor="middle" font-family="Courier New, Courier" font-weight="900" font-size="56" fill="#D23C82">SECRET</text>
+  </g>
+</svg>

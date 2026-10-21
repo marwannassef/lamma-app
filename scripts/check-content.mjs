@@ -173,10 +173,92 @@ else {
   }
 }
 
+// Werewolf / Mafia themes (werewolf spec §15.5, §16.5): every role, team, narration line and dawn
+// story beat exists in both themes and every language, with 2+ variants per narration line.
+{
+  const storySrc = fs.readFileSync(path.join(root, 'src/games/werewolf/engine/story.ts'), 'utf8');
+  const block = (name) => storySrc.slice(storySrc.indexOf(`export const ${name}`)).split('};')[0];
+  const beats = Object.fromEntries(
+    [...block('BEATS').matchAll(/^\s+(\w+): (\d+),$/gm)].map((m) => [m[1], Number(m[2])]),
+  );
+  const kidsBeats = [
+    ...(storySrc.match(/KIDS_BEATS[^=]*= \[([^\]]*)\]/)?.[1] ?? '').matchAll(/'(\w+)'/g),
+  ].map((m) => m[1]);
+  const settings = Object.fromEntries(
+    [...block('SETTINGS').matchAll(/(\w+): \[([^\]]*)\]/g)].map((m) => [
+      m[1],
+      [...m[2].matchAll(/'(\w+)'/g)].map((x) => x[1]),
+    ]),
+  );
+  const roleIds = [
+    ...fs
+      .readFileSync(path.join(root, 'src/games/werewolf/engine/types.ts'), 'utf8')
+      .slice(0, 2000)
+      .match(/export type RoleId =([^;]*);/)[1]
+      .matchAll(/'(\w+)'/g),
+  ].map((m) => m[1]);
+  const get = (o, key) => key.split('.').reduce((v, k) => (v == null ? v : v[k]), o);
+  const leafPaths = (o, prefix = '') =>
+    Object.entries(o).flatMap(([k, v]) =>
+      Array.isArray(v)
+        ? [`${prefix}${k}`]
+        : v && typeof v === 'object'
+          ? leafPaths(v, `${prefix}${k}.`)
+          : [],
+    );
+  for (const lang of uiLocales) {
+    const ww = JSON.parse(
+      fs.readFileSync(path.join(root, 'locales', lang, 'werewolf.json'), 'utf8'),
+    );
+    const mf = JSON.parse(fs.readFileSync(path.join(root, 'locales', lang, 'mafia.json'), 'utf8'));
+    const where = `locales/${lang}`;
+    for (const [theme, file, data] of [
+      ['werewolf', 'werewolf.json', ww],
+      ['mafia', 'mafia.json', mf],
+    ]) {
+      const story = get(data, `story.${theme}`);
+      if (!story) {
+        err(`${where}/${file}`, `story.${theme} is missing`);
+        continue;
+      }
+      for (const [beat, n] of Object.entries(beats)) {
+        if (get(story, beat)?.length !== n)
+          err(`${where}/${file}`, `story.${theme}.${beat} needs ${n} variants`);
+      }
+      for (const beat of kidsBeats) {
+        if (get(story, `${beat}Kids`)?.length !== beats[beat])
+          err(`${where}/${file}`, `story.${theme}.${beat}Kids needs ${beats[beat]} variants`);
+      }
+      for (const id of settings[theme] ?? []) {
+        if (!get(story, `settings.${id}.scene`) || !get(story, `settings.${id}.fall`))
+          err(`${where}/${file}`, `story.${theme}.settings.${id} needs scene and fall`);
+      }
+    }
+    for (const [file, data] of [
+      ['werewolf.json', ww],
+      ['mafia.json', mf],
+    ]) {
+      if (!data.title) err(`${where}/${file}`, 'title is missing');
+      for (const team of ['village', 'wolves', 'neutral', 'lovers'])
+        if (!get(data, `teams.${team}`)) err(`${where}/${file}`, `teams.${team} is missing`);
+      for (const r of roleIds)
+        for (const f of ['name', 'ability'])
+          if (!get(data, `roles.${r}.${f}`)) err(`${where}/${file}`, `roles.${r}.${f} is missing`);
+      for (const key of leafPaths(ww.say)) {
+        if (key.endsWith('Kids')) continue;
+        if (!(get(data.say, key)?.length >= 2))
+          err(`${where}/${file}`, `say.${key} needs 2+ variants`);
+      }
+    }
+    if (!get(mf, 'roles.serialKiller.nameKids'))
+      err(`${where}/mafia.json`, 'roles.serialKiller.nameKids ("The Shadow") is missing');
+  }
+}
+
 if (errors.length) {
   console.error(`content check failed:\n  ${errors.join('\n  ')}`);
   process.exit(1);
 }
 console.log(
-  `content check passed: ${files.length} packs, no banned terms, punishments for ${Object.keys(pun).join(', ')}`,
+  `content check passed: ${files.length} packs, no banned terms, both Werewolf themes complete, punishments for ${Object.keys(pun).join(', ')}`,
 );

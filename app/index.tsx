@@ -15,7 +15,9 @@ import Animated, {
 import { useAge, useContentLevel } from '@/core/age';
 import { gradients, radius, space, useTheme } from '@/core/theme';
 import { Badge, Button, Pressable, Screen, Text } from '@/core/ui';
-import { games, type GameModule } from '@/games/registry';
+import { games, homeOrder, type GameModule } from '@/games/registry';
+import { useWerewolf } from '@/games/werewolf/store';
+import { regionTheme } from '@/games/werewolf/theme';
 
 function Logo() {
   const { colors } = useTheme();
@@ -118,6 +120,7 @@ export default function Home() {
   const { colors } = useTheme();
   const audience = useAge((s) => s.audience);
   const pin = useAge((s) => s.pin);
+  const firstTheme = useWerewolf((s) => s.lastTheme) ?? regionTheme();
   const level = useContentLevel();
 
   // First launch asks "Who's playing tonight?" before anything else.
@@ -165,7 +168,7 @@ export default function Home() {
         {`🎮 ${t('home.pickGame')}`}
       </Text>
 
-      {games.map((game) => (
+      {homeOrder(games, firstTheme).map((game) => (
         <GameCard key={game.id} game={game} />
       ))}
 

@@ -84,6 +84,10 @@
       "title": "Werewolf",
       "blurb": "Villagers against hidden werewolves. The app narrates the night; the day decides who is out."
     },
+    "mafia": {
+      "title": "Mafia",
+      "blurb": "The city against a hidden Mafia family. The app narrates the night; the day decides who gets arrested."
+    },
     "mystery": {
       "title": "Mystery game",
       "blurb": "Something new is coming to the table… Can you guess what it is?",

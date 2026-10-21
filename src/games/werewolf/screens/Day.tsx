@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { mixer } from '@/core/audio';
@@ -14,6 +13,7 @@ import { RoleIcon } from '../components/RoleIcon';
 import { RoleCard } from '../components/RoleCard';
 import type { Effect, GameState, NightReport, PlayerId, StoryLine } from '../engine';
 import { useWerewolf } from '../store';
+import { useWerewolfT } from '../components/i18n';
 
 const usePicker = () => {
   const { colors } = useTheme();
@@ -35,7 +35,7 @@ export function Morning({
   report: NightReport;
   story: readonly StoryLine[];
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const tell = useStoryText();
@@ -89,7 +89,7 @@ export function Morning({
 
 /** Hunter's last shot and the Mayor's badge, handed to that player in public. */
 export function DeathEffects({ game, effect }: { game: GameState; effect: Effect }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -142,7 +142,7 @@ export function DeathEffects({ game, effect }: { game: GameState; effect: Effect
 }
 
 export function MayorElection({ game }: { game: GameState }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -184,7 +184,7 @@ export function Discussion({
   endsAt: number | null;
   pausedLeft: number | null;
 }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const dispatch = useWerewolf((s) => s.dispatch);
   const live = useCountdown(endsAt ?? 0);
   const left = endsAt != null ? live : pausedLeft;
@@ -271,7 +271,7 @@ export function Discussion({
 
 /** "3… 2… 1… Point!", then the host enters the most-pointed player, a tie, or no execution. */
 export function Vote({ game }: { game: GameState }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -373,7 +373,7 @@ export function Vote({ game }: { game: GameState }) {
 }
 
 export function MayorTieBreak({ game, tied }: { game: GameState; tied: PlayerId[] }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -417,7 +417,7 @@ export function MayorTieBreak({ game, tied }: { game: GameState; tied: PlayerId[
 }
 
 export function Execution({ game, playerId }: { game: GameState; playerId: PlayerId | null }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const role = playerId != null ? game.players[playerId]?.dealtRole : undefined;

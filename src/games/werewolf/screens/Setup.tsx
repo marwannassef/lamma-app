@@ -1,7 +1,6 @@
 import { useContentLevel } from '@/core/age';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { clampPlayers, MAX_NAME_LENGTH, usePlayerName, usePlayers } from '@/core/players';
@@ -53,6 +52,9 @@ import {
   type Tier,
 } from '../engine';
 import { useWerewolf, type SavedSetup, type SetupChoice } from '../store';
+import { mafia } from '../mafia';
+import { isTheme } from '../theme';
+import { useWerewolfT } from '../components/i18n';
 
 /** Every role ships, core and expansion (W5). */
 const AVAILABLE = ALL_ROLES;
@@ -61,7 +63,7 @@ const SURPRISE_FROM = 7;
 const COMPLEXITY: Record<Tier, number> = { basic: 1, gentle: 1, classic: 2, party: 3, chaos: 3 };
 
 function RoleChips({ roles }: { roles: RoleCounts }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   return (
     <View style={styles.chips}>
       {ALL_ROLES.filter((r) => roles[r]).map((r) => (
@@ -81,7 +83,7 @@ function RoleChips({ roles }: { roles: RoleCounts }) {
 
 /** Balance meter from −10 (wolves) to +10 (village) with its label (§5.3). */
 function BalanceMeter({ roles }: { roles: RoleCounts }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const { colors } = useTheme();
   const b = balance(
     roles,
@@ -126,7 +128,7 @@ function SetupCard({
   /** Premium-only setup: visible with a 🔒; every button opens the paywall. */
   locked: boolean;
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const { colors } = useTheme();
   const pick = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onPick;
   const editOrPay = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onEdit;
@@ -199,7 +201,7 @@ function CustomEditor({
   players: number;
   onChange(roles: RoleCounts): void;
 }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const filled = fillVillagers(roles, players);
   const teams = ['wolves', 'village', 'neutral'] as const;
   return (
@@ -322,7 +324,7 @@ function SurpriseCard({
   locked: boolean;
   onRoll(): void;
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const roll = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onRoll;
   return (
     <CardFrame
@@ -370,7 +372,7 @@ function SavedCard({
   onPick(): void;
   onDelete(): void;
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const [ask, setAsk] = useState(false);
   return (
     <CardFrame
@@ -424,7 +426,7 @@ function SavedCard({
 
 /** Names and saves the custom setup being edited. */
 function SaveCustom({ onSave }: { onSave(name: string): void }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const { colors } = useTheme();
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
@@ -477,9 +479,10 @@ function SaveCustom({ onSave }: { onSave(name: string): void }) {
 }
 
 export default function Setup() {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t, theme } = useWerewolfT(['common']);
   const { colors } = useTheme();
   const { count, names, setCount, setName, move } = usePlayers();
+  const params = useLocalSearchParams<{ theme?: string }>();
   const nameOf = usePlayerName();
   const store = useWerewolf();
   const narration = useSettings((st) => st.narration);
@@ -490,6 +493,13 @@ export default function Setup() {
   const tierLocked = (tier: Tier) => free && !caps.setupTiers.includes(tier);
   // Free games use the default house rules (monetization §3: "all house rules" is Premium).
   const rules = free ? DEFAULT_RULES : store.rules;
+
+  const playing = !!store.game && store.game.phase.t !== 'gameOver';
+  // The home tile picks the theme; it can't change while a game is running (§15.4).
+  useEffect(() => {
+    if (isTheme(params.theme) && !playing) store.setTheme(params.theme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.theme]);
 
   // The roster is shared with Spy (3+); Werewolf needs 4–20.
   useEffect(() => {
@@ -541,7 +551,7 @@ export default function Setup() {
     if (check.errors.length > 0) return setShowErrors(true);
     const dealt = dealRoles(roles, count, mathRng);
     store.start(
-      newGame(dealt, rules, { theme: 'werewolf', kids: level === 'kids' }),
+      newGame(dealt, rules, { theme: store.theme, kids: level === 'kids' }),
       current.kind === 'curated' ? current.tier : null,
     );
     router.push('/games/werewolf/play');
@@ -564,10 +574,23 @@ export default function Setup() {
     <Screen
       footer={<Button testID="start-game" icon="🌙" label={t('setup.start')} onPress={start} />}
     >
-      <BackHeader title={t('title')} image={module.icon} />
+      <BackHeader title={t('title')} image={theme === 'mafia' ? mafia.icon : module.icon} />
       <Text variant="body" tone="muted" align="center">
         {t('setup.lead')}
       </Text>
+
+      {!playing ? (
+        <Options
+          testID="theme"
+          label={t('setup.theme')}
+          value={store.theme}
+          onChange={(v) => store.setTheme(v)}
+          options={(['werewolf', 'mafia'] as const).map((v) => ({
+            value: v,
+            label: t(`setup.themes.${v}`),
+          }))}
+        />
+      ) : null}
 
       <HowToPlay
         setup={t('howTo.setup', { returnObjects: true }) as string[]}

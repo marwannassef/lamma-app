@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { mixer, useNarrate } from '@/core/audio';
@@ -8,10 +7,11 @@ import { Button, Screen, Text, useCountdown } from '@/core/ui';
 
 import type { GameState } from '../engine';
 import { useWerewolf } from '../store';
+import { useWerewolfT } from '../components/i18n';
 
 /** "Night falls…" — the host starts the wolves' glance when everyone's eyes are closed. */
 export function NightIntro({ game }: { game: GameState }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const dispatch = useWerewolf((s) => s.dispatch);
   return (
     <Screen center>
@@ -35,7 +35,7 @@ export function NightIntro({ game }: { game: GameState }) {
 
 /** The wolves' silent glance: a countdown, then "everyone open your eyes, pass the phone". */
 export function Glance({ game, endsAt }: { game: GameState; endsAt: number }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const { colors } = useTheme();
   const dispatch = useWerewolf((s) => s.dispatch);
   const left = useCountdown(endsAt);

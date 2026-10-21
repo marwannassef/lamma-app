@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { usePlayerName } from '@/core/players';
 
 import { storyKey, type GameState, type StoryLine } from '../engine';
+import { useWerewolfT } from './i18n';
 
 /** Turns dawn story lines (§16) into sentences in the game's theme, language and Kids mode. */
 export function useStoryText() {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const nameOf = usePlayerName();
   return useCallback(
     (g: GameState, lines: readonly StoryLine[]): string[] => {

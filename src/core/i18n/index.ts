@@ -12,7 +12,9 @@ import { fallbackLanguage, localeMeta, namespaces, resources, supportedLanguages
 export { localeMeta, supportedLanguages };
 
 /** Any translation key, namespaced for non-default namespaces (e.g. 'spy:title'). */
-export type I18nKey = ParseKeys<typeof namespaces>;
+// The Mafia theme only overrides Werewolf strings (werewolf.md §15); it never names a screen key.
+type KeyNamespaces = ['common', 'spy', 'werewolf', 'blendIn'];
+export type I18nKey = ParseKeys<KeyNamespaces>;
 
 const i18n = createInstance();
 

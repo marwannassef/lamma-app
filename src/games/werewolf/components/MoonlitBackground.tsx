@@ -1,12 +1,17 @@
 import { Image, StyleSheet, View } from 'react-native';
 
-/** The "moonlit village" backdrop for Werewolf's public screens (§11). */
-export function MoonlitBackground() {
+import type { Theme } from '../engine';
+
+const MOONLIT = require('@/assets/images/werewolf/moonlit.png');
+const CITY = require('@/assets/images/mafia/city.png');
+
+/** The "moonlit village" backdrop for Werewolf's public screens (§11), or Mafia's noir city (§15.3). */
+export function MoonlitBackground({ theme = 'werewolf' }: { theme?: Theme }) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {/* An explicit 100% size: on web an absolutely filled image keeps its intrinsic size. */}
       <Image
-        source={require('@/assets/images/werewolf/moonlit.png')}
+        source={theme === 'mafia' ? CITY : MOONLIT}
         style={styles.image}
         resizeMode="cover"
         accessible={false}

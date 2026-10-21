@@ -13,8 +13,10 @@ import {
   type GameState,
   type HouseRules,
   type RoleCounts,
+  type Theme,
   type Tier,
 } from './engine';
+import { regionTheme } from './theme';
 
 export type SetupChoice =
   | { kind: 'curated'; tier: Tier }
@@ -46,6 +48,11 @@ interface WerewolfState {
   /** Last custom roles, so Custom reopens where it was left. */
   customRoles: RoleCounts | null;
   savedSetups: SavedSetup[];
+  /** The theme picked in setup (§15.4). */
+  theme: Theme;
+  /** The theme of the last game started; it goes first on the home screen. */
+  lastTheme: Theme | null;
+  setTheme(theme: Theme): void;
   setRules(patch: Partial<HouseRules>): void;
   setCustomRoles(roles: RoleCounts): void;
   /** Saves a setup and returns its id. */
@@ -80,6 +87,9 @@ export const useWerewolf = create<WerewolfState>()(
       recentTiers: [],
       customRoles: null,
       savedSetups: [],
+      theme: regionTheme(),
+      lastTheme: null,
+      setTheme: (theme) => set({ theme }),
       setRules: (patch) => set((s) => ({ rules: { ...s.rules, ...patch } })),
       setCustomRoles: (customRoles) => set({ customRoles }),
       saveSetup: (name, players, roles) => {
@@ -96,6 +106,7 @@ export const useWerewolf = create<WerewolfState>()(
         set((s) => ({
           game,
           scored: false,
+          lastTheme: game.theme,
           ...(tier && {
             lastTierByCount: { ...s.lastTierByCount, [game.players.length]: tier },
             recentTiers: [...s.recentTiers, tier].slice(-5),

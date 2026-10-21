@@ -24,13 +24,23 @@ jest.mock('expo-router', () => ({
   router: { push: jest.fn(), back: jest.fn(), replace: jest.fn(), canGoBack: () => true },
   Redirect: () => null,
   Stack: { Screen: () => null },
+  useLocalSearchParams: () => mockParams,
 }));
+let mockParams: Record<string, string> = {};
 
 beforeAll(() => initI18n('en'));
 beforeEach(() => {
   storage.clear();
   usePlayers.setState({ count: 6, names: [] });
-  useWerewolf.setState({ game: null, scored: false, recentTiers: [], lastTierByCount: {} });
+  useWerewolf.setState({
+    game: null,
+    scored: false,
+    recentTiers: [],
+    lastTierByCount: {},
+    theme: 'werewolf',
+    lastTheme: null,
+  });
+  mockParams = {};
 });
 
 const base = () => newGame(['werewolf', 'seer', 'doctor', 'villager', 'villager', 'hunter']);
@@ -130,6 +140,60 @@ describe('Werewolf screens', () => {
     render(<Play />);
     expect(screen.getByText('الصبح')).toBeTruthy();
     await act(() => i18n.changeLanguage('en'));
+  });
+});
+
+describe('Mafia theme (§15)', () => {
+  const mafiaGame = (patch: Partial<GameState> = {}) =>
+    ({
+      ...newGame(
+        ['werewolf', 'seer', 'doctor', 'villager', 'villager', 'hunter'],
+        {},
+        { theme: 'mafia' },
+      ),
+      ...patch,
+    }) as GameState;
+
+  it('opens on the Mafia theme from the home tile and starts a Mafia game', () => {
+    mockParams = { theme: 'mafia' };
+    render(<Setup />);
+    expect(useWerewolf.getState().theme).toBe('mafia');
+    expect(screen.getByText('Mafia')).toBeTruthy();
+    expect(screen.getAllByText(/Citizen/).length).toBeGreaterThan(0);
+    fireEvent.press(screen.getByTestId('start-game'));
+    expect(useWerewolf.getState().game?.theme).toBe('mafia');
+    expect(useWerewolf.getState().lastTheme).toBe('mafia');
+  });
+
+  it('uses Mafia names on game screens and never mixes in Werewolf ones', () => {
+    useWerewolf.setState({
+      game: mafiaGame({ phase: { t: 'execution', playerId: 0, effects: [] }, day: 1 }),
+    });
+    render(<Play />);
+    expect(screen.getByText(/The city has arrested/)).toBeTruthy();
+    expect(screen.getByText(/the Mafia!/)).toBeTruthy();
+    expect(screen.queryByText(/[Ww]erewolf|village|banished/)).toBeNull();
+  });
+
+  it('calls the Serial Killer "The Shadow" in Kids mode', () => {
+    useWerewolf.setState({
+      game: mafiaGame({
+        kids: true,
+        phase: {
+          t: 'gameOver',
+          result: { outcome: 'serialKiller', winners: [0], soloWinners: [0] },
+        },
+      }),
+    });
+    render(<Play />);
+    expect(screen.getByText('The Shadow wins! 🌑')).toBeTruthy();
+  });
+
+  it('switches the theme in setup only when no game is running', () => {
+    render(<Setup />);
+    fireEvent.press(screen.getByTestId('theme-mafia'));
+    expect(useWerewolf.getState().theme).toBe('mafia');
+    expect(screen.getByText('Mafia')).toBeTruthy();
   });
 });
 

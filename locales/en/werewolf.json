@@ -117,7 +117,12 @@
       "named": "Name and result"
     },
     "seerAtDawnNote": "Announcing the result also tells everyone whether the Seer is still alive.",
-    "seerAtDawnHardcore": "With roles hidden on death, announcing the result still tells everyone whether the Seer is alive."
+    "seerAtDawnHardcore": "With roles hidden on death, announcing the result still tells everyone whether the Seer is alive.",
+    "theme": "Theme",
+    "themes": {
+      "werewolf": "🐺 Werewolf",
+      "mafia": "🕴️ Mafia"
+    }
   },
   "teams": {
     "village": "Village",
@@ -208,7 +213,8 @@
     "cupidPick": "Pick the two lovers",
     "cupidHint": "Tap two players. You can pick yourself.",
     "cupidConfirm": "Link them ❤️",
-    "lover": "❤️ Your lover: {{name}}"
+    "lover": "❤️ Your lover: {{name}}",
+    "caseFile": "CASE FILE"
   },
   "night": {
     "title": "Night {{n}}",
@@ -328,7 +334,8 @@
       "Wolves, wake up. Look around, and choose your prey without a sound."
     ],
     "wolvesTwice": [
-      "Werewolves, open your eyes. Tonight the pack hunts twice. Agree on two victims."
+      "Werewolves, open your eyes. Tonight the pack hunts twice. Agree on two victims.",
+      "The pack is hungry for revenge. Werewolves, wake up and agree on two victims."
     ],
     "wolvesSleep": [
       "Werewolves, close your eyes… Everyone, open your eyes and pass the phone around the table.",
@@ -338,9 +345,15 @@
       "Pass the phone around. Everyone takes a turn, so nobody can tell who did what.",
       "One by one, take the phone. Act quietly, then pass it on."
     ],
-    "voteCountdown": ["Three… two… one… Point!"],
-    "banished": ["The village has banished {{name}}!"],
-    "nobody": ["Nobody was banished today. The wolves smile in the shadows."],
+    "voteCountdown": ["Three… two… one… Point!", "On my count: three, two, one… Point!"],
+    "banished": [
+      "The village has banished {{name}}!",
+      "The village has spoken: {{name}} must leave!"
+    ],
+    "nobody": [
+      "Nobody was banished today. The wolves smile in the shadows.",
+      "No one leaves the village today. The wolves are pleased."
+    ],
     "reveal": {
       "wolves": [
         "The village has banished {{name}}… and they were the {{role}}! A wolf is down.",
@@ -350,17 +363,36 @@
         "The village has banished {{name}}… but they were the {{role}}. An innocent soul.",
         "{{name}} leaves the village forever… they were the {{role}}. Oh no."
       ],
-      "neutral": ["The village has banished {{name}}… the {{role}}! Nobody saw that coming."]
+      "neutral": [
+        "The village has banished {{name}}… the {{role}}! Nobody saw that coming.",
+        "{{name}} is sent away… the {{role}}! What a twist."
+      ]
     },
     "win": {
-      "village": ["The last wolf has fallen. The village is safe! Villagers win!"],
-      "wolves": ["The wolves outnumber the village. The howling never stops. Werewolves win!"],
-      "tanner": ["The Tanner wanted out all along… and you gave it to them. The Tanner wins!"],
-      "serialKiller": [
-        "When the dust settles, only the Serial Killer is smiling. The Serial Killer wins!"
+      "village": [
+        "The last wolf has fallen. The village is safe! Villagers win!",
+        "Every wolf is gone. The village sleeps safely tonight. Villagers win!"
       ],
-      "lovers": ["Love conquers all. The lovers win together!"],
-      "draw": ["Silence over an empty village. Nobody survived. It's a draw."]
+      "wolves": [
+        "The wolves outnumber the village. The howling never stops. Werewolves win!",
+        "The village belongs to the pack now. Werewolves win!"
+      ],
+      "tanner": [
+        "The Tanner wanted out all along… and you gave it to them. The Tanner wins!",
+        "The Tanner laughs all the way out of town. The Tanner wins!"
+      ],
+      "serialKiller": [
+        "When the dust settles, only the Serial Killer is smiling. The Serial Killer wins!",
+        "Nobody stopped the Serial Killer. The Serial Killer wins!"
+      ],
+      "lovers": [
+        "Love conquers all. The lovers win together!",
+        "In the end, only love was left standing. The lovers win!"
+      ],
+      "draw": [
+        "Silence over an empty village. Nobody survived. It's a draw.",
+        "The village is empty. Nobody won. It's a draw."
+      ]
     }
   },
   "story": {

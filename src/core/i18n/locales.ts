@@ -28,5 +28,5 @@ for (const key of ctx.keys()) {
 }
 
 export const supportedLanguages = Object.keys(localeMeta).sort();
-export const namespaces = ['common', 'spy', 'werewolf', 'blendIn'] as const;
+export const namespaces = ['common', 'spy', 'werewolf', 'mafia', 'blendIn'] as const;
 export const fallbackLanguage = 'en';

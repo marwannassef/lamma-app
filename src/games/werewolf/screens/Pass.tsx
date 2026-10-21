@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName } from '@/core/players';
@@ -29,6 +28,7 @@ import {
   type SeatAction,
 } from '../engine';
 import { useWerewolf } from '../store';
+import { useWerewolfT } from '../components/i18n';
 
 const RESULT_MS = 3000;
 const CARD_BG = '#15101F';
@@ -37,7 +37,7 @@ const TEXT = '#C9C2DA';
 type PassPhase = Extract<GameState['phase'], { t: 'pass' }>;
 
 function Handoff({ seat }: { seat: PlayerId }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const name = nameOf(seat);
@@ -65,7 +65,7 @@ function Handoff({ seat }: { seat: PlayerId }) {
 
 /** One seat's secret night screen. Every role uses the same choose → hold-to-confirm rhythm. */
 function Action({ game, phase }: { game: GameState; phase: PassPhase }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const seat = phase.seat;

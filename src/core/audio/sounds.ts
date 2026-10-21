@@ -13,6 +13,12 @@ export const SOUNDS = {
   tick: require('@/assets/audio/tick.m4a'),
   swoosh: require('@/assets/audio/swoosh.m4a'),
   countdown: require('@/assets/audio/countdown.m4a'),
+  cityAmbience: require('@/assets/audio/city-ambience.m4a'),
+  noirJazz: require('@/assets/audio/noir-jazz.m4a'),
+  siren: require('@/assets/audio/siren.m4a'),
+  cameraFlash: require('@/assets/audio/camera-flash.m4a'),
+  jailClang: require('@/assets/audio/jail-clang.m4a'),
+  softKnock: require('@/assets/audio/soft-knock.m4a'),
 } as const;
 
 export type SoundId = keyof typeof SOUNDS;

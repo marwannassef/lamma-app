@@ -1,11 +1,11 @@
 import { Redirect, router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { BackHandler, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HostAudioControls, usePhaseAudio } from '@/core/audio';
+import { HostAudioControls, pickLine, usePhaseAudio } from '@/core/audio';
+import { mathRng } from '@/core/rng';
 import { usePlayerName } from '@/core/players';
 import { space, ThemeProvider, useTheme } from '@/core/theme';
 import {
@@ -36,6 +36,7 @@ import Discovery from './Discovery';
 import GameOver from './GameOver';
 import { Glance, NightIntro } from './Night';
 import Pass from './Pass';
+import { useWerewolfT } from '../components/i18n';
 
 const isSecret = (g: GameState) => g.phase.t === 'discovery' || g.phase.t === 'pass';
 
@@ -75,7 +76,7 @@ function PhaseScreen({ game }: { game: GameState }) {
 
 /** Host control on public screens: end the game (inline confirmation, never a native dialog). */
 function HostBar() {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const quit = useWerewolf((s) => s.quit);
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -113,7 +114,10 @@ function HostBar() {
   );
 }
 
-const MOONLIT = <MoonlitBackground />;
+const BACKDROP = {
+  werewolf: <MoonlitBackground theme="werewolf" />,
+  mafia: <MoonlitBackground theme="mafia" />,
+};
 /** Room the overlaid host bar takes at the top of public screens. */
 const HOST_BAR_HEIGHT = 44;
 
@@ -121,12 +125,23 @@ const HOST_BAR_HEIGHT = 44;
 export default function Play() {
   useStayAwake();
   const game = useWerewolf((s) => s.game);
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const tell = useStoryText();
-  usePhaseAudio('werewolf', game ? audioKey(game) : 'none', () =>
-    game ? audioCue(game, nameOf, (r) => t(`roles.${r}.name` as never), tell) : {},
-  );
+  usePhaseAudio('werewolf', game ? audioKey(game) : 'none', () => {
+    if (!game) return {};
+    const cue = audioCue(game, nameOf, (r) => t(`roles.${r}.name` as never), tell);
+    if (!cue.line || !('key' in cue.line)) return cue;
+    // Narration follows the theme too: resolve the line here, one variant at random.
+    const variants = t(
+      cue.line.key as never,
+      { ...cue.line.params, returnObjects: true } as never,
+    ) as unknown;
+    const text = Array.isArray(variants)
+      ? pickLine(variants as string[], mathRng)
+      : String(variants);
+    return { ...cue, line: { text } };
+  });
 
   // The game is saved after every step; leaving by accident must not drop out of it.
   useEffect(() => {
@@ -139,7 +154,7 @@ export default function Play() {
 
   return (
     <ThemeProvider scheme="dark">
-      <ScreenBackground.Provider value={MOONLIT}>
+      <ScreenBackground.Provider value={BACKDROP[game.theme]}>
         <Stack.Screen options={{ gestureEnabled: false }} />
         <StatusBar style="light" hidden={secret} />
         {secret ? (

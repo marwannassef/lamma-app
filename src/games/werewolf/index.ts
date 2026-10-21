@@ -1,3 +1,5 @@
+import type { Href } from 'expo-router';
+
 import type { GameModule } from '../types';
 
 export const werewolf: GameModule = {
@@ -9,6 +11,6 @@ export const werewolf: GameModule = {
   maxPlayers: 20,
   usesScores: true,
   usesPunishments: true,
-  entryRoute: '/games/werewolf',
+  entryRoute: { pathname: '/games/werewolf', params: { theme: 'werewolf' } } as Href,
   ready: true,
 };

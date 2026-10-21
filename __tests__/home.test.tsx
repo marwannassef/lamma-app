@@ -28,7 +28,8 @@ describe('Home', () => {
     expect(screen.getByText('Blend In')).toBeTruthy();
     expect(screen.getByText('Mystery game')).toBeTruthy();
     expect(screen.getAllByText('Coming soon')).toHaveLength(1);
-    expect(screen.getByText(/4–20 players/)).toBeTruthy();
+    expect(screen.getByText('Mafia')).toBeTruthy();
+    expect(screen.getAllByText(/4–20 players/)).toHaveLength(2); // Werewolf and Mafia
   });
 
   it('sends installs without a PIN to the welcome screen first', () => {

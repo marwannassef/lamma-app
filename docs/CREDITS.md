@@ -21,6 +21,10 @@ samples or third-party recordings. License: same as this repository.
 | `chime.m4a` | Blend In turn change |
 | `tick.m4a`, `countdown.m4a` | Countdowns |
 | `swoosh.m4a` | Blend In Chameleon reveal |
+| `city-ambience.m4a` | Mafia night loop (rain on glass, traffic hum, a far siren); masks the action pass |
+| `noir-jazz.m4a` | Mafia discussion music |
+| `siren.m4a`, `jail-clang.m4a`, `camera-flash.m4a` | Mafia stingers: a deadly dawn, an arrest, a reveal |
+| `soft-knock.m4a` | Kids mode: replaces the harsh Mafia stingers |
 
 To regenerate (macOS, needs `afconvert`):
 
@@ -46,3 +50,11 @@ To regenerate (needs `rsvg-convert`, e.g. `brew install librsvg`):
 ```bash
 python3 scripts/generate-role-art.py
 ```
+
+## Mafia theme art
+
+The Mafia home tile (`assets/images/games/mafia.png`), the role portraits in
+`assets/images/mafia-roles/`, the TOP SECRET stamp and the city backdrop (`assets/images/mafia/`) are
+**original**, drawn as SVG by [`scripts/generate-mafia-art.py`](../scripts/generate-mafia-art.py)
+(sources in `assets/source/mafia/`). Noir city style with neon brand colours; no guns or blood
+(werewolf.md §15.3). License: same as this repository.

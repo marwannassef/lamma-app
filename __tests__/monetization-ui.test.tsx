@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 
 import Paywall from '../app/paywall';
 import Settings from '../app/settings';
+import Shop from '../app/shop';
 import Welcome from '../app/welcome';
 import { useAge } from '../src/core/age';
 import { useEntitlements } from '../src/core/entitlements';
@@ -33,9 +34,67 @@ beforeEach(() => {
   storage.clear();
   (router.push as jest.Mock).mockClear();
   useAge.setState({ audience: 'teen', pin: null, signal: 'unknown', teenConfirmed: false });
-  useEntitlements.setState({ passTier: null, devPremium: false, softShownAt: 0 });
+  useEntitlements.setState({ passTier: null, devPremium: false, softShownAt: 0, owned: [] });
   usePlayers.setState({ count: 6, names: [] });
   usePunishments.setState({ level: 'mix', decks: {} });
+});
+
+describe('Shop: single packs and role cards', () => {
+  it('lists packs and role cards, and explains when buying is unavailable', async () => {
+    render(<Shop />);
+    expect(screen.getByTestId('shop-premium')).toBeTruthy();
+    expect(screen.getByTestId('shop-lamma_pack_global_sports')).toBeTruthy();
+    // Free packs aren't sold.
+    expect(screen.queryByTestId('shop-lamma_pack_global_food')).toBeNull();
+    await act(async () => fireEvent.press(screen.getByTestId('buy-lamma_pack_global_sports')));
+    expect(screen.getByTestId('shop-message')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('shop-tab-roles'));
+    expect(screen.getByTestId('shop-lamma_role_hunter')).toBeTruthy();
+    expect(screen.queryByTestId('shop-lamma_role_seer')).toBeNull();
+  });
+
+  it('shows Owned for bought items and In Premium for everything with Premium', () => {
+    useEntitlements.setState({ owned: ['lamma_pack_global_sports'] });
+    const { unmount } = render(<Shop />);
+    expect(screen.getByText(/Owned/)).toBeTruthy();
+    unmount();
+    useEntitlements.setState({ devPremium: true });
+    render(<Shop />);
+    expect(screen.queryByTestId('shop-premium')).toBeNull();
+    expect(screen.getAllByText(/In Premium/).length).toBeGreaterThan(1);
+  });
+
+  it('a bought pack plays in Spy; a locked one offers itself in the paywall', () => {
+    useEntitlements.setState({ owned: ['lamma_pack_global_sports'] });
+    render(<SpySetup />);
+    expect(screen.queryByLabelText(/Sports.*Premium/)).toBeNull();
+    fireEvent.press(screen.getByLabelText(/Instruments.*Premium/));
+    expect(pushed().at(-1)).toMatchObject({
+      params: { trigger: 'locked', item: 'lamma_pack_global_instruments' },
+    });
+  });
+
+  it('Werewolf: owning the role cards of a setup unlocks it and opens Custom', () => {
+    usePlayers.setState({ count: 8, names: [] });
+    useEntitlements.setState({ owned: ['lamma_role_witch'] });
+    render(<WerewolfSetup />);
+    // Classic at 8 players is Werewolf, Seer, Witch and Villagers.
+    fireEvent.press(screen.getByTestId('setup-classic'));
+    expect(pushed()).toHaveLength(0);
+    fireEvent.press(screen.getByTestId('setup-custom'));
+    expect(screen.getByTestId('custom-witch-plus')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('custom-hunter-locked'));
+    expect(pushed().at(-1)).toMatchObject({ params: { item: 'lamma_role_hunter' } });
+  });
+
+  it('the paywall offers to buy just the locked item', () => {
+    mockParams.trigger = 'locked';
+    mockParams.item = 'lamma_role_cupid';
+    render(<Paywall />);
+    expect(screen.getByTestId('paywall-item')).toBeTruthy();
+    expect(screen.getByText('Cupid')).toBeTruthy();
+    delete mockParams.item;
+  });
 });
 
 describe('free tier caps (monetization §3)', () => {

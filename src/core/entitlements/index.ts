@@ -4,8 +4,10 @@ import type { Pack } from '@/core/content';
 import { DEFAULT_CONFIG, useRemoteConfig, type RemoteConfig } from '@/core/remoteConfig';
 
 import { tierOf, useEntitlements, type Tier } from './state';
+import { packProductId } from './store';
 
 export { PREMIUM_PREVIEW_ALLOWED, tierOf, useEntitlements, type Tier } from './state';
+export { ITEM_PREFIX, packProductId, roleProductId } from './store';
 
 /** Where the paywall was opened from (monetization §4). */
 export type PaywallTrigger = 'cap' | 'locked' | 'gameEnd' | 'offline' | 'settings';
@@ -18,10 +20,16 @@ export function packIsFree(pack: Pack, config: RemoteConfig = DEFAULT_CONFIG): b
   return config.freePackIds ? config.freePackIds.includes(pack.id) : pack.tier === 'free';
 }
 
+/** Shop items the user bought (store product ids). Premium users own everything anyway. */
+export const useOwned = (): readonly string[] => useEntitlements((s) => s.owned ?? EMPTY);
+const EMPTY: readonly string[] = [];
+
 export function usePackLocked() {
   const tier = useTier();
   const config = useRemoteConfig();
-  return (pack: Pack) => tier === 'free' && !packIsFree(pack, config);
+  const owned = useOwned();
+  return (pack: Pack) =>
+    tier === 'free' && !packIsFree(pack, config) && !owned.includes(packProductId(pack.id));
 }
 
 /** Whether the soft end-of-game card may show now (free users, once per day). */
@@ -30,13 +38,18 @@ export function softPaywallDue(lastShown: number, now: number, hours: number): b
 }
 
 /** Opens the paywall at the point the user hit a limit. Never on app start. */
-export function openPaywall(trigger: PaywallTrigger, params: { game?: string; max?: number } = {}) {
+export function openPaywall(
+  trigger: PaywallTrigger,
+  params: { game?: string; max?: number; item?: string } = {},
+) {
   router.push({
     pathname: '/paywall',
     params: {
       trigger,
       ...(params.game && { game: params.game }),
       ...(params.max && { max: String(params.max) }),
+      // A locked word pack or role card: the paywall also offers to buy just that (Shop).
+      ...(params.item && { item: params.item }),
     },
   });
 }

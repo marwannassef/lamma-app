@@ -7,7 +7,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import { localized, type Pack } from '@/core/content';
 import { clampPlayers, MAX_NAME_LENGTH, usePlayers } from '@/core/players';
 import { useAge } from '@/core/age';
-import { openPaywall, usePackLocked, useTier } from '@/core/entitlements';
+import { openPaywall, packProductId, usePackLocked, useTier } from '@/core/entitlements';
 import { LEVELS, usePunishments, type PunishmentLevel } from '@/core/punishments';
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { usePacks, useRegions } from '@/core/settings/content';
@@ -126,7 +126,9 @@ export default function Setup() {
     .filter((g) => g.packs.length > 0);
   const teenPacks = packs.filter((p) => p.level === 'teen');
   const choosePack = (pack: Pack) => {
-    if (isLocked(pack)) return openPaywall('locked', { game: 'blendIn' });
+    if (isLocked(pack)) {
+      return openPaywall('locked', { game: 'blendIn', item: packProductId(pack.id) });
+    }
     if (pack.level === 'teen' && !teenConfirmed) return setAskTeenFor(pack);
     set({ choice: pack.id });
   };

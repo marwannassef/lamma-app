@@ -100,3 +100,49 @@ Our own backend will take over from RevenueCat's client-side info: RevenueCat we
   Settings so the app can be tested before store purchases work. Delete it before the release build:
   `bunx eas-cli env:delete --variable-name EXPO_PUBLIC_TESTER_PREMIUM --variable-environment production`
   (or in the Expo dashboard → Environment variables), then build. Without it the switch doesn't exist.
+
+## Shop items (single word packs and role cards)
+
+The Shop (🛍️ on the home screen, and "Buy just this" on a locked item's paywall) sells each Premium
+word pack and each Werewolf role card outside Basic on its own. Premium includes all of them.
+
+Create each product below in **both stores** as a **non-consumable** one-time product
+(App Store: Non-Consumable; Play: one-time product with purchase option `buy`, then import it in
+RevenueCat as **Non-consumable**). Suggested price **$0.99** (Tier 1; lower in Tiers 2–3). Do
+**not** attach them to the `lamma_pro` entitlement or add them to an offering: the app buys them
+by product ID and unlocks them from the purchase itself. Items not created yet stay listed, and
+buying one explains it isn't on sale yet.
+
+| Product ID                      | Name                                  | Type           |
+| ------------------------------- | ------------------------------------- | -------------- |
+| `lamma_pack_egypt_beach`        | Beach & summer (Egypt) word pack      | Non-consumable |
+| `lamma_pack_egypt_cheeky`       | Cheeky (Egypt) word pack              | Non-consumable |
+| `lamma_pack_egypt_fruit`        | Fruits & veggies (Egypt) word pack    | Non-consumable |
+| `lamma_pack_egypt_games`        | Games & toys (Egypt) word pack        | Non-consumable |
+| `lamma_pack_egypt_jobs`         | Jobs (Egypt) word pack                | Non-consumable |
+| `lamma_pack_egypt_ramadan`      | Ramadan & Eid (Egypt) word pack       | Non-consumable |
+| `lamma_pack_egypt_school`       | School (Egypt) word pack              | Non-consumable |
+| `lamma_pack_egypt_street`       | Street life (Egypt) word pack         | Non-consumable |
+| `lamma_pack_egypt_transport`    | Transport (Egypt) word pack           | Non-consumable |
+| `lamma_pack_global_beach`       | Beach & summer (Worldwide) word pack  | Non-consumable |
+| `lamma_pack_global_cheeky`      | Cheeky (Worldwide) word pack          | Non-consumable |
+| `lamma_pack_global_clothes`     | Clothes (Worldwide) word pack         | Non-consumable |
+| `lamma_pack_global_games`       | Games & toys (Worldwide) word pack    | Non-consumable |
+| `lamma_pack_global_instruments` | Instruments (Worldwide) word pack     | Non-consumable |
+| `lamma_pack_global_landmarks`   | World landmarks (Worldwide) word pack | Non-consumable |
+| `lamma_pack_global_school`      | School (Worldwide) word pack          | Non-consumable |
+| `lamma_pack_global_sports`      | Sports (Worldwide) word pack          | Non-consumable |
+| `lamma_pack_global_transport`   | Transport (Worldwide) word pack       | Non-consumable |
+| `lamma_role_alpha`              | Alpha Werewolf role card              | Non-consumable |
+| `lamma_role_wolf_cub`           | Wolf Cub role card                    | Non-consumable |
+| `lamma_role_lone_wolf`          | Lone Wolf role card                   | Non-consumable |
+| `lamma_role_sorcerer`           | Sorcerer role card                    | Non-consumable |
+| `lamma_role_apprentice_seer`    | Apprentice Seer role card             | Non-consumable |
+| `lamma_role_witch`              | Witch role card                       | Non-consumable |
+| `lamma_role_hunter`             | Hunter role card                      | Non-consumable |
+| `lamma_role_cupid`              | Cupid role card                       | Non-consumable |
+| `lamma_role_mayor`              | Mayor role card                       | Non-consumable |
+| `lamma_role_lycan`              | Lycan role card                       | Non-consumable |
+| `lamma_role_cursed`             | Cursed role card                      | Non-consumable |
+| `lamma_role_tanner`             | Tanner role card                      | Non-consumable |
+| `lamma_role_serial_killer`      | Serial Killer role card               | Non-consumable |

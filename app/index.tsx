@@ -1,4 +1,4 @@
-import { Redirect, router } from 'expo-router';
+import { Redirect, router, type Href } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -131,6 +131,19 @@ export default function Home() {
     <Screen>
       <View style={styles.topBar}>
         <Pressable
+          testID="open-shop"
+          accessibilityLabel={t('shop.title')}
+          onPress={() => router.push('/shop' as Href)}
+          style={[
+            styles.settingsBtn,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Text style={styles.gear} accessible={false}>
+            🛍️
+          </Text>
+        </Pressable>
+        <Pressable
           testID="open-settings"
           accessibilityLabel={t('home.openSettings')}
           onPress={() => router.push('/settings')}
@@ -182,7 +195,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  topBar: { flexDirection: 'row', justifyContent: 'flex-end' },
+  topBar: { flexDirection: 'row', justifyContent: 'flex-end', gap: space.sm },
   settingsBtn: {
     width: 48,
     height: 48,

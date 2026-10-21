@@ -186,5 +186,22 @@
     "replay": "Replay the last line",
     "skip": "Skip the line",
     "volume": "Volume {{n}}%"
+  },
+  "shop": {
+    "title": "Shop",
+    "premiumPitch": "Everything below, plus bigger groups and no ads.",
+    "tabs": {
+      "packs": "Word packs",
+      "roles": "Role cards"
+    },
+    "packsNote": "Each pack works in Spy and Blend In. Yours forever.",
+    "rolesNote": "Each card adds a Werewolf / Mafia role to your setups. Yours forever.",
+    "packSub_one": "{{count}} word · Spy & Blend In",
+    "packSub_other": "{{count}} words · Spy & Blend In",
+    "buy": "Buy",
+    "buyHint": "Buys {{name}}",
+    "owned": "Owned",
+    "inPremium": "In Premium",
+    "justThis": "Just want this one?"
   }
 }

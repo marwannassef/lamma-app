@@ -19,7 +19,9 @@ export function NightIntro({ game }: { game: GameState }) {
         {t('night.title', { n: game.night })}
       </Text>
       <Text variant="heading" align="center" tone="muted" testID="narration">
-        {t('night.fall')}
+        {game.story.setting
+          ? t(`story.${game.theme}.settings.${game.story.setting}.fall` as never)
+          : t('night.fall')}
       </Text>
       <Button
         testID="wake-wolves"

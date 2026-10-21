@@ -24,6 +24,32 @@ export type RoleId =
   | 'tanner'
   | 'serialKiller';
 
+export type Theme = 'werewolf' | 'mafia';
+
+/** Whether the dawn story tells what the Seer saw last night (§6). */
+export type SeerAtDawn = 'off' | 'result' | 'named';
+
+/** One sentence of the dawn story (§16): a beat, its variant, and ids the screen turns into names. */
+export interface StoryLine {
+  beat: string;
+  variant: number;
+  name?: PlayerId;
+  names?: PlayerId[];
+  lover?: PlayerId;
+  count?: number;
+}
+
+export interface StoryState {
+  /** Tonight's setting id (§16.3); null before the first night. */
+  setting: string | null;
+  /** Variants not used yet in this game, per beat: no repeats until a beat runs out. */
+  decks: Partial<Record<string, number[]>>;
+  /** Yesterday's vote: who was banished, null for nobody, undefined before the first day. */
+  lastVote?: PlayerId | null;
+  /** Nights in a row without a death, this one included. */
+  quietNights: number;
+}
+
 export type NightAction =
   'none' | 'wolfKill' | 'inspectWolf' | 'inspectSeer' | 'protect' | 'witch' | 'soloKill';
 
@@ -61,6 +87,7 @@ export interface HouseRules {
   revealRoleOnDeath: boolean; // false = hardcore
   doctorSelfProtect: 'never' | 'night1' | 'always';
   detailedNarration: boolean;
+  seerAtDawn: SeerAtDawn;
   mayor: 'off' | 'assigned' | 'elected';
   ambienceVolume: number; // 0–1
   deadMayTalk: boolean;
@@ -73,6 +100,7 @@ export const DEFAULT_RULES: HouseRules = {
   revealRoleOnDeath: true,
   doctorSelfProtect: 'night1',
   detailedNarration: false,
+  seerAtDawn: 'off',
   mayor: 'off',
   ambienceVolume: 0.7,
   deadMayTalk: false,
@@ -95,6 +123,8 @@ export interface NightActions {
   witchHeal: boolean;
   witchPoison?: PlayerId;
   serialKillerTarget?: PlayerId;
+  /** What the Seer saw tonight, for the dawn story's Seer result (§6). */
+  seerCheck?: { target: PlayerId; sawWolf: boolean };
 }
 
 export const emptyNightActions = (): NightActions => ({ wolfVotes: {}, witchHeal: false });
@@ -141,7 +171,7 @@ export type Phase =
   | { t: 'nightIntro'; night: number }
   | { t: 'glance'; endsAt: number }
   | { t: 'pass'; seat: number; step: 'handoff' | 'action'; startedAt: number; turn: number }
-  | { t: 'morning'; report: NightReport }
+  | { t: 'morning'; report: NightReport; story: StoryLine[] }
   | { t: 'deathEffects'; queue: Effect[]; then: 'day' | 'night' }
   | { t: 'mayorElection' }
   | { t: 'discussion'; endsAt: number | null; pausedLeft: number | null }
@@ -153,6 +183,10 @@ export type Phase =
 
 export interface GameState {
   players: Player[];
+  theme: Theme;
+  /** Kids mode: softer narration (§15.2). */
+  kids: boolean;
+  story: StoryState;
   rules: HouseRules;
   phase: Phase;
   /** Current or last night number (1-based); 0 before the first night. */

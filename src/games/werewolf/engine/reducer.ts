@@ -3,7 +3,8 @@ import type { Rng } from '@/core/rng';
 import { mayorTieBreak, resolveVote, type VoteOutcome } from './day';
 import { applyDeaths, effectsFor, hunterShot, mayorHandoff } from './deaths';
 import { resolveNight, wolfTargetable } from './night';
-import { ROLES } from './roles';
+import { ROLES, seerSees } from './roles';
+import { newStory, pickSetting, tellDawn } from './story';
 import {
   DEFAULT_RULES,
   emptyNightActions,
@@ -13,6 +14,7 @@ import {
   type PlayerId,
   type RoleId,
   type SeatAction,
+  type Theme,
   type VoteChoice,
 } from './types';
 import { checkWin } from './win';
@@ -47,10 +49,17 @@ const SEC = 1000;
 export const EXTRA_DISCUSSION_MS = 30 * SEC;
 
 /** A new game with roles dealt per seat; it starts at the first discovery turn. */
-export function newGame(roles: readonly RoleId[], rules: Partial<HouseRules> = {}): GameState {
+export function newGame(
+  roles: readonly RoleId[],
+  rules: Partial<HouseRules> = {},
+  opts: { theme?: Theme; kids?: boolean } = {},
+): GameState {
   const players = roles.map((role, id) => ({ id, role, dealtRole: role, alive: true }));
   return {
     players,
+    theme: opts.theme ?? 'werewolf',
+    kids: opts.kids ?? false,
+    story: newStory(),
     rules: { ...DEFAULT_RULES, ...rules },
     phase: { t: 'discovery', seat: 0, revealed: false },
     night: 0,
@@ -127,6 +136,9 @@ function record(state: GameState, seat: PlayerId, a: SeatAction): GameState {
   if (a.kind === 'wolf') actions.wolfVotes[seat] = a.targets;
   if (a.kind === 'doctor') actions.doctorTarget = a.target;
   if (a.kind === 'serialKiller') actions.serialKillerTarget = a.target;
+  if (a.kind === 'seer') {
+    actions.seerCheck = { target: a.target, sawWolf: seerSees(state, a.target) === 'werewolf' };
+  }
   if (a.kind === 'witch') {
     actions.witchHeal = a.heal;
     if (a.poison != null) actions.witchPoison = a.poison;
@@ -134,11 +146,12 @@ function record(state: GameState, seat: PlayerId, a: SeatAction): GameState {
   return { ...state, actions };
 }
 
-function startNight(state: GameState): GameState {
+function startNight(state: GameState, rng: Rng): GameState {
   const night = state.night + 1;
   return {
     ...state,
     night,
+    story: { ...state.story, setting: pickSetting(state.theme, state.story.setting, rng) },
     startSeat: (night - 1) % state.players.length,
     actions: emptyNightActions(),
     phase: { t: 'nightIntro', night },
@@ -162,7 +175,7 @@ function afterDeaths(
 ): GameState {
   const result = checkWin(state, executed);
   if (result) return { ...state, phase: { t: 'gameOver', result } };
-  if (then === 'night') return startNight(state);
+  if (then === 'night') return startNight(state, ctx.rng);
   if (state.day === 1 && state.rules.mayor === 'elected' && state.mayor == null) {
     return { ...state, phase: { t: 'mayorElection' } };
   }
@@ -179,11 +192,17 @@ function execute(state: GameState, outcome: VoteOutcome): GameState {
   if (outcome.t === 'mayorTieBreak') {
     return { ...state, phase: { t: 'mayorTieBreak', tied: outcome.tied } };
   }
-  if (outcome.t === 'none')
-    return { ...state, phase: { t: 'execution', playerId: null, effects: [] } };
+  if (outcome.t === 'none') {
+    return {
+      ...state,
+      story: { ...state.story, lastVote: null },
+      phase: { t: 'execution', playerId: null, effects: [] },
+    };
+  }
   const r = applyDeaths(state, [{ playerId: outcome.playerId, cause: 'execution' }]);
   return {
     ...r.state,
+    story: { ...r.state.story, lastVote: outcome.playerId },
     phase: { t: 'execution', playerId: outcome.playerId, effects: effectsFor(r.pending) },
   };
 }
@@ -211,7 +230,7 @@ export function gameReducer(state: GameState, e: GameEvent, ctx: Ctx): GameState
         if (p?.role === 'cupid' && !state.lovers) return state;
         return ph.seat + 1 < n
           ? { ...state, phase: { t: 'discovery', seat: ph.seat + 1, revealed: false } }
-          : startNight(state);
+          : startNight(state, ctx.rng);
       }
       return state;
     }
@@ -252,7 +271,13 @@ export function gameReducer(state: GameState, e: GameEvent, ctx: Ctx): GameState
         };
       }
       const { state: resolved, report } = resolveNight(recorded, recorded.actions, ctx.rng);
-      return { ...resolved, day: resolved.night, phase: { t: 'morning', report } };
+      const told = tellDawn(resolved, report, recorded.actions.seerCheck, ctx.rng);
+      return {
+        ...resolved,
+        story: told.story,
+        day: resolved.night,
+        phase: { t: 'morning', report, story: told.lines },
+      };
     }
 
     case 'morning':

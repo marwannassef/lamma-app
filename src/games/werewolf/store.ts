@@ -7,6 +7,7 @@ import { storage } from '@/core/storage';
 import {
   DEFAULT_RULES,
   gameReducer,
+  newStory,
   resumePhase,
   type GameEvent,
   type GameState,
@@ -56,6 +57,19 @@ interface WerewolfState {
   quit(): void;
 }
 
+/** Fills in fields a game saved by an older app version doesn't have. */
+function upgrade(g: GameState): GameState {
+  const phase = g.phase.t === 'morning' && !g.phase.story ? { ...g.phase, story: [] } : g.phase;
+  return {
+    ...g,
+    theme: g.theme ?? 'werewolf',
+    kids: g.kids ?? false,
+    story: g.story ?? newStory(),
+    rules: { ...DEFAULT_RULES, ...g.rules },
+    phase,
+  };
+}
+
 export const useWerewolf = create<WerewolfState>()(
   persist(
     (set, get) => ({
@@ -103,7 +117,12 @@ export const useWerewolf = create<WerewolfState>()(
       // A relaunch never resumes on a secret screen (§4).
       merge: (persisted, current) => {
         const p = persisted as Partial<WerewolfState>;
-        return { ...current, ...p, game: p.game ? resumePhase(p.game) : null };
+        return {
+          ...current,
+          ...p,
+          rules: { ...DEFAULT_RULES, ...p.rules },
+          game: p.game ? resumePhase(upgrade(p.game)) : null,
+        };
       },
     },
   ),

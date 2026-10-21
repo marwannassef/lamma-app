@@ -1,9 +1,9 @@
 import { int, shuffle, type Rng } from '@/core/rng';
 
 import { CURATED, type CuratedSetup, type Tier } from '../content/presets';
-import { balanceLabel, ROLE_WEIGHTS, type BalanceLabel } from './balance';
+import { balanceLabel, ROLE_WEIGHTS, SEER_AT_DAWN_BONUS, type BalanceLabel } from './balance';
 import { ALL_ROLES, CORE_ROLES, isPackWolf, ROLES } from './roles';
-import type { RoleCounts, RoleId } from './types';
+import type { RoleCounts, RoleId, SeerAtDawn } from './types';
 
 export type { CuratedSetup, Tier };
 
@@ -40,8 +40,10 @@ export interface Balance {
   score: number;
   label: BalanceLabel;
 }
-export const balance = (roles: RoleCounts): Balance => {
-  const score = balanceScore(roles);
+/** The setup's balance; `seerAtDawn` adds its bonus when the setup has a Seer (§6). */
+export const balance = (roles: RoleCounts, seerAtDawn: SeerAtDawn = 'off'): Balance => {
+  const score =
+    balanceScore(roles) + (count(roles, 'seer') > 0 ? SEER_AT_DAWN_BONUS[seerAtDawn] : 0);
   return { score, label: balanceLabel(score) };
 };
 

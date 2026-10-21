@@ -15,7 +15,7 @@ samples or third-party recordings. License: same as this repository.
 | `tavern.m4a` | Werewolf discussion music (speeds up in the last 30 s) |
 | `lounge.m4a` | Blend In clue circle |
 | `night-fall.m4a` | Werewolf "night falls" stinger |
-| `death-bell.m4a` | Werewolf morning with a death |
+| `dawn-sting.m4a` | Werewolf morning with a death (a low thump and a minor chord, no bells) |
 | `reveal-wolves.m4a`, `reveal-village.m4a` | Werewolf role reveal on banishment and game over |
 | `fanfare.m4a` | Win screens |
 | `chime.m4a` | Blend In turn change |

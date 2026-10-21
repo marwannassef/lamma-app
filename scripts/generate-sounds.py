@@ -75,16 +75,6 @@ def pluck(freq, sec, damping=0.996):
     return out
 
 
-def bell(freq, sec):
-    """Church-bell-like: inharmonic partials with long decay."""
-    parts = [(0.5, 0.6, 3.0), (1.0, 1.0, 2.2), (1.19, 0.5, 1.6), (1.56, 0.4, 1.2), (2.0, 0.35, 1.0), (2.74, 0.2, 0.6)]
-    n = int(sec * RATE)
-    return [
-        sum(a * math.exp(-i / (d * RATE)) * math.sin(2 * math.pi * freq * r * i / RATE) for r, a, d in parts)
-        for i in range(n)
-    ]
-
-
 def normalize(x, peak=0.85):
     m = max(1e-9, max(abs(v) for v in x))
     return [v * peak / m for v in x]
@@ -189,8 +179,14 @@ def lounge():
 
 # ---- one-shots ---------------------------------------------------------------------------------
 
-def death_bell():
-    return normalize(fade(bell(196, 4.0), 0.002, 1.0), 0.8)
+def dawn_sting():
+    """A sombre dawn: a low thump under a slowly swelling minor chord. No bells (werewolf.md §17)."""
+    sec = 3.5
+    out = silence(sec)
+    mix(out, tone(55, 1.2, ((1, 1.0), (2, 0.3)), attack=0.005, decay=0.35), 0.0, 0.9)
+    for f in (220.0, 261.63, 329.63, 440.0):
+        mix(out, tone(f, sec - 0.2, ((1, 1.0), (2, 0.25), (3, 0.08)), attack=0.9, decay=1.4), 0.15, 0.32)
+    return normalize(fade(lowpass(out, 2400), 0.005, 1.0), 0.75)
 
 
 def night_fall():
@@ -257,7 +253,7 @@ if __name__ == '__main__':
         ('heartbeat', heartbeat),
         ('tavern', tavern),
         ('lounge', lounge),
-        ('death-bell', death_bell),
+        ('dawn-sting', dawn_sting),
         ('night-fall', night_fall),
         ('reveal-wolves', reveal_wolves),
         ('reveal-village', reveal_village),

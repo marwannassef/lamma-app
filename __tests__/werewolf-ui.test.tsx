@@ -56,7 +56,14 @@ const PHASES: [string, Partial<GameState>][] = [
     'pass action',
     { night: 1, phase: { t: 'pass', seat: 1, step: 'action', startedAt: Date.now(), turn: 1 } },
   ],
-  ['morning', { night: 1, day: 1, phase: { t: 'morning', report } }],
+  [
+    'morning',
+    {
+      night: 1,
+      day: 1,
+      phase: { t: 'morning', report, story: [{ beat: 'deathOne', variant: 0, name: 1 }] },
+    },
+  ],
   [
     'hunter',
     { day: 1, phase: { t: 'deathEffects', queue: [{ t: 'hunterShot', hunter: 5 }], then: 'day' } },

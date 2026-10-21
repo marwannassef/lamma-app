@@ -18,6 +18,7 @@ import {
   useStayAwake,
 } from '@/core/ui';
 
+import { useStoryText } from '../components/story';
 import { audioCue, audioKey } from '../audio';
 import { MoonlitBackground } from '../components/MoonlitBackground';
 import type { GameState } from '../engine';
@@ -50,7 +51,7 @@ function PhaseScreen({ game }: { game: GameState }) {
     case 'pass':
       return <Pass key={`p-${ph.turn}-${ph.step}`} game={game} phase={ph} />;
     case 'morning':
-      return <Morning game={game} report={ph.report} />;
+      return <Morning game={game} report={ph.report} story={ph.story} />;
     case 'deathEffects':
       return ph.queue[0] ? (
         <DeathEffects key={JSON.stringify(ph.queue[0])} game={game} effect={ph.queue[0]} />
@@ -122,8 +123,9 @@ export default function Play() {
   const game = useWerewolf((s) => s.game);
   const { t } = useTranslation('werewolf');
   const nameOf = usePlayerName();
+  const tell = useStoryText();
   usePhaseAudio('werewolf', game ? audioKey(game) : 'none', () =>
-    game ? audioCue(game, nameOf, (r) => t(`roles.${r}.name` as never)) : {},
+    game ? audioCue(game, nameOf, (r) => t(`roles.${r}.name` as never), tell) : {},
   );
 
   // The game is saved after every step; leaving by accident must not drop out of it.

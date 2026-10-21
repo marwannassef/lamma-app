@@ -467,7 +467,7 @@ describe('events outside their phase are ignored', () => {
     { t: 'nightIntro', night: 1 },
     { t: 'glance', endsAt: 0 },
     { t: 'pass', seat: 0, step: 'handoff', startedAt: 0, turn: 0 },
-    { t: 'morning', report },
+    { t: 'morning', report, story: [] },
     { t: 'deathEffects', queue: [{ t: 'hunterShot', hunter: 1 }], then: 'day' },
     { t: 'mayorElection' },
     { t: 'discussion', endsAt: 5, pausedLeft: null },

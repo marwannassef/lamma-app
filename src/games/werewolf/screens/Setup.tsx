@@ -1,3 +1,4 @@
+import { useContentLevel } from '@/core/age';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,7 +83,10 @@ function RoleChips({ roles }: { roles: RoleCounts }) {
 function BalanceMeter({ roles }: { roles: RoleCounts }) {
   const { t } = useTranslation('werewolf');
   const { colors } = useTheme();
-  const b = balance(roles);
+  const b = balance(
+    roles,
+    useWerewolf((s) => s.rules.seerAtDawn),
+  );
   const pos = Math.max(0, Math.min(1, (b.score + 10) / 20));
   return (
     <View
@@ -481,12 +485,13 @@ export default function Setup() {
   const narration = useSettings((st) => st.narration);
   const setNarration = useSettings((st) => st.setNarration);
   const free = useTier() === 'free';
+  const level = useContentLevel();
   const caps = useRemoteConfig().caps.werewolf;
   const tierLocked = (tier: Tier) => free && !caps.setupTiers.includes(tier);
   // Free games use the default house rules (monetization §3: "all house rules" is Premium).
   const rules = free ? DEFAULT_RULES : store.rules;
 
-  // The roster is shared with Spy (3+); Werewolf needs 4–16.
+  // The roster is shared with Spy (3+); Werewolf needs 4–20.
   useEffect(() => {
     if (count < module.minPlayers) setCount(module.minPlayers);
   }, [count, setCount]);
@@ -535,7 +540,10 @@ export default function Setup() {
     }
     if (check.errors.length > 0) return setShowErrors(true);
     const dealt = dealRoles(roles, count, mathRng);
-    store.start(newGame(dealt, rules), current.kind === 'curated' ? current.tier : null);
+    store.start(
+      newGame(dealt, rules, { theme: 'werewolf', kids: level === 'kids' }),
+      current.kind === 'curated' ? current.tier : null,
+    );
     router.push('/games/werewolf/play');
   };
 
@@ -840,6 +848,22 @@ export default function Setup() {
           value={rules.revealRoleOnDeath}
           onChange={(v) => setRules({ revealRoleOnDeath: v })}
         />
+        <Options
+          testID="seer-at-dawn"
+          locked={free}
+          label={t('setup.seerAtDawn')}
+          value={rules.seerAtDawn}
+          onChange={(v) => setRules({ seerAtDawn: v })}
+          options={(['off', 'result', 'named'] as const).map((v) => ({
+            value: v,
+            label: t(`setup.seerAtDawnOptions.${v}`),
+          }))}
+        />
+        {rules.seerAtDawn !== 'off' ? (
+          <Text variant="caption" tone={rules.revealRoleOnDeath ? 'muted' : 'danger'}>
+            {t(rules.revealRoleOnDeath ? 'setup.seerAtDawnNote' : 'setup.seerAtDawnHardcore')}
+          </Text>
+        ) : null}
         <Toggle
           surface={false}
           testID="detailed"

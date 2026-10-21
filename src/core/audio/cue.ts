@@ -8,8 +8,8 @@ export interface Cue {
   /** `null` stops the channel; a missing channel keeps playing as it is. */
   loops?: Partial<Record<Channel, Loop>>;
   sfx?: SoundId;
-  /** An i18n key holding the line's variants, and its interpolation params. */
-  line?: { key: string; params?: Record<string, unknown> };
+  /** An i18n key holding the line's variants and its params, or ready-made text. */
+  line?: { key: string; params?: Record<string, unknown> } | { text: string };
 }
 
 export function applyLoops(mixer: Mixer, cue: Cue) {

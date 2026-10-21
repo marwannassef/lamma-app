@@ -57,10 +57,12 @@ export function useNarrate(ns: 'werewolf' | 'blendIn') {
  */
 export function usePhaseAudio(ns: 'werewolf' | 'blendIn', key: string, cue: () => Cue) {
   const narrate = useNarrate(ns);
+  const { i18n } = useTranslation();
   useEffect(() => {
     const c = cue();
     applyLoops(mixer, c);
-    if (c.line) narrate(c.line.key, c.line.params);
+    if (c.line && 'text' in c.line) narrator.speak(c.line.text, speechLanguage(i18n.language));
+    else if (c.line) narrate(c.line.key, c.line.params);
     // The cue is derived from the same state as the key.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);

@@ -4,7 +4,7 @@ export const SOUNDS = {
   heartbeat: require('@/assets/audio/heartbeat.m4a'),
   tavern: require('@/assets/audio/tavern.m4a'),
   lounge: require('@/assets/audio/lounge.m4a'),
-  deathBell: require('@/assets/audio/death-bell.m4a'),
+  dawnSting: require('@/assets/audio/dawn-sting.m4a'),
   nightFall: require('@/assets/audio/night-fall.m4a'),
   revealWolves: require('@/assets/audio/reveal-wolves.m4a'),
   revealVillage: require('@/assets/audio/reveal-village.m4a'),

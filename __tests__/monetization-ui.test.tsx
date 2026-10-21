@@ -58,7 +58,7 @@ describe('free tier caps (monetization §3)', () => {
     fireEvent.press(screen.getByTestId('setup-classic'));
     expect(pushed().at(-1)).toMatchObject({ params: { trigger: 'locked' } });
     fireEvent.press(screen.getByTestId('players-plus'));
-    expect(pushed().at(-1)).toMatchObject({ params: { trigger: 'cap', max: '16' } });
+    expect(pushed().at(-1)).toMatchObject({ params: { trigger: 'cap', max: '20' } });
   });
 
   it('Blend In: Undercover is locked', () => {

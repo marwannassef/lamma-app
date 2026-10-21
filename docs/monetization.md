@@ -23,11 +23,15 @@
 
 | Product        | Type                       | US price      | Egypt (starting point) | Grants               |
 | -------------- | -------------------------- | ------------- | ---------------------- | -------------------- |
-| **Party Pass** | 7 days, **does not renew** | $2.99         | ~EGP 59                | Premium for 7 days   |
-| **Annual**     | Auto-renewing subscription | $14.99 / year | ~EGP 299               | Premium while active |
-| **Lifetime**   | One-time purchase          | $24.99        | ~EGP 479               | Premium forever      |
+| **Party Pass** | 7 days, **does not renew** | $2.99         | ~EGP 53 (Tier 3)       | Premium for 7 days   |
+| **Annual**     | Auto-renewing subscription | $14.99 / year | ~EGP 270 (Tier 3)      | Premium while active |
+| **Lifetime**   | One-time purchase          | $24.99        | ~EGP 480 (Tier 3)      | Premium forever      |
 
-- Other lower-income markets: about **40% of the US price**. Rich markets (US, Gulf, Europe): the US price, using each store's local price levels. Check the exchange rates when setting the EGP prices.
+- **Three price tiers; every storefront's tier and exact local price are in `docs/pricing/lamma-pricing-tiers.xlsx`:**
+  - **Tier 1** (49 rich markets): $2.99 / $14.99 / $24.99, keeping Apple's and Google's automatic local prices.
+  - **Tier 2** (70 middle-income markets): $1.99 / $8.99 / $14.99 or the local equivalent.
+  - **Tier 3** (52 lower-income markets, including Egypt): $0.99 / $4.99 / $8.99 or the local equivalent.
+  - Tiers come from World Bank price levels and GDP per person. Review every 6 months (sooner for volatile currencies).
 - **Party Pass stacking:** buying another pass while one is active adds 7 days to the end date.
 - **Annual:** no free trial at launch (party use is short, and a trial would mostly be used for one night and cancelled). Test a 3-day trial later.
 - **Apple Family Sharing:** off at launch for Lifetime and Annual; revisit after looking at the data.
@@ -41,7 +45,7 @@
 |                                | Free                                                                | Premium                                                                     |
 | ------------------------------ | ------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | **Spy**                        | Up to **6 players**, 1 spy, free categories, Light punishments only | 3–12 players, 2 spies, all categories, all punishment levels                |
-| **Werewolf**                   | Up to **8 players**, **Basic** setups only                          | 4–16 players, all setups, Custom, Surprise me, all house rules, voice packs |
+| **Werewolf**                   | Up to **8 players**, **Basic** setups only                          | 4–20 players, all setups, Custom, Surprise me, all house rules, voice packs |
 | **Blend In**                   | Up to **6 players**, Classic mode, Normal difficulty, free topics   | 3–12 players, Undercover mode, all difficulties, all topics                 |
 | **Content**                    | 3–4 packs per game per region (Kids or Teen level)                  | All packs, including new ones as they're released                           |
 | **Ads**                        | Yes (§5)                                                            | None                                                                        |

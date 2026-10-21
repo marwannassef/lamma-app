@@ -14,14 +14,14 @@
 |                     |                                                                                                                                |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | App name            | **Lamma** (from Arabic لمّة, "the gathering")                                                                                  |
-| Store title         | `Lamma: Spy & Party Games` (localized per store locale; add game names as they ship)                                           |
+| Store title         | `Lamma: Spy, Mafia & Werewolf` (localized per store locale; adjust as games ship)                                              |
 | Tagline             | One phone. Everyone plays.                                                                                                     |
 | Publisher           | AN Ventures Labs                                                                                                               |
 | Repo                | `lamma`                                                                                                                        |
 | Bundle / package id | `com.anventureslabs.lamma`                                                                                                     |
 | Markets             | Worldwide. Launch locales are **English** and **Arabic**; the architecture must let us add a locale by adding files, not code. |
 
-**What it is:** a collection of pass-the-phone party games. One phone gets passed around the group and everyone plays in person. Launch games: **Spy**, **Werewolf** and **Blend In**; later games (Heads Up, Taboo, Charades and others) are modules inside the same app.
+**What it is:** a collection of pass-the-phone party games. One phone gets passed around the group and everyone plays in person. Launch games: **Spy**, **Werewolf / Mafia** (one game, two themes) and **Blend In**; later games (Heads Up, Taboo, Charades and others) are modules inside the same app.
 
 **Audience and rating:** teens, adults and families. Store rating **Teen** (Apple 13+, Google Teen). Content has two levels inside the app, **Kids** and **Teen**, decided by platform age signals, a "Who's playing?" choice and a parent PIN (`docs/monetization.md` §7). Adult content never ships in Lamma.
 
@@ -142,7 +142,7 @@ export interface GameModule {
 
 ### Players
 
-Up to 16 players (each game sets its own min/max; free-tier caps in `docs/monetization.md` §3), default 5. Optional names (max 14 characters) default to "Player N" localized. The list can be **drag-reordered into seating order** (Werewolf needs it). It's persisted and shared by every game.
+Up to 20 players (each game sets its own min/max; free-tier caps in `docs/monetization.md` §3), default 5. Optional names (max 14 characters) default to "Player N" localized. The list can be **drag-reordered into seating order** (Werewolf needs it). It's persisted and shared by every game.
 
 ### Scoreboard
 

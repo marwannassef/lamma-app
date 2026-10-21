@@ -141,10 +141,42 @@ else {
   }
 }
 
+// No religious references in narration, role texts and punishments (werewolf spec §17).
+{
+  const banned = JSON.parse(
+    fs.readFileSync(path.join(root, 'content', 'banned-terms.json'), 'utf8'),
+  );
+  const LETTER = '\\p{L}\\p{M}';
+  const re = (lang) =>
+    new RegExp(
+      `(?<![${LETTER}])(${banned[lang].map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?![${LETTER}])`,
+      'iu',
+    );
+  const strings = (v, out = []) => {
+    if (typeof v === 'string') out.push(v);
+    else if (v && typeof v === 'object') for (const x of Object.values(v)) strings(x, out);
+    return out;
+  };
+  const scan = (file, lang) => {
+    if (!banned[lang] || !fs.existsSync(file)) return;
+    const r = re(lang);
+    for (const s of strings(JSON.parse(fs.readFileSync(file, 'utf8')))) {
+      const m = s.match(r);
+      if (m) err(path.relative(root, file), `banned term "${m[1]}" in "${s}"`);
+    }
+  };
+  for (const lang of uiLocales) {
+    for (const f of fs.readdirSync(path.join(root, 'locales', lang)))
+      if (f.endsWith('.json') && f !== 'meta.json' && f !== 'native.json')
+        scan(path.join(root, 'locales', lang, f), lang);
+    scan(path.join(root, 'content', 'punishments', `${lang}.json`), lang);
+  }
+}
+
 if (errors.length) {
   console.error(`content check failed:\n  ${errors.join('\n  ')}`);
   process.exit(1);
 }
 console.log(
-  `content check passed: ${files.length} packs, punishments for ${Object.keys(pun).join(', ')}`,
+  `content check passed: ${files.length} packs, no banned terms, punishments for ${Object.keys(pun).join(', ')}`,
 );

@@ -243,7 +243,7 @@
   },
   "morning": {
     "title": "Morning",
-    "single": "The church bells toll… {{name}} did not survive the night.",
+    "single": "The sun rises over the rooftops… {{name}} did not survive the night.",
     "multi": "A bloodbath in the shadows… {{names}} did not survive the night.",
     "none": "A violent struggle in the dark… but no one was harmed.",
     "was": "{{name}} was the {{role}}.",
@@ -345,7 +345,7 @@
       "One by one, take the phone. Act quietly, then pass it on."
     ],
     "morningSingle": [
-      "The church bells toll… {{name}} did not survive the night.",
+      "The sun rises over the rooftops… {{name}} did not survive the night.",
       "A scream at dawn… {{name}} was found this morning.",
       "The village wakes to bad news. {{name}} is gone."
     ],

@@ -1,1 +1,4 @@
-{ "CFBundleDisplayName": "Lamma", "NSHumanReadableCopyright": "© AN Ventures Labs" }
+{
+  "ios": { "CFBundleDisplayName": "Lamma", "NSHumanReadableCopyright": "© AN Ventures Labs" },
+  "android": { "app_name": "Lamma" }
+}

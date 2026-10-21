@@ -12,7 +12,8 @@
       "channel": "development",
       "ios": {
         "simulator": true
-      }
+      },
+      "environment": "development"
     },
     "development-device": {
       "extends": "development",
@@ -23,15 +24,21 @@
     "preview": {
       "extends": "base",
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "environment": "preview"
     },
     "production": {
       "extends": "base",
       "channel": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "environment": "production"
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6824671363"
+      }
+    }
   }
 }

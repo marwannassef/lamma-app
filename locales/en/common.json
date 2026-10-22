@@ -229,5 +229,15 @@
     "owned": "Owned",
     "inPremium": "In Premium",
     "justThis": "Just want this one?"
+  },
+  "setupTabs": {
+    "play": "Play",
+    "customize": "Customize",
+    "yourSettings": "Your settings",
+    "change": "Change",
+    "changeArrow": "Change ›",
+    "item": "{{label}}: {{value}}",
+    "on": "On",
+    "off": "Off"
   }
 }

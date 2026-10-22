@@ -245,5 +245,15 @@
     "owned": "عندك",
     "inPremium": "في بريميوم",
     "justThis": "عايز دي بس؟"
+  },
+  "setupTabs": {
+    "play": "العب",
+    "customize": "خصّص",
+    "yourSettings": "إعداداتك",
+    "change": "غيّر",
+    "changeArrow": "غيّر ‹",
+    "item": "{{label}}: {{value}}",
+    "on": "شغّال",
+    "off": "مقفول"
   }
 }

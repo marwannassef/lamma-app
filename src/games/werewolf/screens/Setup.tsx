@@ -16,15 +16,18 @@ import {
   Button,
   Chip,
   ConfirmInline,
+  CustomizeSummary,
   Hint,
   HowToPlay,
   Panel,
   Pressable,
   ReorderList,
   Screen,
+  SetupTabs,
   Stepper,
   Text,
   Toggle,
+  type SetupTab,
 } from '@/core/ui';
 
 import { werewolf as module } from '..';
@@ -528,10 +531,9 @@ export default function Setup() {
   // Free games use the default house rules (monetization §3: "all house rules" is Premium).
   const rules = free ? DEFAULT_RULES : store.rules;
 
-  const playing = !!store.game && store.game.phase.t !== 'gameOver';
-  // The home tile picks the theme; it can't change while a game is running (§15.4).
+  // Werewolf and Mafia are separate home tiles: the tile picks the theme, there is no switch here.
   useEffect(() => {
-    if (isTheme(params.theme) && !playing) store.setTheme(params.theme);
+    if (isTheme(params.theme)) store.setTheme(params.theme);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.theme]);
 
@@ -570,6 +572,7 @@ export default function Setup() {
           : (cards.find((c) => c.tier === current.tier)?.roles ?? {});
   const check = validateSetup(roles, count);
   const [showErrors, setShowErrors] = useState(false);
+  const [tab, setTab] = useState<SetupTab>('play');
 
   const edit = (from: RoleCounts) => {
     const custom = { ...from, villager: 0 };
@@ -585,7 +588,11 @@ export default function Setup() {
       const role = firstLockedRole(roles, owned);
       return openPaywall('locked', { game: 'werewolf', item: role && roleProductId(role) });
     }
-    if (check.errors.length > 0) return setShowErrors(true);
+    if (check.errors.length > 0) {
+      // A custom setup's problems are shown next to its editor, on the Customize tab.
+      if (current.kind === 'custom') setTab('customize');
+      return setShowErrors(true);
+    }
     const dealt = dealRoles(roles, count, mathRng);
     store.start(
       newGame(dealt, rules, { theme: store.theme, kids: level === 'kids' }),
@@ -607,6 +614,31 @@ export default function Setup() {
   const setRules = (patch: Partial<HouseRules>) =>
     free ? openPaywall('locked', { game: 'werewolf' }) : store.setRules(patch);
 
+  const setupName =
+    current.kind === 'custom'
+      ? t('setup.custom')
+      : current.kind === 'surprise'
+        ? t('setup.surprise')
+        : current.kind === 'saved'
+          ? saved.find((x) => x.id === current.id)?.name
+          : null;
+  const summary = [
+    ...(setupName
+      ? [`🃏 ${t('common:setupTabs.item', { label: t('setup.setups'), value: setupName })}`]
+      : []),
+    `⏱️ ${t('common:setupTabs.item', {
+      label: t('setup.discussion'),
+      value: rules.discussionSeconds
+        ? t('setup.seconds', { n: rules.discussionSeconds })
+        : t('setup.untimed'),
+    })}`,
+    `🔊 ${t('common:setupTabs.item', {
+      label: t('setup.narrator'),
+      value: t(narration ? 'common:setupTabs.on' : 'common:setupTabs.off'),
+    })}`,
+  ];
+  const errors = check.errors.map((e) => <Hint key={e}>{t(`setup.errors.${e}`)}</Hint>);
+
   return (
     <Screen
       footer={<Button testID="start-game" icon="🌙" label={t('setup.start')} onPress={start} />}
@@ -616,328 +648,324 @@ export default function Setup() {
         {t('setup.lead')}
       </Text>
 
-      {!playing ? (
-        <Options
-          testID="theme"
-          label={t('setup.theme')}
-          value={store.theme}
-          onChange={(v) => store.setTheme(v)}
-          options={(['werewolf', 'mafia'] as const).map((v) => ({
-            value: v,
-            label: t(`setup.themes.${v}`),
-          }))}
-        />
-      ) : null}
+      <SetupTabs value={tab} onChange={setTab} />
 
-      <HowToPlay
-        setup={t('howTo.setup', { returnObjects: true }) as string[]}
-        play={t('howTo.play', { returnObjects: true }) as string[]}
-      />
+      {tab === 'play' ? (
+        <>
+          <HowToPlay
+            setup={t('howTo.setup', { returnObjects: true }) as string[]}
+            play={t('howTo.play', { returnObjects: true }) as string[]}
+          />
 
-      {store.game && store.game.phase.t !== 'gameOver' ? (
-        <Panel title={t('setup.inProgress')} icon="⏯️" testID="in-progress">
-          <View style={styles.cardButtons}>
-            <View style={styles.flex}>
-              <Button
-                size="md"
-                variant="secondary"
-                testID="resume"
-                label={t('setup.resume')}
-                onPress={() => router.push('/games/werewolf/play')}
-              />
-            </View>
-            <View style={styles.flex}>
-              <Button
-                size="md"
-                variant="ghost"
-                testID="discard"
-                label={t('setup.discard')}
-                onPress={store.quit}
-              />
-            </View>
-          </View>
-        </Panel>
-      ) : null}
-
-      <Stepper
-        testID="players"
-        icon="👥"
-        label={t('setup.players')}
-        sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
-        value={count}
-        min={module.minPlayers}
-        max={module.maxPlayers}
-        onChange={(n) =>
-          free && n > caps.players
-            ? openPaywall('cap', { game: 'werewolf', max: module.maxPlayers })
-            : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
-        }
-        decreaseLabel={t('setup.fewerPlayers')}
-        increaseLabel={t('setup.morePlayers')}
-        minHint={t('setup.minPlayers')}
-        maxHint={t('setup.maxPlayers')}
-      />
-
-      <Panel title={t('setup.seating')} icon="🪑">
-        <Text variant="caption" tone="muted">
-          {t('setup.seatingHint')}
-        </Text>
-        <ReorderList
-          count={count}
-          onMove={move}
-          handleLabel={(i) => t('setup.dragSeat', { name: nameOf(i) })}
-          moveUpLabel={(i) => t('setup.moveUp', { name: nameOf(i) })}
-          moveDownLabel={(i) => t('setup.moveDown', { name: nameOf(i) })}
-          renderRow={(i) => {
-            const value = names[i] ?? '';
-            const placeholder = t('common:players.defaultName', { n: i + 1 });
-            return (
-              <View
-                style={[
-                  styles.seat,
-                  { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
-                ]}
-              >
-                <Text variant="label" tone="muted" style={styles.seatNo}>
-                  {String(i + 1)}
-                </Text>
-                <Avatar player={i} size={32} />
-                <TextInput
-                  testID={`seat-${i}`}
-                  value={value}
-                  onChangeText={(v) => setName(i, v)}
-                  placeholder={placeholder}
-                  placeholderTextColor={colors.textMuted}
-                  maxLength={MAX_NAME_LENGTH}
-                  accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-                  autoCorrect={false}
-                  maxFontSizeMultiplier={2}
-                  style={[
-                    styles.seatInput,
-                    {
-                      color: colors.text,
-                      fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                    },
-                  ]}
-                />
+          {store.game && store.game.phase.t !== 'gameOver' && store.game.theme === store.theme ? (
+            <Panel title={t('setup.inProgress')} icon="⏯️" testID="in-progress">
+              <View style={styles.cardButtons}>
+                <View style={styles.flex}>
+                  <Button
+                    size="md"
+                    variant="secondary"
+                    testID="resume"
+                    label={t('setup.resume')}
+                    onPress={() => router.push('/games/werewolf/play')}
+                  />
+                </View>
+                <View style={styles.flex}>
+                  <Button
+                    size="md"
+                    variant="ghost"
+                    testID="discard"
+                    label={t('setup.discard')}
+                    onPress={store.quit}
+                  />
+                </View>
               </View>
-            );
-          }}
-        />
-      </Panel>
+            </Panel>
+          ) : null}
 
-      <Text variant="heading" accessibilityRole="header" accessibilityLabel={t('setup.setups')}>
-        {`🃏 ${t('setup.setups')}`}
-      </Text>
-      {cards.map((c) => (
-        <SetupCard
-          key={c.tier}
-          tier={c.tier}
-          roles={c.roles}
-          selected={current.kind === 'curated' && current.tier === c.tier}
-          nudge={nudge === c.tier}
-          onPick={() => setChoice({ kind: 'curated', tier: c.tier })}
-          onEdit={() => edit(c.roles)}
-          discussion={rules.discussionSeconds}
-          locked={cardLocked(c)}
-          lockedItem={(() => {
-            const r = firstLockedRole(c.roles, owned);
-            return r && roleProductId(r);
-          })()}
-        />
-      ))}
-
-      {saved.map((x) => (
-        <SavedCard
-          key={x.id}
-          setup={x}
-          selected={current.kind === 'saved' && current.id === x.id}
-          onPick={() => setChoice({ kind: 'saved', id: x.id })}
-          onDelete={() => store.deleteSetup(x.id)}
-        />
-      ))}
-
-      {count >= SURPRISE_FROM ? (
-        <SurpriseCard
-          roles={current.kind === 'surprise' ? current.roles : null}
-          locked={free}
-          onRoll={rollSurprise}
-        />
-      ) : null}
-
-      <Pressable
-        testID="setup-custom"
-        haptic={false}
-        accessibilityRole="radio"
-        accessibilityState={{ checked: current.kind === 'custom' }}
-        onPress={() =>
-          !customOpen
-            ? openPaywall('locked', { game: 'werewolf' })
-            : current.kind !== 'custom' &&
-              edit(store.customRoles ?? cards[0]?.roles ?? { werewolf: 1, seer: 1 })
-        }
-        style={[
-          styles.setupCard,
-          {
-            backgroundColor: current.kind === 'custom' ? colors.surfaceRaised : colors.surface,
-            borderColor: current.kind === 'custom' ? colors.secondary : colors.border,
-          },
-        ]}
-      >
-        <Text variant="heading">
-          {!customOpen
-            ? `🔒 ✏️ ${t('setup.custom')}`
-            : current.kind === 'custom'
-              ? `✓ ✏️ ${t('setup.custom')}`
-              : `✏️ ${t('setup.custom')}`}
-        </Text>
-        <Text variant="caption" tone="muted">
-          {t('setup.customPitch')}
-        </Text>
-        {current.kind === 'custom' ? (
-          <CustomEditor
-            roles={current.roles}
-            players={count}
-            locked={roleLocked}
-            onChange={(r) => {
-              store.setCustomRoles(r);
-              setChoice({ kind: 'custom', roles: r });
-            }}
+          <Stepper
+            testID="players"
+            icon="👥"
+            label={t('setup.players')}
+            sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
+            value={count}
+            min={module.minPlayers}
+            max={module.maxPlayers}
+            onChange={(n) =>
+              free && n > caps.players
+                ? openPaywall('cap', { game: 'werewolf', max: module.maxPlayers })
+                : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
+            }
+            decreaseLabel={t('setup.fewerPlayers')}
+            increaseLabel={t('setup.morePlayers')}
+            minHint={t('setup.minPlayers')}
+            maxHint={t('setup.maxPlayers')}
           />
-        ) : null}
-        {current.kind === 'custom' && check.errors.length === 0 ? (
-          <SaveCustom
-            onSave={(name) => {
-              const id = store.saveSetup(name, count, roles);
-              setChoice({ kind: 'saved', id });
-            }}
-          />
-        ) : null}
-      </Pressable>
 
-      {(showErrors || current.kind === 'custom') && check.errors.length > 0
-        ? check.errors.map((e) => <Hint key={e}>{t(`setup.errors.${e}`)}</Hint>)
-        : null}
-      {current.kind === 'custom'
-        ? check.warnings.map((w) => (
-            <Text
-              key={w}
-              variant="caption"
-              tone="muted"
-              align="center"
-              accessibilityLabel={t(`setup.warnings.${w}`)}
-            >
-              {`⚠️ ${t(`setup.warnings.${w}`)}`}
-            </Text>
-          ))
-        : null}
-
-      <Panel title={t('setup.sound')} icon="🔊">
-        <Toggle
-          surface={false}
-          testID="narrator"
-          label={t('setup.narrator')}
-          sublabel={t('setup.narratorSub')}
-          value={narration}
-          onChange={setNarration}
-        />
-        <Options
-          testID="ambience"
-          label={t('setup.ambience')}
-          value={rules.ambienceVolume}
-          onChange={(v) => store.setRules({ ambienceVolume: v })}
-          options={[0, 0.4, 0.7, 1].map((v) => ({
-            value: v,
-            label: v === 0 ? t('setup.ambienceOff') : `${Math.round(v * 100)}%`,
-          }))}
-        />
-      </Panel>
-
-      <Panel title={t('setup.rules')} icon="📜">
-        <Options
-          testID="discussion"
-          locked={free}
-          label={t('setup.discussion')}
-          value={rules.discussionSeconds}
-          onChange={(v) => setRules({ discussionSeconds: v })}
-          options={[
-            { value: 60 as const, label: t('setup.seconds', { n: 60 }) },
-            { value: 120 as const, label: t('setup.seconds', { n: 120 }) },
-            { value: 180 as const, label: t('setup.seconds', { n: 180 }) },
-            { value: null, label: t('setup.untimed') },
-          ]}
-        />
-        <Options
-          testID="glance"
-          locked={free}
-          label={t('setup.glance')}
-          value={rules.glanceSeconds}
-          onChange={(v) => setRules({ glanceSeconds: v })}
-          options={[8, 10, 12, 15].map((n) => ({ value: n, label: t('setup.seconds', { n }) }))}
-        />
-        <Options
-          testID="min-turn"
-          locked={free}
-          label={t('setup.minTurn')}
-          value={rules.minTurnSeconds}
-          onChange={(v) => setRules({ minTurnSeconds: v })}
-          options={[3, 4.5, 6, 8].map((n) => ({ value: n, label: t('setup.seconds', { n }) }))}
-        />
-        <Options
-          testID="doctor-self"
-          locked={free}
-          label={t('setup.doctorSelf')}
-          value={rules.doctorSelfProtect}
-          onChange={(v) => setRules({ doctorSelfProtect: v })}
-          options={(['never', 'night1', 'always'] as const).map((v) => ({
-            value: v,
-            label: t(`setup.doctorSelfOptions.${v}`),
-          }))}
-        />
-        <Options
-          testID="mayor"
-          locked={free}
-          label={t('setup.mayor')}
-          value={rules.mayor === 'elected' ? 'elected' : 'off'}
-          onChange={(v) => setRules({ mayor: v })}
-          options={(['off', 'elected'] as const).map((v) => ({
-            value: v,
-            label: t(`setup.mayorOptions.${v}`),
-          }))}
-        />
-        <Toggle
-          surface={false}
-          testID="reveal-on-death"
-          label={t('setup.revealOnDeath')}
-          sublabel={t('setup.revealOnDeathSub')}
-          value={rules.revealRoleOnDeath}
-          onChange={(v) => setRules({ revealRoleOnDeath: v })}
-        />
-        <Options
-          testID="seer-at-dawn"
-          locked={free}
-          label={t('setup.seerAtDawn')}
-          value={rules.seerAtDawn}
-          onChange={(v) => setRules({ seerAtDawn: v })}
-          options={(['off', 'result', 'named'] as const).map((v) => ({
-            value: v,
-            label: t(`setup.seerAtDawnOptions.${v}`),
-          }))}
-        />
-        {rules.seerAtDawn !== 'off' ? (
-          <Text variant="caption" tone={rules.revealRoleOnDeath ? 'muted' : 'danger'}>
-            {t(rules.revealRoleOnDeath ? 'setup.seerAtDawnNote' : 'setup.seerAtDawnHardcore')}
+          <Text variant="heading" accessibilityRole="header" accessibilityLabel={t('setup.setups')}>
+            {`🃏 ${t('setup.setups')}`}
           </Text>
-        ) : null}
-        <Toggle
-          surface={false}
-          testID="detailed"
-          label={t('setup.detailed')}
-          sublabel={t('setup.detailedSub')}
-          value={rules.detailedNarration}
-          onChange={(v) => setRules({ detailedNarration: v })}
-        />
-      </Panel>
+          {cards.map((c) => (
+            <SetupCard
+              key={c.tier}
+              tier={c.tier}
+              roles={c.roles}
+              selected={current.kind === 'curated' && current.tier === c.tier}
+              nudge={nudge === c.tier}
+              onPick={() => setChoice({ kind: 'curated', tier: c.tier })}
+              onEdit={() => edit(c.roles)}
+              discussion={rules.discussionSeconds}
+              locked={cardLocked(c)}
+              lockedItem={(() => {
+                const r = firstLockedRole(c.roles, owned);
+                return r && roleProductId(r);
+              })()}
+            />
+          ))}
+
+          {showErrors && current.kind !== 'custom' ? errors : null}
+          <CustomizeSummary lines={summary} onPress={() => setTab('customize')} />
+        </>
+      ) : (
+        <>
+          <Panel title={t('setup.seating')} icon="🪑">
+            <Text variant="caption" tone="muted">
+              {t('setup.seatingHint')}
+            </Text>
+            <ReorderList
+              count={count}
+              onMove={move}
+              handleLabel={(i) => t('setup.dragSeat', { name: nameOf(i) })}
+              moveUpLabel={(i) => t('setup.moveUp', { name: nameOf(i) })}
+              moveDownLabel={(i) => t('setup.moveDown', { name: nameOf(i) })}
+              renderRow={(i) => {
+                const value = names[i] ?? '';
+                const placeholder = t('common:players.defaultName', { n: i + 1 });
+                return (
+                  <View
+                    style={[
+                      styles.seat,
+                      { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+                    ]}
+                  >
+                    <Text variant="label" tone="muted" style={styles.seatNo}>
+                      {String(i + 1)}
+                    </Text>
+                    <Avatar player={i} size={32} />
+                    <TextInput
+                      testID={`seat-${i}`}
+                      value={value}
+                      onChangeText={(v) => setName(i, v)}
+                      placeholder={placeholder}
+                      placeholderTextColor={colors.textMuted}
+                      maxLength={MAX_NAME_LENGTH}
+                      accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                      autoCorrect={false}
+                      maxFontSizeMultiplier={2}
+                      style={[
+                        styles.seatInput,
+                        {
+                          color: colors.text,
+                          fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                        },
+                      ]}
+                    />
+                  </View>
+                );
+              }}
+            />
+          </Panel>
+
+          {saved.map((x) => (
+            <SavedCard
+              key={x.id}
+              setup={x}
+              selected={current.kind === 'saved' && current.id === x.id}
+              onPick={() => setChoice({ kind: 'saved', id: x.id })}
+              onDelete={() => store.deleteSetup(x.id)}
+            />
+          ))}
+
+          {count >= SURPRISE_FROM ? (
+            <SurpriseCard
+              roles={current.kind === 'surprise' ? current.roles : null}
+              locked={free}
+              onRoll={rollSurprise}
+            />
+          ) : null}
+
+          <Pressable
+            testID="setup-custom"
+            haptic={false}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: current.kind === 'custom' }}
+            onPress={() =>
+              !customOpen
+                ? openPaywall('locked', { game: 'werewolf' })
+                : current.kind !== 'custom' &&
+                  edit(store.customRoles ?? cards[0]?.roles ?? { werewolf: 1, seer: 1 })
+            }
+            style={[
+              styles.setupCard,
+              {
+                backgroundColor: current.kind === 'custom' ? colors.surfaceRaised : colors.surface,
+                borderColor: current.kind === 'custom' ? colors.secondary : colors.border,
+              },
+            ]}
+          >
+            <Text variant="heading">
+              {!customOpen
+                ? `🔒 ✏️ ${t('setup.custom')}`
+                : current.kind === 'custom'
+                  ? `✓ ✏️ ${t('setup.custom')}`
+                  : `✏️ ${t('setup.custom')}`}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {t('setup.customPitch')}
+            </Text>
+            {current.kind === 'custom' ? (
+              <CustomEditor
+                roles={current.roles}
+                players={count}
+                locked={roleLocked}
+                onChange={(r) => {
+                  store.setCustomRoles(r);
+                  setChoice({ kind: 'custom', roles: r });
+                }}
+              />
+            ) : null}
+            {current.kind === 'custom' && check.errors.length === 0 ? (
+              <SaveCustom
+                onSave={(name) => {
+                  const id = store.saveSetup(name, count, roles);
+                  setChoice({ kind: 'saved', id });
+                }}
+              />
+            ) : null}
+          </Pressable>
+
+          {current.kind === 'custom' ? errors : null}
+          {current.kind === 'custom'
+            ? check.warnings.map((w) => (
+                <Text
+                  key={w}
+                  variant="caption"
+                  tone="muted"
+                  align="center"
+                  accessibilityLabel={t(`setup.warnings.${w}`)}
+                >
+                  {`⚠️ ${t(`setup.warnings.${w}`)}`}
+                </Text>
+              ))
+            : null}
+
+          <Panel title={t('setup.sound')} icon="🔊">
+            <Toggle
+              surface={false}
+              testID="narrator"
+              label={t('setup.narrator')}
+              sublabel={t('setup.narratorSub')}
+              value={narration}
+              onChange={setNarration}
+            />
+            <Options
+              testID="ambience"
+              label={t('setup.ambience')}
+              value={rules.ambienceVolume}
+              onChange={(v) => store.setRules({ ambienceVolume: v })}
+              options={[0, 0.4, 0.7, 1].map((v) => ({
+                value: v,
+                label: v === 0 ? t('setup.ambienceOff') : `${Math.round(v * 100)}%`,
+              }))}
+            />
+          </Panel>
+
+          <Panel title={t('setup.rules')} icon="📜">
+            <Options
+              testID="discussion"
+              locked={free}
+              label={t('setup.discussion')}
+              value={rules.discussionSeconds}
+              onChange={(v) => setRules({ discussionSeconds: v })}
+              options={[
+                { value: 60 as const, label: t('setup.seconds', { n: 60 }) },
+                { value: 120 as const, label: t('setup.seconds', { n: 120 }) },
+                { value: 180 as const, label: t('setup.seconds', { n: 180 }) },
+                { value: null, label: t('setup.untimed') },
+              ]}
+            />
+            <Options
+              testID="glance"
+              locked={free}
+              label={t('setup.glance')}
+              value={rules.glanceSeconds}
+              onChange={(v) => setRules({ glanceSeconds: v })}
+              options={[8, 10, 12, 15].map((n) => ({ value: n, label: t('setup.seconds', { n }) }))}
+            />
+            <Options
+              testID="min-turn"
+              locked={free}
+              label={t('setup.minTurn')}
+              value={rules.minTurnSeconds}
+              onChange={(v) => setRules({ minTurnSeconds: v })}
+              options={[3, 4.5, 6, 8].map((n) => ({ value: n, label: t('setup.seconds', { n }) }))}
+            />
+            <Options
+              testID="doctor-self"
+              locked={free}
+              label={t('setup.doctorSelf')}
+              value={rules.doctorSelfProtect}
+              onChange={(v) => setRules({ doctorSelfProtect: v })}
+              options={(['never', 'night1', 'always'] as const).map((v) => ({
+                value: v,
+                label: t(`setup.doctorSelfOptions.${v}`),
+              }))}
+            />
+            <Options
+              testID="mayor"
+              locked={free}
+              label={t('setup.mayor')}
+              value={rules.mayor === 'elected' ? 'elected' : 'off'}
+              onChange={(v) => setRules({ mayor: v })}
+              options={(['off', 'elected'] as const).map((v) => ({
+                value: v,
+                label: t(`setup.mayorOptions.${v}`),
+              }))}
+            />
+            <Toggle
+              surface={false}
+              testID="reveal-on-death"
+              label={t('setup.revealOnDeath')}
+              sublabel={t('setup.revealOnDeathSub')}
+              value={rules.revealRoleOnDeath}
+              onChange={(v) => setRules({ revealRoleOnDeath: v })}
+            />
+            <Options
+              testID="seer-at-dawn"
+              locked={free}
+              label={t('setup.seerAtDawn')}
+              value={rules.seerAtDawn}
+              onChange={(v) => setRules({ seerAtDawn: v })}
+              options={(['off', 'result', 'named'] as const).map((v) => ({
+                value: v,
+                label: t(`setup.seerAtDawnOptions.${v}`),
+              }))}
+            />
+            {rules.seerAtDawn !== 'off' ? (
+              <Text variant="caption" tone={rules.revealRoleOnDeath ? 'muted' : 'danger'}>
+                {t(rules.revealRoleOnDeath ? 'setup.seerAtDawnNote' : 'setup.seerAtDawnHardcore')}
+              </Text>
+            ) : null}
+            <Toggle
+              surface={false}
+              testID="detailed"
+              label={t('setup.detailed')}
+              sublabel={t('setup.detailedSub')}
+              value={rules.detailedNarration}
+              onChange={(v) => setRules({ detailedNarration: v })}
+            />
+          </Panel>
+        </>
+      )}
     </Screen>
   );
 }

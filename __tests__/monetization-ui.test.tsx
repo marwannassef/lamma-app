@@ -67,6 +67,7 @@ describe('Shop: single packs and role cards', () => {
   it('a bought pack plays in Spy; a locked one offers itself in the paywall', () => {
     useEntitlements.setState({ owned: ['lamma_pack_global_sports'] });
     render(<SpySetup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     expect(screen.queryByLabelText(/Sports.*Premium/)).toBeNull();
     fireEvent.press(screen.getByLabelText(/Instruments.*Premium/));
     expect(pushed().at(-1)).toMatchObject({
@@ -81,6 +82,7 @@ describe('Shop: single packs and role cards', () => {
     // Classic at 8 players is Werewolf, Seer, Witch and Villagers.
     fireEvent.press(screen.getByTestId('setup-classic'));
     expect(pushed()).toHaveLength(0);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('setup-custom'));
     expect(screen.getByTestId('custom-witch-plus')).toBeTruthy();
     fireEvent.press(screen.getByTestId('custom-hunter-locked'));
@@ -106,6 +108,7 @@ describe('free tier caps (monetization §3)', () => {
       params: { trigger: 'cap', game: 'spy', max: '12' },
     });
     expect(usePlayers.getState().count).toBe(6);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     expect(screen.getByLabelText(/Sports.*Premium/)).toBeTruthy();
     // Free users play Light punishments only.
     expect(usePunishments.getState().level).toBe('light');
@@ -122,6 +125,7 @@ describe('free tier caps (monetization §3)', () => {
 
   it('Blend In: Undercover is locked', () => {
     render(<BlendInSetup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('mode-undercover'));
     expect(pushed().at(-1)).toMatchObject({ params: { trigger: 'locked', game: 'blendIn' } });
   });
@@ -139,6 +143,7 @@ describe('Kids mode', () => {
   it('hides Teen packs and asks once per session before a Teen pack', () => {
     useEntitlements.setState({ devPremium: true });
     render(<SpySetup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('cat-global-cheeky'));
     expect(screen.getByTestId('teen-confirm')).toBeTruthy();
     fireEvent.press(screen.getByTestId('teen-confirm-yes'));
@@ -149,6 +154,7 @@ describe('Kids mode', () => {
     useAge.setState({ audience: 'kids', pin: '1234' });
     useEntitlements.setState({ devPremium: true });
     render(<SpySetup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     expect(screen.queryByTestId('cat-global-cheeky')).toBeNull();
   });
 });

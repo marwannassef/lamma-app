@@ -18,14 +18,17 @@ import {
   Button,
   Chip,
   ConfirmInline,
+  CustomizeSummary,
   Hint,
   HowToPlay,
   Panel,
   Pressable,
   Screen,
+  SetupTabs,
   Stepper,
   Text,
   Toggle,
+  type SetupTab,
 } from '@/core/ui';
 
 import { blendIn as module } from '..';
@@ -102,6 +105,7 @@ export default function Setup() {
   const modeLocked = (m: string) => free && !caps.modes.includes(m);
   const escapeLocked = (d: string) => free && !caps.escape.includes(d);
   const [askTeenFor, setAskTeenFor] = useState<Pack | null>(null);
+  const [tab, setTab] = useState<SetupTab>('play');
 
   // Free users play Classic at Normal difficulty (monetization §3).
   useEffect(() => {
@@ -137,10 +141,29 @@ export default function Setup() {
     if (free && count > caps.players) {
       return openPaywall('cap', { game: 'blendIn', max: module.maxPlayers });
     }
-    if (unlocked.length === 0) return setNoPacksHint(true);
+    if (unlocked.length === 0) {
+      setTab('customize');
+      return setNoPacksHint(true);
+    }
     start(count, unlocked);
     router.push('/games/blend-in/play');
   };
+
+  const chosen = packs.find((p) => p.id === settings.choice);
+  const summary = [
+    `${settings.mode === 'classic' ? '🦎' : '🕶️'} ${t('common:setupTabs.item', {
+      label: t('setup.mode'),
+      value: t(`setup.modes.${settings.mode}.name`),
+    })}`,
+    `🗂️ ${t('common:setupTabs.item', {
+      label: t('setup.topic'),
+      value: randomSelected || !chosen ? t('setup.random') : localized(chosen.name, lang),
+    })}`,
+    `${LEVEL_EMOJI[punishments.level]} ${t('common:setupTabs.item', {
+      label: t('common:punishments.title'),
+      value: t(`common:punishments.levels.${punishments.level}`),
+    })}`,
+  ];
 
   return (
     <Screen footer={<Button testID="start" icon="🦎" label={t('setup.start')} onPress={begin} />}>
@@ -149,289 +172,304 @@ export default function Setup() {
         {t('setup.lead')}
       </Text>
 
-      {game && game.phase.t !== 'over' ? (
-        <Panel title={t('setup.inProgress')} icon="⏯️" testID="in-progress">
-          <View style={styles.row}>
-            <View style={styles.flex}>
-              <Button
-                size="md"
-                variant="secondary"
-                testID="resume"
-                label={t('setup.resume')}
-                onPress={() => router.push('/games/blend-in/play')}
-              />
+      <SetupTabs value={tab} onChange={setTab} />
+
+      {tab === 'play' ? (
+        <>
+          {game && game.phase.t !== 'over' ? (
+            <Panel title={t('setup.inProgress')} icon="⏯️" testID="in-progress">
+              <View style={styles.row}>
+                <View style={styles.flex}>
+                  <Button
+                    size="md"
+                    variant="secondary"
+                    testID="resume"
+                    label={t('setup.resume')}
+                    onPress={() => router.push('/games/blend-in/play')}
+                  />
+                </View>
+                <View style={styles.flex}>
+                  <Button
+                    size="md"
+                    variant="ghost"
+                    testID="discard"
+                    label={t('host.quit')}
+                    onPress={quit}
+                  />
+                </View>
+              </View>
+            </Panel>
+          ) : null}
+
+          <HowToPlay
+            setup={t('howTo.setup', { returnObjects: true }) as string[]}
+            play={t('howTo.play', { returnObjects: true }) as string[]}
+          />
+
+          <Stepper
+            testID="players"
+            icon="👥"
+            label={t('setup.players')}
+            sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
+            value={count}
+            min={module.minPlayers}
+            max={module.maxPlayers}
+            onChange={(n) =>
+              free && n > caps.players
+                ? openPaywall('cap', { game: 'blendIn', max: module.maxPlayers })
+                : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
+            }
+            decreaseLabel={t('setup.fewerPlayers')}
+            increaseLabel={t('setup.morePlayers')}
+            minHint={t('setup.minPlayers')}
+            maxHint={t('setup.maxPlayers')}
+          />
+          {count < 4 || count > 8 ? (
+            <Text
+              variant="caption"
+              tone="muted"
+              align="center"
+              accessibilityLabel={t('setup.bestWith')}
+            >
+              {`💡 ${t('setup.bestWith')}`}
+            </Text>
+          ) : null}
+
+          <CustomizeSummary lines={summary} onPress={() => setTab('customize')} />
+        </>
+      ) : (
+        <>
+          <Panel title={t('setup.names')} icon="✍️">
+            <View style={styles.names}>
+              {Array.from({ length: count }, (_, i) => {
+                const value = names[i] ?? '';
+                const placeholder = t('common:players.defaultName', { n: i + 1 });
+                return (
+                  <View
+                    key={i}
+                    style={[
+                      styles.nameCell,
+                      { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+                    ]}
+                  >
+                    <Avatar player={i} size={32} />
+                    <TextInput
+                      testID={`name-${i}`}
+                      value={value}
+                      onChangeText={(v) => setName(i, v)}
+                      placeholder={placeholder}
+                      placeholderTextColor={colors.textMuted}
+                      maxLength={MAX_NAME_LENGTH}
+                      accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                      autoCorrect={false}
+                      maxFontSizeMultiplier={2}
+                      style={[
+                        styles.nameInput,
+                        {
+                          color: colors.text,
+                          fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                        },
+                      ]}
+                    />
+                  </View>
+                );
+              })}
             </View>
-            <View style={styles.flex}>
-              <Button
-                size="md"
-                variant="ghost"
-                testID="discard"
-                label={t('host.quit')}
-                onPress={quit}
+          </Panel>
+
+          <Panel title={t('setup.mode')} icon="🎭">
+            {(['classic', 'undercover'] as const).map((m) => (
+              <Chip
+                key={m}
+                testID={`mode-${m}`}
+                emoji={m === 'classic' ? '🦎' : '🕶️'}
+                title={t(`setup.modes.${m}.name`)}
+                subtitle={t(`setup.modes.${m}.sub`)}
+                selected={settings.mode === m}
+                locked={modeLocked(m)}
+                lockedLabel={t('common:premium.lockedTag')}
+                onPress={() =>
+                  modeLocked(m) ? openPaywall('locked', { game: 'blendIn' }) : set({ mode: m })
+                }
               />
-            </View>
-          </View>
-        </Panel>
-      ) : null}
+            ))}
+          </Panel>
 
-      <HowToPlay
-        setup={t('howTo.setup', { returnObjects: true }) as string[]}
-        play={t('howTo.play', { returnObjects: true }) as string[]}
-      />
-
-      <Stepper
-        testID="players"
-        icon="👥"
-        label={t('setup.players')}
-        sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
-        value={count}
-        min={module.minPlayers}
-        max={module.maxPlayers}
-        onChange={(n) =>
-          free && n > caps.players
-            ? openPaywall('cap', { game: 'blendIn', max: module.maxPlayers })
-            : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
-        }
-        decreaseLabel={t('setup.fewerPlayers')}
-        increaseLabel={t('setup.morePlayers')}
-        minHint={t('setup.minPlayers')}
-        maxHint={t('setup.maxPlayers')}
-      />
-      {count < 4 || count > 8 ? (
-        <Text
-          variant="caption"
-          tone="muted"
-          align="center"
-          accessibilityLabel={t('setup.bestWith')}
-        >
-          {`💡 ${t('setup.bestWith')}`}
-        </Text>
-      ) : null}
-
-      <Panel title={t('setup.names')} icon="✍️">
-        <View style={styles.names}>
-          {Array.from({ length: count }, (_, i) => {
-            const value = names[i] ?? '';
-            const placeholder = t('common:players.defaultName', { n: i + 1 });
-            return (
-              <View
-                key={i}
+          <Panel title={t('setup.topic')} icon="🗂️">
+            <Pressable
+              testID="topic-random"
+              accessibilityRole="radio"
+              accessibilityState={{ checked: randomSelected }}
+              accessibilityLabel={`${t('setup.random')}, ${t('setup.randomSub')}`}
+              onPress={() => set({ choice: RANDOM })}
+            >
+              <LinearGradient
+                colors={
+                  randomSelected
+                    ? colors.secondaryGradient
+                    : [colors.surfaceRaised, colors.surfaceRaised]
+                }
                 style={[
-                  styles.nameCell,
-                  { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+                  styles.random,
+                  { borderColor: randomSelected ? colors.glow : colors.border },
                 ]}
               >
-                <Avatar player={i} size={32} />
-                <TextInput
-                  testID={`name-${i}`}
-                  value={value}
-                  onChangeText={(v) => setName(i, v)}
-                  placeholder={placeholder}
-                  placeholderTextColor={colors.textMuted}
-                  maxLength={MAX_NAME_LENGTH}
-                  accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-                  autoCorrect={false}
-                  maxFontSizeMultiplier={2}
-                  style={[
-                    styles.nameInput,
-                    {
-                      color: colors.text,
-                      fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                    },
-                  ]}
-                />
+                <Text style={styles.dice} accessible={false}>
+                  🎲
+                </Text>
+                <View style={styles.flex}>
+                  <Text
+                    variant="heading"
+                    style={{ color: randomSelected ? colors.onSecondary : colors.text }}
+                  >
+                    {randomSelected ? `✓ ${t('setup.random')}` : t('setup.random')}
+                  </Text>
+                  <Text
+                    variant="caption"
+                    style={{ color: randomSelected ? colors.onSecondary : colors.textMuted }}
+                  >
+                    {t('setup.randomSub')}
+                  </Text>
+                </View>
+              </LinearGradient>
+            </Pressable>
+            {groups.map((g) => (
+              <View key={g.region} style={styles.stack}>
+                {groups.length > 1 ? (
+                  <Text variant="caption" tone="muted">
+                    {t(`common:regions.${g.region}` as 'common:regions.global', {
+                      defaultValue: g.region,
+                    })}
+                  </Text>
+                ) : null}
+                <View style={styles.grid}>
+                  {g.packs.map((p) => (
+                    <View key={p.id} style={styles.cell}>
+                      <Chip
+                        testID={`topic-${p.id}`}
+                        emoji={p.emoji}
+                        title={localized(p.name, lang)}
+                        subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+                        selected={!randomSelected && settings.choice === p.id}
+                        locked={isLocked(p)}
+                        lockedLabel={t('common:premium.lockedTag')}
+                        onPress={() => choosePack(p)}
+                      />
+                    </View>
+                  ))}
+                </View>
               </View>
-            );
-          })}
-        </View>
-      </Panel>
-
-      <Panel title={t('setup.mode')} icon="🎭">
-        {(['classic', 'undercover'] as const).map((m) => (
-          <Chip
-            key={m}
-            testID={`mode-${m}`}
-            emoji={m === 'classic' ? '🦎' : '🕶️'}
-            title={t(`setup.modes.${m}.name`)}
-            subtitle={t(`setup.modes.${m}.sub`)}
-            selected={settings.mode === m}
-            locked={modeLocked(m)}
-            lockedLabel={t('common:premium.lockedTag')}
-            onPress={() =>
-              modeLocked(m) ? openPaywall('locked', { game: 'blendIn' }) : set({ mode: m })
-            }
-          />
-        ))}
-      </Panel>
-
-      <Panel title={t('setup.topic')} icon="🗂️">
-        <Pressable
-          testID="topic-random"
-          accessibilityRole="radio"
-          accessibilityState={{ checked: randomSelected }}
-          accessibilityLabel={`${t('setup.random')}, ${t('setup.randomSub')}`}
-          onPress={() => set({ choice: RANDOM })}
-        >
-          <LinearGradient
-            colors={
-              randomSelected
-                ? colors.secondaryGradient
-                : [colors.surfaceRaised, colors.surfaceRaised]
-            }
-            style={[styles.random, { borderColor: randomSelected ? colors.glow : colors.border }]}
-          >
-            <Text style={styles.dice} accessible={false}>
-              🎲
-            </Text>
-            <View style={styles.flex}>
-              <Text
-                variant="heading"
-                style={{ color: randomSelected ? colors.onSecondary : colors.text }}
-              >
-                {randomSelected ? `✓ ${t('setup.random')}` : t('setup.random')}
-              </Text>
-              <Text
-                variant="caption"
-                style={{ color: randomSelected ? colors.onSecondary : colors.textMuted }}
-              >
-                {t('setup.randomSub')}
-              </Text>
-            </View>
-          </LinearGradient>
-        </Pressable>
-        {groups.map((g) => (
-          <View key={g.region} style={styles.stack}>
-            {groups.length > 1 ? (
-              <Text variant="caption" tone="muted">
-                {t(`common:regions.${g.region}` as 'common:regions.global', {
-                  defaultValue: g.region,
-                })}
-              </Text>
+            ))}
+            {teenPacks.map((p) => (
+              <Chip
+                key={p.id}
+                testID={`topic-${p.id}`}
+                emoji={p.emoji}
+                title={`${localized(p.name, lang)} · ${t('common:teen.tag')}`}
+                subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+                selected={!randomSelected && settings.choice === p.id}
+                warning
+                locked={isLocked(p)}
+                lockedLabel={t('common:premium.lockedTag')}
+                onPress={() => choosePack(p)}
+              />
+            ))}
+            {askTeenFor ? (
+              <ConfirmInline
+                testID="teen-confirm"
+                question={t('common:teen.ask')}
+                confirmLabel={t('common:teen.yes')}
+                cancelLabel={t('common:actions.cancel')}
+                onConfirm={() => {
+                  confirmTeen();
+                  set({ choice: askTeenFor.id });
+                  setAskTeenFor(null);
+                }}
+                onCancel={() => setAskTeenFor(null)}
+              />
             ) : null}
-            <View style={styles.grid}>
-              {g.packs.map((p) => (
-                <View key={p.id} style={styles.cell}>
+            {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
+          </Panel>
+
+          <Panel title={t('common:punishments.title')} icon="😈">
+            <View style={styles.row} accessibilityRole="radiogroup">
+              {LEVELS.map((level) => (
+                <View key={level} style={styles.level}>
                   <Chip
-                    testID={`topic-${p.id}`}
-                    emoji={p.emoji}
-                    title={localized(p.name, lang)}
-                    subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
-                    selected={!randomSelected && settings.choice === p.id}
-                    locked={isLocked(p)}
-                    lockedLabel={t('common:premium.lockedTag')}
-                    onPress={() => choosePack(p)}
+                    compact
+                    testID={`level-${level}`}
+                    emoji={LEVEL_EMOJI[level]}
+                    title={t(`common:punishments.levels.${level}`)}
+                    selected={punishments.level === level}
+                    onPress={() => punishments.setLevel(level)}
                   />
                 </View>
               ))}
             </View>
-          </View>
-        ))}
-        {teenPacks.map((p) => (
-          <Chip
-            key={p.id}
-            testID={`topic-${p.id}`}
-            emoji={p.emoji}
-            title={`${localized(p.name, lang)} · ${t('common:teen.tag')}`}
-            subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
-            selected={!randomSelected && settings.choice === p.id}
-            warning
-            locked={isLocked(p)}
-            lockedLabel={t('common:premium.lockedTag')}
-            onPress={() => choosePack(p)}
-          />
-        ))}
-        {askTeenFor ? (
-          <ConfirmInline
-            testID="teen-confirm"
-            question={t('common:teen.ask')}
-            confirmLabel={t('common:teen.yes')}
-            cancelLabel={t('common:actions.cancel')}
-            onConfirm={() => {
-              confirmTeen();
-              set({ choice: askTeenFor.id });
-              setAskTeenFor(null);
-            }}
-            onCancel={() => setAskTeenFor(null)}
-          />
-        ) : null}
-        {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
-      </Panel>
+          </Panel>
 
-      <Panel title={t('common:punishments.title')} icon="😈">
-        <View style={styles.row} accessibilityRole="radiogroup">
-          {LEVELS.map((level) => (
-            <View key={level} style={styles.level}>
-              <Chip
-                compact
-                testID={`level-${level}`}
-                emoji={LEVEL_EMOJI[level]}
-                title={t(`common:punishments.levels.${level}`)}
-                selected={punishments.level === level}
-                onPress={() => punishments.setLevel(level)}
+          <Panel title={t('setup.options')} icon="⚙️" testID="options">
+            <Options<GameLength>
+              testID="length"
+              label={t('setup.length')}
+              value={settings.length}
+              onChange={(length) => set({ length })}
+              same={(a, b) =>
+                a.t === b.t && (a.t === 'target' || (b.t === 'rounds' && a.n === b.n))
+              }
+              options={[
+                ...([3, 5, 8] as const).map((n) => ({
+                  id: `r${n}`,
+                  value: { t: 'rounds' as const, n },
+                  label: t('setup.rounds', { n }),
+                })),
+                { id: 'target', value: { t: 'target' as const }, label: t('setup.target') },
+              ]}
+            />
+            <Options<1 | 2>
+              testID="clue-rounds"
+              label={t('setup.clueRounds')}
+              value={settings.clueRounds}
+              onChange={(clueRounds) => set({ clueRounds })}
+              options={[1, 2].map((n) => ({ id: String(n), value: n as 1 | 2, label: `${n}×` }))}
+            />
+            <Options<Settings['clueTimer']>
+              testID="timer"
+              label={t('setup.clueTimer')}
+              value={settings.clueTimer}
+              onChange={(clueTimer) => set({ clueTimer })}
+              options={([0, 10, 15, 20] as const).map((n) => ({
+                id: String(n),
+                value: n,
+                label: n ? t('setup.seconds', { n }) : t('setup.off'),
+              }))}
+            />
+            {settings.mode === 'classic' ? (
+              <Options<Difficulty>
+                testID="escape"
+                label={t('setup.escape')}
+                value={settings.escape}
+                onChange={(escape) => set({ escape })}
+                locked={escapeLocked}
+                lockedLabel={t('common:premium.lockedTag')}
+                options={(['easy', 'normal', 'hard'] as const).map((d) => ({
+                  id: d,
+                  value: d,
+                  label: t(`setup.escapeLevels.${d}`),
+                }))}
               />
-            </View>
-          ))}
-        </View>
-      </Panel>
-
-      <Panel title={t('setup.options')} icon="⚙️" testID="options">
-        <Options<GameLength>
-          testID="length"
-          label={t('setup.length')}
-          value={settings.length}
-          onChange={(length) => set({ length })}
-          same={(a, b) => a.t === b.t && (a.t === 'target' || (b.t === 'rounds' && a.n === b.n))}
-          options={[
-            ...([3, 5, 8] as const).map((n) => ({
-              id: `r${n}`,
-              value: { t: 'rounds' as const, n },
-              label: t('setup.rounds', { n }),
-            })),
-            { id: 'target', value: { t: 'target' as const }, label: t('setup.target') },
-          ]}
-        />
-        <Options<1 | 2>
-          testID="clue-rounds"
-          label={t('setup.clueRounds')}
-          value={settings.clueRounds}
-          onChange={(clueRounds) => set({ clueRounds })}
-          options={[1, 2].map((n) => ({ id: String(n), value: n as 1 | 2, label: `${n}×` }))}
-        />
-        <Options<Settings['clueTimer']>
-          testID="timer"
-          label={t('setup.clueTimer')}
-          value={settings.clueTimer}
-          onChange={(clueTimer) => set({ clueTimer })}
-          options={([0, 10, 15, 20] as const).map((n) => ({
-            id: String(n),
-            value: n,
-            label: n ? t('setup.seconds', { n }) : t('setup.off'),
-          }))}
-        />
-        {settings.mode === 'classic' ? (
-          <Options<Difficulty>
-            testID="escape"
-            label={t('setup.escape')}
-            value={settings.escape}
-            onChange={(escape) => set({ escape })}
-            locked={escapeLocked}
-            lockedLabel={t('common:premium.lockedTag')}
-            options={(['easy', 'normal', 'hard'] as const).map((d) => ({
-              id: d,
-              value: d,
-              label: t(`setup.escapeLevels.${d}`),
-            }))}
-          />
-        ) : null}
-        <Toggle
-          surface={false}
-          testID="never-first"
-          label={t('setup.neverFirst')}
-          sublabel={t('setup.neverFirstSub')}
-          value={settings.chameleonNeverFirst}
-          onChange={(chameleonNeverFirst) => set({ chameleonNeverFirst })}
-        />
-      </Panel>
+            ) : null}
+            <Toggle
+              surface={false}
+              testID="never-first"
+              label={t('setup.neverFirst')}
+              sublabel={t('setup.neverFirstSub')}
+              value={settings.chameleonNeverFirst}
+              onChange={(chameleonNeverFirst) => set({ chameleonNeverFirst })}
+            />
+          </Panel>
+        </>
+      )}
     </Screen>
   );
 }

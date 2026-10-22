@@ -6,8 +6,11 @@ import { useContentLevel } from '@/core/age';
 import type { Theme } from '../engine';
 import { useWerewolf } from '../store';
 
-/** The theme on screen: the running game's, or the one picked in setup. */
-export const useGameTheme = (): Theme => useWerewolf((s) => s.game?.theme ?? s.theme);
+/**
+ * The theme on screen: the home tile opened (Werewolf or Mafia). A game only plays in the theme
+ * it was started in, since Resume is offered only from its own tile.
+ */
+export const useGameTheme = (): Theme => useWerewolf((s) => s.theme);
 
 /**
  * `t` for Werewolf screens, in the game's theme (§15): Mafia strings come from the `mafia`

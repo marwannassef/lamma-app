@@ -117,12 +117,7 @@
       "named": "Name and result"
     },
     "seerAtDawnNote": "Announcing the result also tells everyone whether the Seer is still alive.",
-    "seerAtDawnHardcore": "With roles hidden on death, announcing the result still tells everyone whether the Seer is alive.",
-    "theme": "Theme",
-    "themes": {
-      "werewolf": "🐺 Werewolf",
-      "mafia": "🕴️ Mafia"
-    }
+    "seerAtDawnHardcore": "With roles hidden on death, announcing the result still tells everyone whether the Seer is alive."
   },
   "teams": {
     "village": "Village",

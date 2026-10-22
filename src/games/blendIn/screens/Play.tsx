@@ -6,12 +6,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HostAudioControls, usePhaseAudio } from '@/core/audio';
 import { allPacks, localized, type Pack } from '@/core/content';
-import { usePlayerName } from '@/core/players';
+import { useContentLevel } from '@/core/age';
+import { PlayerNamesContext, usePlayerName } from '@/core/players';
+import { useSettings } from '@/core/settings/store';
 import { space, useTheme } from '@/core/theme';
 import { ConfirmInline, Pressable, ScreenTopInset, Text, useStayAwake } from '@/core/ui';
 
 import { audioCue, audioKey } from '../audio';
 import { useBlendIn } from '../store';
+import { resumeBlendInRoom, useBlendInRoom } from '../net';
+import { HostEscape, HostLook } from './NetHost';
 import { Circle, Discuss, Escape, Over, Peek, Result, Vote } from './Phases';
 
 function QuitButton() {
@@ -60,6 +64,14 @@ const HOST_BAR_HEIGHT = 44;
 export default function Play() {
   useStayAwake();
   const game = useBlendIn((s) => s.game);
+  const { room, snapshot } = useBlendInRoom();
+  const level = useContentLevel();
+  const myName = useSettings((s) => s.myName);
+  // Resumed from setup after a relaunch: reopen the room so the phones find their seats.
+  const network = !!game?.network;
+  useEffect(() => {
+    if (network && !room) resumeBlendInRoom(myName, level === 'kids');
+  }, [level, myName, network, room]);
   const { i18n } = useTranslation();
   const nameOf = usePlayerName();
   const pack = game
@@ -84,6 +96,9 @@ export default function Play() {
     case 'peek':
       screen = <Peek key={`${key}-${ph.seat}`} game={game} pack={pack} seat={ph.seat} />;
       break;
+    case 'look':
+      screen = <HostLook key={key} game={game} pack={pack} />;
+      break;
     case 'circle':
       screen = (
         <Circle
@@ -102,7 +117,11 @@ export default function Play() {
       screen = <Vote key={`${key}-${ph.among?.join(',') ?? 'all'}`} game={game} among={ph.among} />;
       break;
     case 'escape':
-      screen = <Escape key={key} game={game} pack={pack} choices={ph.choices} />;
+      screen = game.network ? (
+        <HostEscape key={key} game={game} pack={pack} choices={ph.choices} />
+      ) : (
+        <Escape key={key} game={game} pack={pack} choices={ph.choices} />
+      );
       break;
     case 'result':
       screen = (
@@ -121,16 +140,20 @@ export default function Play() {
       screen = <Over game={game} winners={ph.winners} />;
       break;
   }
-  const secret = ph.t === 'peek' || ph.t === 'escape';
+  const secret = ph.t === 'peek' || ph.t === 'look' || ph.t === 'escape';
+  // On everyone's phone, the players are the room's, as the host seated them.
+  const names = game.network ? (snapshot?.members.map((m) => m.name) ?? null) : null;
 
   return (
-    <View style={styles.fill}>
-      <Stack.Screen options={{ gestureEnabled: false }} />
-      <ScreenTopInset.Provider value={!secret && ph.t !== 'over' ? HOST_BAR_HEIGHT : 0}>
-        {screen}
-      </ScreenTopInset.Provider>
-      {!secret && ph.t !== 'over' ? <QuitButton /> : null}
-    </View>
+    <PlayerNamesContext.Provider value={names}>
+      <View style={styles.fill}>
+        <Stack.Screen options={{ gestureEnabled: false }} />
+        <ScreenTopInset.Provider value={!secret && ph.t !== 'over' ? HOST_BAR_HEIGHT : 0}>
+          {screen}
+        </ScreenTopInset.Provider>
+        {!secret && ph.t !== 'over' ? <QuitButton /> : null}
+      </View>
+    </PlayerNamesContext.Provider>
   );
 }
 

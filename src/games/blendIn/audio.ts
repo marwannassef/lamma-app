@@ -17,6 +17,7 @@ export function audioCue(g: BlendInState, nameOf: (seat: number) => string, topi
   const ph = g.phase;
   switch (ph.t) {
     case 'peek':
+    case 'look':
       return { loops: { music: null } };
     case 'circle': {
       if (ph.clueRound === 1 && ph.turn === 0) {

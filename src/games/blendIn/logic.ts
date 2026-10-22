@@ -131,6 +131,8 @@ export const winnersOf = (totals: readonly number[]) => {
 
 export type Phase =
   | { t: 'peek'; seat: number }
+  /** Everyone's phone (network mode): every seat looks at its own card at once. */
+  | { t: 'look'; seen: number[] }
   | { t: 'circle'; clueRound: number; turn: number }
   | { t: 'discuss' }
   /** `among`: null = everyone may be accused; a list = revote among the tied players. */
@@ -146,6 +148,8 @@ export interface Memory {
 }
 
 export interface BlendInState extends Memory {
+  /** Played on everyone's phone; missing in games saved before network mode. */
+  network?: boolean;
   settings: Settings;
   players: number;
   round: Round;
@@ -196,6 +200,10 @@ function dealRound(
   };
 }
 
+/** How a round opens: the pass-the-phone peek, or everyone looking at their own phone. */
+const firstPhase = (network: boolean | undefined): Phase =>
+  network ? { t: 'look', seen: [] } : { t: 'peek', seat: 0 };
+
 /** A new game, starting with the first secret peek. Throws if no pack is playable. */
 export function newGame(
   players: number,
@@ -203,14 +211,16 @@ export function newGame(
   packs: readonly Pack[],
   memory: Memory,
   rng: Rng,
+  network = false,
 ): BlendInState {
   const { round, memory: m } = dealRound(1, players, settings, packs, memory, rng);
   return {
     ...m,
+    ...(network && { network }),
     settings,
     players,
     round,
-    phase: { t: 'peek', seat: 0 },
+    phase: firstPhase(network),
     totals: Array<number>(players).fill(0),
     roundsPlayed: 0,
   };
@@ -218,6 +228,8 @@ export function newGame(
 
 export type BlendInEvent =
   | { t: 'peeked' }
+  /** Network mode: a seat has looked at its own card. */
+  | { t: 'seen'; seat: number }
   | { t: 'nextClue' }
   | { t: 'ruleBroken' }
   | { t: 'startVote' }
@@ -249,6 +261,17 @@ export function blendInReducer(s: BlendInState, e: BlendInEvent, rng: Rng): Blen
             ? { t: 'peek', seat: ph.seat + 1 }
             : { t: 'circle', clueRound: 1, turn: 0 },
       };
+    case 'look': {
+      if (e.t !== 'seen' || e.seat < 0 || e.seat >= s.players || ph.seen.includes(e.seat)) {
+        return s;
+      }
+      const seen = [...ph.seen, e.seat];
+      return {
+        ...s,
+        phase:
+          seen.length < s.players ? { t: 'look', seen } : { t: 'circle', clueRound: 1, turn: 0 },
+      };
+    }
     case 'circle':
       if (e.t === 'ruleBroken') return finish(s, 'ruleBroken', null, null);
       if (e.t !== 'nextClue') return s;
@@ -297,7 +320,7 @@ export function blendInReducer(s: BlendInState, e: BlendInEvent, rng: Rng): Blen
         return { ...s, phase: { t: 'over', winners: winnersOf(s.totals) } };
       }
       const { round, memory } = dealRound(s.round.no + 1, s.players, s.settings, e.packs, s, rng);
-      return { ...s, ...memory, round, phase: { t: 'peek', seat: 0 } };
+      return { ...s, ...memory, round, phase: firstPhase(s.network) };
     }
     default:
       return s;

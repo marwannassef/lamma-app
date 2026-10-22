@@ -15,6 +15,7 @@ import {
   type ProductId,
   type PurchaseResult,
 } from '@/core/entitlements/purchases';
+import { useRestoreMessage } from '@/core/entitlements/restore';
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { gradients, radius, space, useTheme } from '@/core/theme';
 import { Badge, Button, Hint, Panel, Pressable, Screen, Text } from '@/core/ui';
@@ -52,6 +53,7 @@ export default function Paywall() {
   }, [params.item]);
   const price = { ...config.prices, ...local };
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
+  const restoreMessage = useRestoreMessage();
   const run = async (action: () => Promise<PurchaseResult>, unavailable: string) => {
     const r = await action();
     if (r.ok) return close();
@@ -193,7 +195,12 @@ export default function Paywall() {
       <View style={styles.links}>
         <Pressable
           testID="paywall-restore"
-          onPress={() => run(restorePurchases, t('premium.unavailable'))}
+          onPress={async () => {
+            const r = await restorePurchases();
+            // Close only when something came back; otherwise say so.
+            if (r.ok && r.found) return close();
+            setMessage(restoreMessage(r));
+          }}
           style={styles.link}
         >
           <Text variant="caption" tone="secondary">

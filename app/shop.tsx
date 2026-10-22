@@ -11,6 +11,7 @@ import {
   restorePurchases,
   type PurchaseResult,
 } from '@/core/entitlements/purchases';
+import { useRestoreMessage } from '@/core/entitlements/restore';
 import { useContentLevel } from '@/core/age';
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { gradients, radius, space } from '@/core/theme';
@@ -47,6 +48,7 @@ export default function Shop() {
     };
   }, [items]);
 
+  const restoreMessage = useRestoreMessage();
   const run = async (key: string, action: () => Promise<PurchaseResult>) => {
     setBusy(key);
     const r = await action();
@@ -145,7 +147,12 @@ export default function Shop() {
         size="md"
         testID="shop-restore"
         label={t('premium.restore')}
-        onPress={() => run('restore', restorePurchases)}
+        onPress={async () => {
+          setBusy('restore');
+          const r = await restorePurchases();
+          setBusy(null);
+          setMessage(restoreMessage(r));
+        }}
       />
     </Screen>
   );

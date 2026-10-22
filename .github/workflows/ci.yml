@@ -24,4 +24,8 @@ jobs:
       - run: npm run i18n:check
       - run: npm run content:check
       - run: npm test -- --ci
+      # Project health only. Newer Expo patch releases appear upstream without any change here,
+      # so they're reported by the weekly "Dependencies" workflow instead of failing every PR.
       - run: npx expo-doctor
+        env:
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: '1'

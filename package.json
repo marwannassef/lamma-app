@@ -15,6 +15,10 @@
     "e2e": "maestro test .maestro",
     "content:check": "node scripts/check-content.mjs"
   },
+  "engines": {
+    "node": "^24.3.0",
+    "npm": ">=11"
+  },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.17",
     "expo": "~57.0.31",

@@ -74,7 +74,14 @@ export function PlayerPicker<P extends PickablePlayer>({
             ]}
           >
             <Avatar player={p.id} size={40} ring={on ? accent : undefined} />
-            <Text variant="caption" align="center" numberOfLines={1} style={{ color: fg }}>
+            <Text
+              variant="caption"
+              align="center"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.6}
+              style={{ color: fg }}
+            >
               {on ? `✓ ${name}` : name}
             </Text>
             {tag ? (

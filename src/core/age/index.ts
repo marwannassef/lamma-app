@@ -11,14 +11,14 @@ export { capFor, effectiveLevel, isValidPin, type AgeSignal, type Audience };
 
 interface AgeState {
   audience: Audience;
-  /** 4-digit parent PIN, set the first time Kids mode is chosen. */
+  /** 4-digit parent PIN, set at first launch. Turning on Teens and adults always needs it. */
   pin: string | null;
   signal: AgeSignal;
   /** The table confirmed cheeky words this session (not persisted). */
   teenConfirmed: boolean;
   setAudience(audience: ContentLevel): void;
   setPin(pin: string): void;
-  /** Switching Kids → Teen needs the PIN; returns whether it was accepted. */
+  /** Choosing or switching to Teen needs the PIN; returns whether it was accepted. */
   unlockTeen(pin: string): boolean;
   confirmTeen(): void;
   refreshSignal(): Promise<void>;
@@ -32,8 +32,8 @@ export const useAge = create<AgeState>()(
       signal: 'unknown',
       teenConfirmed: false,
       setAudience: (audience) => {
-        // Teen is only reachable directly when no PIN guards Kids mode.
-        if (audience === 'teen' && get().audience === 'kids' && get().pin) return;
+        // With a PIN set, Teen is only reachable through unlockTeen.
+        if (audience === 'teen' && get().audience !== 'teen' && get().pin) return;
         set({ audience });
       },
       setPin: (pin) => isValidPin(pin) && set({ pin }),

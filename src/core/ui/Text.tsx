@@ -6,13 +6,20 @@ import { fontFamilyFor, useTheme, type FontRole, type FontWeight } from '@/core/
 type Variant = 'hero' | 'title' | 'heading' | 'body' | 'label' | 'caption';
 type Tone = 'default' | 'muted' | 'primary' | 'secondary' | 'danger' | 'success' | 'onPrimary';
 
-const variants: Record<Variant, { role: FontRole; weight: FontWeight; size: number }> = {
-  hero: { role: 'display', weight: 'extrabold', size: 52 },
-  title: { role: 'display', weight: 'bold', size: 32 },
-  heading: { role: 'display', weight: 'bold', size: 22 },
-  body: { role: 'body', weight: 'regular', size: 17 },
-  label: { role: 'body', weight: 'bold', size: 17 },
-  caption: { role: 'body', weight: 'semibold', size: 14 },
+/**
+ * `maxScale`: how far the phone's text size may grow each style. Body text grows the most (that's
+ * what needs reading); big titles are already large, so they grow less and don't fill the screen.
+ */
+const variants: Record<
+  Variant,
+  { role: FontRole; weight: FontWeight; size: number; maxScale: number }
+> = {
+  hero: { role: 'display', weight: 'extrabold', size: 52, maxScale: 1.2 },
+  title: { role: 'display', weight: 'bold', size: 32, maxScale: 1.3 },
+  heading: { role: 'display', weight: 'bold', size: 22, maxScale: 1.5 },
+  body: { role: 'body', weight: 'regular', size: 17, maxScale: 2 },
+  label: { role: 'body', weight: 'bold', size: 17, maxScale: 2 },
+  caption: { role: 'body', weight: 'semibold', size: 14, maxScale: 2 },
 };
 
 export interface AppTextProps extends TextProps {
@@ -29,7 +36,8 @@ function plainText(children: ReactNode): string {
 
 /**
  * The only text component screens should use. Picks Latin or Arabic fonts from the
- * string's own script, scales with dynamic type (capped at 2x) and follows writing direction.
+ * string's own script, scales with dynamic type (capped per style, at most 2x) and follows
+ * writing direction.
  */
 export function Text({
   variant = 'body',
@@ -55,12 +63,14 @@ export function Text({
     fontSize: v.size,
     lineHeight: Math.round(v.size * (v.role === 'display' ? 1.25 : 1.45)),
     color: color[tone],
-    textAlign: align,
+    // 'left' means "start of the line": React Native flips it to the right in RTL on both platforms.
+    // ('auto' follows each string's own language on iOS, so Arabic UI text landed on the left.)
+    textAlign: align === 'auto' ? 'left' : align,
     writingDirection: 'auto',
   };
   return (
     <RNText
-      maxFontSizeMultiplier={2}
+      maxFontSizeMultiplier={v.maxScale}
       accessibilityRole={variant === 'hero' || variant === 'title' ? 'header' : undefined}
       style={[base, style]}
       {...rest}

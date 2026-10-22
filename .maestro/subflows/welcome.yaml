@@ -1,6 +1,22 @@
-# First launch asks "Who's playing tonight?"; pick Teens and adults when it shows.
+# First launch: set the parent PIN (1234, twice), then choose Teens and adults, which asks for it.
+# The 4th digit submits by itself.
 appId: com.anventureslabs.lamma
 ---
+- runFlow:
+    when:
+      visible:
+        id: pin-continue
+    commands:
+      - tapOn:
+          id: pin
+      - inputText: '1234'
+      - tapOn:
+          id: pin
+      - inputText: '1234'
+- extendedWaitUntil:
+    visible:
+      id: '(audience-teen|open-settings)'
+    timeout: 15000
 - runFlow:
     when:
       visible:
@@ -8,3 +24,6 @@ appId: com.anventureslabs.lamma
     commands:
       - tapOn:
           id: audience-teen
+      - tapOn:
+          id: pin
+      - inputText: '1234'

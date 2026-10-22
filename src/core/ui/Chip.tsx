@@ -89,9 +89,9 @@ export function Chip({
               variant={compact ? 'caption' : 'label'}
               tone={selected ? 'secondary' : 'default'}
               align={compact ? 'center' : 'auto'}
-              numberOfLines={2}
+              numberOfLines={title.includes(' ') ? 2 : 1}
               adjustsFontSizeToFit
-              minimumFontScale={0.8}
+              minimumFontScale={0.6}
             >
               {title}
             </Text>
@@ -100,7 +100,7 @@ export function Chip({
                 variant="caption"
                 tone="muted"
                 align={compact ? 'center' : 'auto'}
-                numberOfLines={1}
+                numberOfLines={compact ? 1 : undefined}
               >
                 {subtitle}
               </Text>

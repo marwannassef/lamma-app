@@ -52,7 +52,8 @@ preview`, or ask Claude to run it.)
    Key ID and Issuer ID) and a Play Store app (package `com.anventureslabs.lamma`, upload the
    service account JSON).
 3. **Products**: import the three products from each store.
-4. **Entitlements**: create `premium` and attach **Annual and Lifetime only**. Don't attach the
+4. **Entitlements**: create `lamma_pro` (the identifier the app checks) and attach **Annual and
+   Lifetime only**. Don't attach the
    Party Pass: RevenueCat would treat a consumable as "forever". The app counts 7 days from each
    Party Pass purchase itself, adding a week when one is bought while another is running.
 5. **Offerings**: the `default` offering (mark it current) with three packages:
@@ -91,3 +92,11 @@ Then rebuild the app (the SDK is native code), open the paywall, and the prices 
 
 Our own backend will take over from RevenueCat's client-side info: RevenueCat webhooks → our server
 → a signed offline pass the app checks.
+
+## Before submitting to the App Store
+
+- **Remove the tester Premium switch.** TestFlight builds are made with `EXPO_PUBLIC_TESTER_PREMIUM=1`
+  (an EAS environment variable on the production environment), which shows "Preview Premium" in
+  Settings so the app can be tested before store purchases work. Delete it before the release build:
+  `bunx eas-cli env:delete --variable-name EXPO_PUBLIC_TESTER_PREMIUM --variable-environment production`
+  (or in the Expo dashboard → Environment variables), then build. Without it the switch doesn't exist.

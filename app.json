@@ -28,16 +28,17 @@
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WRITE_SETTINGS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-localization",
-        {
-          "supportsRTL": true
-        }
-      ],
+      "expo-localization",
       [
         "expo-screen-orientation",
         {
@@ -67,6 +68,9 @@
         "projectId": "5a9efbbe-0096-4f3f-a3cf-0d28780eb0bf"
       }
     },
-    "owner": "mnassef"
+    "owner": "mnassef",
+    "updates": {
+      "url": "https://u.expo.dev/5a9efbbe-0096-4f3f-a3cf-0d28780eb0bf"
+    }
   }
 }

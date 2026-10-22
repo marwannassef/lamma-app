@@ -3,7 +3,7 @@ import type PurchasesSdk from 'react-native-purchases';
 import type { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
 
 import { useEntitlements } from './state';
-import { ENTITLEMENT, partyPassUntil, productIdFor, type ProductId } from './store';
+import { ENTITLEMENT, partyPassUntil, productIdFor, STORE_PRODUCTS, type ProductId } from './store';
 
 export { STORE_PRODUCTS, type ProductId } from './store';
 
@@ -16,7 +16,27 @@ export { STORE_PRODUCTS, type ProductId } from './store';
  * the backend will take that over and sign it into the offline pass.
  */
 export type PurchaseResult =
-  { ok: true } | { ok: false; reason: 'unavailable' | 'cancelled' | 'failed' };
+  | { ok: true }
+  | {
+      ok: false;
+      reason: 'unavailable' | 'cancelled' | 'failed';
+      /** A short technical reason, shown small on the paywall so a failed test can be diagnosed. */
+      detail?: string;
+    };
+
+const NO_KEY: PurchaseResult = {
+  ok: false,
+  reason: 'unavailable',
+  detail: 'no RevenueCat key in this build',
+};
+
+/** RevenueCat's readable error code and message, e.g. "CONFIGURATION_ERROR: …". */
+export function errorDetail(e: unknown): string {
+  const err = e as { readableErrorCode?: string; code?: string; message?: string } | null;
+  const code = err?.readableErrorCode ?? err?.code;
+  const message = err?.message ?? String(e);
+  return code ? `${code}: ${message}` : message;
+}
 
 type Sdk = typeof PurchasesSdk;
 
@@ -94,29 +114,38 @@ export async function storePrices(): Promise<Partial<Record<ProductId, string>>>
 
 export async function purchase(product: ProductId): Promise<PurchaseResult> {
   const Purchases = load();
-  if (!Purchases) return { ok: false, reason: 'unavailable' };
+  if (!Purchases) return NO_KEY;
+  let found: Partial<Record<ProductId, PurchasesPackage>>;
   try {
-    const pkg = (await packages())[product];
-    if (!pkg) return { ok: false, reason: 'unavailable' };
+    found = await packages();
+  } catch (e) {
+    return { ok: false, reason: 'failed', detail: errorDetail(e) };
+  }
+  const pkg = found[product];
+  if (!pkg) {
+    const detail = Object.keys(found).length
+      ? `${STORE_PRODUCTS[product]} is not in the current offering`
+      : 'the current offering has no Lamma products';
+    return { ok: false, reason: 'unavailable', detail };
+  }
+  try {
     const { customerInfo } = await Purchases.purchasePackage(pkg);
     applyCustomerInfo(customerInfo);
     return { ok: true };
   } catch (e) {
-    return {
-      ok: false,
-      reason: (e as { userCancelled?: boolean }).userCancelled ? 'cancelled' : 'failed',
-    };
+    if ((e as { userCancelled?: boolean }).userCancelled) return { ok: false, reason: 'cancelled' };
+    return { ok: false, reason: 'failed', detail: errorDetail(e) };
   }
 }
 
 export async function restorePurchases(): Promise<PurchaseResult> {
   const Purchases = load();
-  if (!Purchases || !configurePurchases()) return { ok: false, reason: 'unavailable' };
+  if (!Purchases || !configurePurchases()) return NO_KEY;
   try {
     applyCustomerInfo(await Purchases.restorePurchases());
     return { ok: true };
-  } catch {
-    return { ok: false, reason: 'failed' };
+  } catch (e) {
+    return { ok: false, reason: 'failed', detail: errorDetail(e) };
   }
 }
 

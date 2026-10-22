@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
 
 import { minTouch, radius, space, useTheme } from '@/core/theme';
 
@@ -58,9 +58,15 @@ function RoundButton({
   );
 }
 
+/** Below this width (points, scaled by the phone's text size) the controls wrap under the label. */
+const NARROW_WIDTH = 360;
+
 export function Stepper(p: StepperProps) {
   const { colors } = useTheme();
   const [hint, setHint] = useState<string | null>(null);
+  // On a narrow row (small phone, large text) the controls go on their own line instead of
+  // squeezing the label into a sliver.
+  const [narrow, setNarrow] = useState(false);
   const step = (delta: number) => {
     const next = p.value + delta;
     if (next < p.min) return setHint(p.minHint);
@@ -68,8 +74,43 @@ export function Stepper(p: StepperProps) {
     setHint(null);
     p.onChange(next);
   };
+  const controls = (
+    <View style={styles.controls}>
+      <RoundButton
+        sign="−"
+        label={p.decreaseLabel}
+        dim={p.value <= p.min}
+        onPress={() => step(-1)}
+        testID={`${p.testID}-minus`}
+      />
+      <Text
+        variant="hero"
+        align="center"
+        style={[styles.value, { color: colors.text }]}
+        maxFontSizeMultiplier={1.3}
+        testID={`${p.testID}-value`}
+        accessibilityLabel={`${p.label}: ${p.value}`}
+      >
+        {String(p.value)}
+      </Text>
+      <RoundButton
+        sign="+"
+        label={p.increaseLabel}
+        dim={p.value >= p.max}
+        onPress={() => step(1)}
+        testID={`${p.testID}-plus`}
+      />
+    </View>
+  );
   return (
-    <View style={[styles.wrap, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+    <View
+      style={[styles.wrap, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      onLayout={(e) =>
+        setNarrow(
+          e.nativeEvent.layout.width < NARROW_WIDTH * Math.max(1, PixelRatio.getFontScale()),
+        )
+      }
+    >
       <View style={styles.row}>
         {typeof p.icon === 'string' ? (
           <Text style={styles.icon} accessible={false}>
@@ -86,32 +127,9 @@ export function Stepper(p: StepperProps) {
             </Text>
           ) : null}
         </View>
-        <View style={styles.controls}>
-          <RoundButton
-            sign="−"
-            label={p.decreaseLabel}
-            dim={p.value <= p.min}
-            onPress={() => step(-1)}
-            testID={`${p.testID}-minus`}
-          />
-          <Text
-            variant="hero"
-            align="center"
-            style={[styles.value, { color: colors.text }]}
-            testID={`${p.testID}-value`}
-            accessibilityLabel={`${p.label}: ${p.value}`}
-          >
-            {String(p.value)}
-          </Text>
-          <RoundButton
-            sign="+"
-            label={p.increaseLabel}
-            dim={p.value >= p.max}
-            onPress={() => step(1)}
-            testID={`${p.testID}-plus`}
-          />
-        </View>
+        {narrow ? null : controls}
       </View>
+      {narrow ? <View style={styles.controlsLine}>{controls}</View> : null}
       {hint ? <Hint>{hint}</Hint> : null}
     </View>
   );
@@ -128,7 +146,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   icon: { fontSize: 28, lineHeight: 36 },
   labels: { flex: 1 },
-  controls: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  controlsLine: { alignItems: 'flex-end' },
+  controls: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginStart: 'auto' },
   btn: {
     width: minTouch,
     height: minTouch,

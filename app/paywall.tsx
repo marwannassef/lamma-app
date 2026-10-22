@@ -11,6 +11,7 @@ import {
   storePrices,
   watchRewardedAd,
   type ProductId,
+  type PurchaseResult,
 } from '@/core/entitlements/purchases';
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { gradients, radius, space, useTheme } from '@/core/theme';
@@ -42,10 +43,12 @@ export default function Paywall() {
   }, []);
   const price = { ...config.prices, ...local };
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
-  const run = async (action: () => Promise<{ ok: boolean }>, unavailable: string) => {
+  const run = async (action: () => Promise<PurchaseResult>, unavailable: string) => {
     const r = await action();
-    if (r.ok) close();
-    else setMessage(unavailable);
+    if (r.ok) return close();
+    if (r.reason === 'cancelled') return setMessage(null);
+    const text = r.reason === 'failed' ? t('premium.failed') : unavailable;
+    setMessage(r.detail ? `${text}\n${t('premium.details', { detail: r.detail })}` : text);
   };
 
   return (

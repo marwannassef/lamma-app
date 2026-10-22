@@ -12,8 +12,8 @@ import { PinInput } from './PinInput';
 import { Text } from './Text';
 
 /**
- * "Who's playing" in Settings. Kids → Teen needs the parent PIN; choosing Kids without a PIN
- * sets one first. An under-13 age signal keeps Kids mode on (monetization §7).
+ * "Who's playing" in Settings. Switching to Teen needs the parent PIN; without a PIN (installs
+ * from before it was required) one is set first. An under-13 age signal keeps Kids mode on (§7).
  */
 export function AudiencePicker() {
   const { t } = useTranslation('common');
@@ -22,6 +22,7 @@ export function AudiencePicker() {
   const [value, setValue] = useState('');
   const [first, setFirst] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [target, setTarget] = useState<'kids' | 'teen'>('kids');
   const cappedKids = capFor(signal) === 'kids';
 
   const reset = () => {
@@ -35,33 +36,36 @@ export function AudiencePicker() {
     if (cappedKids) return setError(t('age.lockedByAge'));
     if (audience === 'teen') return;
     if (pin) return setStep('unlock');
-    setAudience('teen');
+    setTarget('teen');
+    setStep('setPin');
   };
   const chooseKids = () => {
     if (audience === 'kids') return;
     if (pin) return setAudience('kids');
+    setTarget('kids');
     setStep('setPin');
   };
 
-  const submit = () => {
-    if (!isValidPin(value)) return setError(t('age.pinLabel'));
+  const submit = (entered = value) => {
+    if (!isValidPin(entered)) return setError(t('age.pinLabel'));
     if (step === 'unlock') {
-      if (unlockTeen(value)) return reset();
+      if (unlockTeen(entered)) return reset();
       setValue('');
       return setError(t('age.wrongPin'));
     }
     if (step === 'setPin') {
-      setFirst(value);
+      setFirst(entered);
       setValue('');
       setError(null);
       return setStep('confirmPin');
     }
-    if (value !== first) {
+    if (entered !== first) {
       reset();
       return setError(t('age.pinMismatch'));
     }
     setPin(first);
-    setAudience('kids');
+    if (target === 'teen') unlockTeen(first);
+    else setAudience('kids');
     reset();
   };
 
@@ -97,7 +101,11 @@ export function AudiencePicker() {
             testID="settings-pin"
             label={t('age.pinLabel')}
             value={value}
-            onChange={setValue}
+            onChange={(v) => {
+              setValue(v);
+              // The 4th digit moves on by itself: on iOS the number pad covers the buttons.
+              if (isValidPin(v)) submit(v);
+            }}
           />
           <View style={styles.row}>
             <View style={styles.flex}>
@@ -105,7 +113,7 @@ export function AudiencePicker() {
                 size="md"
                 testID="settings-pin-ok"
                 label={t('age.continue')}
-                onPress={submit}
+                onPress={() => submit()}
               />
             </View>
             <View style={styles.flex}>

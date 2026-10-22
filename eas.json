@@ -4,7 +4,9 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "base": {},
+    "base": {
+      "channel": "base"
+    },
     "development": {
       "extends": "base",
       "developmentClient": true,
@@ -19,7 +21,8 @@
       "extends": "development",
       "ios": {
         "simulator": false
-      }
+      },
+      "channel": "development-device"
     },
     "preview": {
       "extends": "base",

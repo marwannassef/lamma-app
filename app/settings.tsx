@@ -4,9 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { allRegions } from '@/core/content';
-import { openPaywall, useEntitlements, useIsPremium } from '@/core/entitlements';
+import {
+  openPaywall,
+  PREMIUM_PREVIEW_ALLOWED,
+  useEntitlements,
+  useIsPremium,
+} from '@/core/entitlements';
 import { restorePurchases } from '@/core/entitlements/purchases';
-import { localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
+import { directionPending, localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
 import { useRegions } from '@/core/settings/content';
 import { useSettings, type Appearance, type LanguagePref } from '@/core/settings/store';
 import { radius, space, useTheme } from '@/core/theme';
@@ -73,7 +78,7 @@ function OptionGroup<T extends string>({
 }
 
 export default function Settings() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { scheme } = useTheme();
   const s = useSettings();
 
@@ -118,9 +123,13 @@ export default function Settings() {
             void switchLanguage(v);
           }}
         />
-        <Text variant="caption" tone="muted">
-          {t('settings.directionNote')}
-        </Text>
+        {directionPending(i18n.language) ? (
+          <Hint testID="direction-pending">{t('settings.directionPending')}</Hint>
+        ) : (
+          <Text variant="caption" tone="muted">
+            {t('settings.directionNote')}
+          </Text>
+        )}
       </Panel>
 
       <Panel title={t('age.settingsTitle')} icon="👨‍👩‍👧" testID="audience">
@@ -147,7 +156,7 @@ export default function Settings() {
           }}
         />
         {restoreMsg ? <Hint>{restoreMsg}</Hint> : null}
-        {__DEV__ ? (
+        {PREMIUM_PREVIEW_ALLOWED ? (
           <Toggle
             surface={false}
             testID="dev-premium"

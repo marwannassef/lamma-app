@@ -19,6 +19,7 @@
     "language": "Language",
     "languageSystem": "Phone language",
     "directionNote": "The app restarts when the reading direction changes.",
+    "directionPending": "Close Lamma and open it again to finish switching the reading direction.",
     "appearance": "Appearance",
     "appearanceSystem": "Match phone",
     "appearanceLight": "Light",
@@ -112,17 +113,18 @@
       "sub": "Adds cheeky words like burps and bald spots"
     },
     "setPin": "Set a parent PIN",
-    "setPinSub": "You'll need these 4 digits to switch out of Kids mode.",
+    "setPinSub": "Parents use these 4 digits to turn on Teens and adults content.",
     "confirmPin": "Enter the same 4 digits again",
     "pinMismatch": "The PINs don't match. Try again.",
-    "enterPin": "Enter the parent PIN to switch to Teens and adults",
+    "enterPin": "Enter the parent PIN to turn on Teens and adults",
     "wrongPin": "Wrong PIN. Try again.",
     "pinLabel": "4-digit PIN",
     "kidsBadge": "Kids mode",
     "lockedByAge": "This device is limited to Kids content.",
     "settingsTitle": "Who's playing",
     "continue": "Continue",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "enterPinTitle": "Parent PIN"
   },
   "premium": {
     "title": "Lamma Premium",
@@ -157,7 +159,7 @@
     "restore": "Restore purchases",
     "terms": "Terms of use",
     "privacy": "Privacy policy",
-    "unavailable": "Purchases aren't available in this build yet.",
+    "unavailable": "Purchases aren't available right now.",
     "or": "or",
     "rewardedCap": "Watch a short ad to play with your whole group this session",
     "rewardedPack": "Watch an ad to unlock this for 24 hours",
@@ -167,10 +169,12 @@
     "softTitle": "Loved it?",
     "softSub": "Get every pack, bigger groups and no ads.",
     "softCta": "See Premium",
-    "devPremium": "Preview Premium (developer build only)",
+    "devPremium": "Preview Premium (test builds only)",
     "linkSoon": "This link isn't ready yet.",
     "close": "Close",
-    "priceNote": "Prices are confirmed by the store before you pay."
+    "priceNote": "Prices are confirmed by the store before you pay.",
+    "failed": "The store couldn't complete this. Please try again.",
+    "details": "Details: {{detail}}"
   },
   "audio": {
     "pause": "Pause sound",

@@ -1,10 +1,11 @@
+import { reloadAppAsync } from 'expo';
 import { getLocales } from 'expo-localization';
-import * as Updates from 'expo-updates';
 import { createInstance, type ParseKeys } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { DevSettings, I18nManager, Platform } from 'react-native';
 
 import type { LanguagePref } from '@/core/settings/store';
+import { storage } from '@/core/storage';
 
 import { fallbackLanguage, localeMeta, namespaces, resources, supportedLanguages } from './locales';
 
@@ -51,13 +52,31 @@ export function initI18n(pref: LanguagePref) {
  */
 export function syncLayoutDirection(lang: string): boolean {
   const rtl = isRTL(lang);
-  if (Platform.OS === 'web' || I18nManager.isRTL === rtl) return false;
+  const want = rtl ? 'rtl' : 'ltr';
+  if (Platform.OS === 'web') return false;
+  if (I18nManager.isRTL === rtl) {
+    storage.removeItem(RELOAD_KEY);
+    return false;
+  }
   I18nManager.allowRTL(rtl);
   I18nManager.forceRTL(rtl);
-  if (__DEV__) DevSettings.reload();
-  else void Updates.reloadAsync();
+  // Some builds (iOS store builds) only apply a new direction on a cold start. Reload at most once
+  // per change: if the direction still hasn't flipped afterwards, carry on and let Settings ask the
+  // player to close and reopen the app, instead of reloading forever.
+  if (storage.getItem(RELOAD_KEY) === want) return false;
+  storage.setItem(RELOAD_KEY, want);
+  // reloadAppAsync works in every build (expo-updates' reloadAsync rejects when updates are off).
+  reloadAppAsync('Layout direction changed').catch(() => {
+    if (__DEV__) DevSettings.reload();
+  });
   return true;
 }
+
+const RELOAD_KEY = 'layout-direction-reload';
+
+/** True while the language's writing direction waits for the app to be reopened. */
+export const directionPending = (lang: string) =>
+  Platform.OS !== 'web' && I18nManager.isRTL !== isRTL(lang);
 
 /** Switches language at runtime, reloading the app if the writing direction flips. */
 export async function switchLanguage(pref: LanguagePref) {

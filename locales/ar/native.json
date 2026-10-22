@@ -1,1 +1,4 @@
-{ "CFBundleDisplayName": "لمّة", "NSHumanReadableCopyright": "© AN Ventures Labs" }
+{
+  "ios": { "CFBundleDisplayName": "لمّة", "NSHumanReadableCopyright": "© AN Ventures Labs" },
+  "android": { "app_name": "لمّة" }
+}

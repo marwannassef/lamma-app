@@ -5,7 +5,7 @@ import { DEFAULT_CONFIG, useRemoteConfig, type RemoteConfig } from '@/core/remot
 
 import { tierOf, useEntitlements, type Tier } from './state';
 
-export { tierOf, useEntitlements, type Tier } from './state';
+export { PREMIUM_PREVIEW_ALLOWED, tierOf, useEntitlements, type Tier } from './state';
 
 /** Where the paywall was opened from (monetization §4). */
 export type PaywallTrigger = 'cap' | 'locked' | 'gameEnd' | 'offline' | 'settings';

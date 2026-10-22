@@ -105,22 +105,78 @@ describe('paywall (monetization §4)', () => {
     expect(screen.getByText('Best value')).toBeTruthy();
     expect(screen.getByTestId('paywall-rewarded')).toBeTruthy();
     await act(async () => fireEvent.press(screen.getByTestId('paywall-buy')));
-    expect(screen.getByText("Purchases aren't available in this build yet.")).toBeTruthy();
+    expect(screen.getByText(/Purchases aren't available right now\./)).toBeTruthy();
+    expect(screen.getByText(/Details: no RevenueCat key in this build/)).toBeTruthy();
     fireEvent.press(screen.getByTestId('product-partyPass'));
     expect(screen.getByText(/Continue · \$2\.99/)).toBeTruthy();
   });
 });
 
 describe('first launch and Settings', () => {
-  it('Kids on first launch sets a PIN', () => {
-    useAge.setState({ audience: null });
+  // The 4th digit submits by itself (on iOS the number pad covers the Continue button).
+  const enterPin = (pin: string) => fireEvent.changeText(screen.getByTestId('pin'), pin);
+
+  it('first launch sets the parent PIN, then Kids needs nothing more', () => {
+    useAge.setState({ audience: null, pin: null });
     render(<Welcome />);
+    expect(screen.queryByTestId('audience-kids')).toBeNull();
+    enterPin('2468');
+    enterPin('1357'); // mismatch: start again
+    expect(screen.getByText("The PINs don't match. Try again.")).toBeTruthy();
+    enterPin('2468');
+    enterPin('2468');
     fireEvent.press(screen.getByTestId('audience-kids'));
-    fireEvent.changeText(screen.getByTestId('pin'), '2468');
-    fireEvent.press(screen.getByTestId('pin-continue'));
-    fireEvent.changeText(screen.getByTestId('pin'), '2468');
-    fireEvent.press(screen.getByTestId('pin-continue'));
     expect(useAge.getState()).toMatchObject({ audience: 'kids', pin: '2468' });
+    expect(router.replace).toHaveBeenCalledWith('/');
+  });
+
+  it('choosing Teens and adults on first launch asks for the PIN', () => {
+    useAge.setState({ audience: null, pin: null });
+    render(<Welcome />);
+    enterPin('2468');
+    enterPin('2468');
+    fireEvent.press(screen.getByTestId('audience-teen'));
+    enterPin('1111');
+    expect(screen.getByText('Wrong PIN. Try again.')).toBeTruthy();
+    expect(useAge.getState().audience).toBeNull();
+    fireEvent.press(screen.getByTestId('pin-cancel'));
+    fireEvent.press(screen.getByTestId('audience-teen'));
+    enterPin('2468');
+    expect(useAge.getState().audience).toBe('teen');
+  });
+
+  it('asks an install without a PIN to set one, keeping its choice', () => {
+    useAge.setState({ audience: 'teen', pin: null });
+    render(<Welcome />);
+    enterPin('9876');
+    enterPin('9876');
+    expect(useAge.getState()).toMatchObject({ audience: 'teen', pin: '9876' });
+    expect(router.replace).toHaveBeenCalledWith('/');
+  });
+
+  it('keeps Teen locked when the device says the user is under 13', () => {
+    useAge.setState({ audience: null, pin: '2468', signal: 'under13' });
+    render(<Welcome />);
+    fireEvent.press(screen.getByTestId('audience-teen'));
+    expect(screen.getByTestId('welcome-error')).toBeTruthy();
+    useAge.setState({ signal: 'unknown' });
+  });
+
+  it('Settings without a PIN sets one before switching to Teen', () => {
+    useAge.setState({ audience: 'kids', pin: null });
+    render(<Settings />);
+    fireEvent.press(screen.getByTestId('audience-teen'));
+    const enter = () => fireEvent.changeText(screen.getByTestId('settings-pin'), '4321');
+    enter(); // set
+    enter(); // confirm
+    expect(useAge.getState()).toMatchObject({ audience: 'teen', pin: '4321' });
+  });
+
+  it('the Continue button still works for a typed PIN', () => {
+    useAge.setState({ audience: null, pin: null });
+    render(<Welcome />);
+    fireEvent.press(screen.getByTestId('pin-continue'));
+    expect(screen.getByText('4-digit PIN')).toBeTruthy();
   });
 
   it('switching back to Teen in Settings needs the PIN', () => {
@@ -128,10 +184,8 @@ describe('first launch and Settings', () => {
     render(<Settings />);
     fireEvent.press(screen.getByTestId('audience-teen'));
     fireEvent.changeText(screen.getByTestId('settings-pin'), '1111');
-    fireEvent.press(screen.getByTestId('settings-pin-ok'));
     expect(screen.getByText('Wrong PIN. Try again.')).toBeTruthy();
     fireEvent.changeText(screen.getByTestId('settings-pin'), '2468');
-    fireEvent.press(screen.getByTestId('settings-pin-ok'));
     expect(useAge.getState().audience).toBe('teen');
   });
 

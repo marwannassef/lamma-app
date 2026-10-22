@@ -23,7 +23,8 @@ export { STORE_PRODUCTS, type ProductId } from './store';
  * the backend will take that over and sign it into the offline pass.
  */
 export type PurchaseResult =
-  | { ok: true }
+  /** `found` (restore only): whether the store had anything to give back. */
+  | { ok: true; found?: boolean }
   | {
       ok: false;
       reason: 'unavailable' | 'cancelled' | 'failed';
@@ -155,7 +156,9 @@ export async function restorePurchases(): Promise<PurchaseResult> {
   if (!Purchases || !configurePurchases()) return NO_KEY;
   try {
     applyCustomerInfo(await Purchases.restorePurchases());
-    return { ok: true };
+    const s = useEntitlements.getState();
+    const found = s.storePremium || (s.partyPassUntil ?? 0) > Date.now() || s.owned.length > 0;
+    return { ok: true, found };
   } catch (e) {
     return { ok: false, reason: 'failed', detail: errorDetail(e) };
   }

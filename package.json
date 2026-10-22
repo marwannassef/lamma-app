@@ -15,9 +15,13 @@
     "e2e": "maestro test .maestro",
     "content:check": "node scripts/check-content.mjs"
   },
+  "engines": {
+    "node": "^24.3.0",
+    "npm": ">=11"
+  },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.17",
-    "expo": "~57.0.30",
+    "expo": "~57.0.31",
     "expo-asset": "~57.0.20",
     "expo-audio": "~57.0.5",
     "expo-brightness": "~57.0.2",
@@ -29,7 +33,7 @@
     "expo-linear-gradient": "~57.0.2",
     "expo-linking": "~57.0.13",
     "expo-localization": "~57.0.2",
-    "expo-router": "~57.0.28",
+    "expo-router": "~57.0.29",
     "expo-screen-capture": "~57.0.4",
     "expo-screen-orientation": "~57.0.3",
     "expo-speech": "~57.0.3",

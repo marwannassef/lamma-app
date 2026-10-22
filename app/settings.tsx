@@ -11,6 +11,7 @@ import {
   useIsPremium,
 } from '@/core/entitlements';
 import { restorePurchases } from '@/core/entitlements/purchases';
+import { useRestoreMessage } from '@/core/entitlements/restore';
 import { directionPending, localeMeta, supportedLanguages, switchLanguage } from '@/core/i18n';
 import { useRegions } from '@/core/settings/content';
 import { useSettings, type Appearance, type LanguagePref } from '@/core/settings/store';
@@ -99,6 +100,7 @@ export default function Settings() {
   const regions = useRegions();
   const [lastRegionHint, setLastRegionHint] = useState(false);
   const [restoreMsg, setRestoreMsg] = useState<string | null>(null);
+  const restoreMessage = useRestoreMessage();
   const isPremium = useIsPremium();
   const { devPremium, setDevPremium } = useEntitlements();
 
@@ -151,8 +153,7 @@ export default function Settings() {
           testID="restore"
           label={t('premium.restore')}
           onPress={async () => {
-            const r = await restorePurchases();
-            setRestoreMsg(r.ok ? null : t('premium.unavailable'));
+            setRestoreMsg(restoreMessage(await restorePurchases()));
           }}
         />
         {restoreMsg ? <Hint>{restoreMsg}</Hint> : null}

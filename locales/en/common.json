@@ -204,7 +204,9 @@
     "close": "Close",
     "priceNote": "Prices are confirmed by the store before you pay.",
     "failed": "The store couldn't complete this. Please try again.",
-    "details": "Details: {{detail}}"
+    "details": "Details: {{detail}}",
+    "restored": "Purchases restored ✓",
+    "nothingToRestore": "No purchases found for this store account. A Party Pass can't be restored after reinstalling or on another phone."
   },
   "audio": {
     "pause": "Pause sound",

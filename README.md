@@ -10,7 +10,9 @@ Expo SDK 57 · React Native · TypeScript (strict) · Expo Router · Zustand + M
 
 ## Getting started
 
-Requires Node 22+, Xcode (iOS) and/or Android Studio (Android). MMKV is a native module, so the app runs in a **development build**, not Expo Go.
+Requires **Node 24** (the version in `.nvmrc`; it comes with npm 11), Xcode (iOS) and/or Android Studio (Android). MMKV is a native module, so the app runs in a **development build**, not Expo Go.
+
+Use the same Node locally as CI and EAS: `package-lock.json` must be written by that npm, or `npm ci` rejects it. Add packages with `npx expo install <package>` and commit the lockfile it writes. The weekly **Dependencies** workflow says when Expo has newer patches; then run `npx expo install --fix`.
 
 ```bash
 npm install

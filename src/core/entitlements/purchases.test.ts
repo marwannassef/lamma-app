@@ -127,9 +127,14 @@ describe('purchases (RevenueCat)', () => {
     expect(sdk.purchasePackage).toHaveBeenCalledWith(pkg('lamma_premium_annual:annual', 'EGP 299'));
     expect(state.useEntitlements.getState().storePremium).toBe(true);
 
-    expect(await mod.restorePurchases()).toEqual({ ok: true });
+    // A pass bought just now comes back.
+    expect(await mod.restorePurchases()).toEqual({ ok: true, found: true });
     expect(state.useEntitlements.getState().storePremium).toBe(false);
     expect(state.useEntitlements.getState().partyPassUntil).toBeGreaterThan(Date.now());
+
+    // Nothing on this store account (an old pass, long expired): restore works, finds nothing.
+    sdk.restorePurchases.mockResolvedValueOnce(info(false, ['2020-01-01T00:00:00Z']));
+    expect(await mod.restorePurchases()).toEqual({ ok: true, found: false });
   });
 
   it('tells a cancelled purchase apart from a failed one', async () => {

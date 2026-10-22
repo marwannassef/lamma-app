@@ -22,6 +22,11 @@ interface SettingsState {
   /** How the home screen shows the games: a searchable list or the 3D wheel. */
   homeView: 'wheel' | 'list';
   setHomeView(view: 'wheel' | 'list'): void;
+  /** This phone's name in network games (what the other phones see). */
+  myName: string;
+  setMyName(name: string): void;
+  /** Random id for network games, so a phone rejoins its own seat. Not tied to the person. */
+  deviceId: string;
   setLanguage(language: LanguagePref): void;
   setAppearance(appearance: Appearance): void;
   setHaptics(on: boolean): void;
@@ -43,6 +48,9 @@ export const useSettings = create<SettingsState>()(
       regions: null,
       homeView: 'wheel',
       setHomeView: (homeView) => set({ homeView }),
+      myName: '',
+      setMyName: (myName) => set({ myName }),
+      deviceId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
       setLanguage: (language) => set({ language }),
       setAppearance: (appearance) => set({ appearance }),
       setHaptics: (haptics) => set({ haptics }),

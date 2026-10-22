@@ -41,6 +41,7 @@ export function audioCue(
   const ambience = { id: sfx.ambience, volume: g.rules.ambienceVolume };
   switch (ph.t) {
     case 'discovery':
+    case 'reveal':
       return { loops: { ambience: null, music: null } };
     case 'nightIntro': {
       // Tonight's setting opens the night and comes back in the dawn story (§16.3).
@@ -57,6 +58,9 @@ export function audioCue(
     case 'pass':
       // The ambience masks taps and footsteps during the pass (§10); it runs at full rule volume.
       return { loops: { ambience, music: null }, line: { key: 'say.passStart' } };
+    case 'actions':
+      // Network mode: everyone acts at once on their own phone, under the same masking ambience.
+      return { loops: { ambience, music: null }, line: { key: 'say.phonesStart' } };
     case 'morning':
       // The dawn story (§16) is read aloud exactly as it's shown on screen.
       return {

@@ -16,6 +16,7 @@ import {
   type Theme,
   type Tier,
 } from './engine';
+import type { Member } from './net/host';
 import { regionTheme } from './theme';
 
 export type SetupChoice =
@@ -52,6 +53,9 @@ interface WerewolfState {
   theme: Theme;
   /** The theme of the last game started; it goes first on the home screen. */
   lastTheme: Theme | null;
+  /** A network game's players in seat order, so a relaunched host gives them their seats back. */
+  netMembers: Member[] | null;
+  setNetMembers(members: Member[] | null): void;
   setTheme(theme: Theme): void;
   setRules(patch: Partial<HouseRules>): void;
   setCustomRoles(roles: RoleCounts): void;
@@ -89,6 +93,8 @@ export const useWerewolf = create<WerewolfState>()(
       savedSetups: [],
       theme: regionTheme(),
       lastTheme: null,
+      netMembers: null,
+      setNetMembers: (netMembers) => set({ netMembers }),
       setTheme: (theme) => set({ theme }),
       setRules: (patch) => set((s) => ({ rules: { ...s.rules, ...patch } })),
       setCustomRoles: (customRoles) => set({ customRoles }),

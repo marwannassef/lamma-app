@@ -1,0 +1,166 @@
+// The host's room in setup (werewolf-network.md §5): open it, show the room code, and seat the
+// players who joined.
+import { useState } from 'react';
+import { StyleSheet, TextInput, View } from 'react-native';
+
+import { roomCode } from '@/core/net/roomCode';
+import { MAX_NAME_LENGTH } from '@/core/players';
+import { useSettings } from '@/core/settings/store';
+import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
+import { Avatar, Button, Hint, Panel, Pressable, ReorderList, Text } from '@/core/ui';
+
+import { useWerewolfT } from '../components/i18n';
+import type { Theme } from '../engine';
+import { openRoom, useHostRoom } from '../net/room';
+
+/** "192.168.1.5:47777" → its room code, or null when the phone has no local address. */
+function codeOf(address: string) {
+  const colon = address.lastIndexOf(':');
+  if (colon <= 0) return null;
+  return roomCode(address.slice(0, colon), Number(address.slice(colon + 1)));
+}
+
+export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; game: string }) {
+  const { t } = useWerewolfT(['common']);
+  const { colors } = useTheme();
+  const myName = useSettings((s) => s.myName);
+  const setMyName = useSettings((s) => s.setMyName);
+  const { room, snapshot } = useHostRoom();
+  const [state, setState] = useState<'idle' | 'opening' | 'failed' | 'needName'>('idle');
+
+  if (!room || !snapshot) {
+    const open = () => {
+      const name = myName.trim();
+      if (!name) return setState('needName');
+      setState('opening');
+      openRoom({ name, theme, kids }).then(
+        () => setState('idle'),
+        () => setState('failed'),
+      );
+    };
+    return (
+      <Panel title={t('net.yourName')} icon="🙋" testID="lobby">
+        <TextInput
+          testID="host-name"
+          value={myName}
+          onChangeText={(v) => setMyName(v.slice(0, MAX_NAME_LENGTH))}
+          placeholder={t('net.namePlaceholder')}
+          placeholderTextColor={colors.textMuted}
+          accessibilityLabel={t('net.yourName')}
+          autoCorrect={false}
+          maxFontSizeMultiplier={2}
+          style={[
+            styles.input,
+            {
+              color: colors.text,
+              borderColor: colors.border,
+              backgroundColor: colors.surfaceRaised,
+              fontFamily: fontFamilyFor(myName || 'a', 'body', 'bold'),
+            },
+          ]}
+        />
+        {state === 'needName' ? <Hint>{t('net.needName')}</Hint> : null}
+        {state === 'failed' ? <Hint>{t('net.openFailed')}</Hint> : null}
+        <Button
+          testID="open-room"
+          size="md"
+          icon="📶"
+          label={state === 'opening' ? t('net.opening') : t('net.openRoom')}
+          onPress={() => state !== 'opening' && open()}
+        />
+      </Panel>
+    );
+  }
+
+  const code = codeOf(snapshot.address);
+  const members = snapshot.members;
+  return (
+    <Panel title={t('net.roomCode')} icon="📶" testID="lobby">
+      {code ? (
+        <Text
+          variant="hero"
+          align="center"
+          testID="room-code-shown"
+          accessibilityLabel={`${t('net.roomCode')}: ${code.split('').join(' ')}`}
+        >
+          {code}
+        </Text>
+      ) : (
+        <Hint>{t('net.noAddress')}</Hint>
+      )}
+      <Text variant="caption" tone="muted" align="center">
+        {t('net.howToJoin', { game })}
+      </Text>
+      <Text variant="label">{t('net.players', { n: members.length })}</Text>
+      <Text variant="caption" tone="muted">
+        {t('net.seatHint')}
+      </Text>
+      <ReorderList
+        count={members.length}
+        onMove={(from, to) => room.move(from, to)}
+        handleLabel={(i) => t('setup.dragSeat', { name: members[i]?.name ?? '' })}
+        moveUpLabel={(i) => t('setup.moveUp', { name: members[i]?.name ?? '' })}
+        moveDownLabel={(i) => t('setup.moveDown', { name: members[i]?.name ?? '' })}
+        renderRow={(i) => {
+          const m = members[i];
+          if (!m) return null;
+          return (
+            <View
+              style={[
+                styles.seat,
+                { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+              ]}
+            >
+              <Text variant="label" tone="muted" style={styles.seatNo}>
+                {String(i + 1)}
+              </Text>
+              <Avatar player={i} size={32} />
+              <Text variant="label" style={styles.flex} numberOfLines={1} testID={`member-${i}`}>
+                {m.isHost ? `${m.name} (${t('net.you')})` : m.name}
+              </Text>
+              {!m.online ? (
+                <Text variant="caption" tone="muted">
+                  {t('net.offline')}
+                </Text>
+              ) : null}
+              {!m.isHost ? (
+                <Pressable
+                  testID={`remove-${i}`}
+                  accessibilityLabel={t('net.remove', { name: m.name })}
+                  onPress={() => room.remove(m.deviceId)}
+                  style={styles.remove}
+                >
+                  <Text variant="label" tone="muted" accessible={false}>
+                    ✕
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          );
+        }}
+      />
+    </Panel>
+  );
+}
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  input: {
+    minHeight: 52,
+    borderWidth: 1.5,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
+    fontSize: 18,
+  },
+  seat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    borderWidth: 1.5,
+    borderRadius: radius.md,
+    paddingHorizontal: space.sm,
+    minHeight: 52,
+  },
+  seatNo: { width: 22, textAlign: 'center' },
+  remove: { minWidth: 48, alignItems: 'center', justifyContent: 'center' },
+});

@@ -1,5 +1,5 @@
 import { useContentLevel } from '@/core/age';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
@@ -60,6 +60,8 @@ import { mafia } from '../mafia';
 import { isTheme } from '../theme';
 import { firstLockedRole, roleUnlocked, setupUnlocked } from '../shop';
 import { useWerewolfT } from '../components/i18n';
+import { closeRoom, getRoom, useHostRoom } from '../net/room';
+import { HostLobby } from './Lobby';
 
 /** Every role ships, core and expansion (W5). */
 const AVAILABLE = ALL_ROLES;
@@ -511,7 +513,13 @@ function SaveCustom({ onSave }: { onSave(name: string): void }) {
 export default function Setup() {
   const { t, theme } = useWerewolfT(['common']);
   const { colors } = useTheme();
-  const { count, names, setCount, setName, move } = usePlayers();
+  const { count: rosterCount, names, setCount, setName, move } = usePlayers();
+  const { room, snapshot: lobby } = useHostRoom();
+  // One phone passed around, or everyone on their own phone (werewolf-network.md).
+  const [phones, setPhones] = useState<'one' | 'all'>(() => (getRoom() ? 'all' : 'one'));
+  const network = phones === 'all';
+  // In a network game the players are whoever joined the room, in the order the host seated them.
+  const count = network ? (lobby?.members.length ?? 1) : rosterCount;
   const params = useLocalSearchParams<{ theme?: string }>();
   const nameOf = usePlayerName();
   const store = useWerewolf();
@@ -539,8 +547,16 @@ export default function Setup() {
 
   // The roster is shared with Spy (3+); Werewolf needs 4–20.
   useEffect(() => {
-    if (count < module.minPlayers) setCount(module.minPlayers);
-  }, [count, setCount]);
+    if (rosterCount < module.minPlayers) setCount(module.minPlayers);
+  }, [rosterCount, setCount]);
+
+  // Leaving setup closes an open room, unless a network game is running from it.
+  useEffect(
+    () => () => {
+      if (useWerewolf.getState().game?.mode !== 'network') closeRoom();
+    },
+    [],
+  );
 
   const cards = useMemo(() => recommendedSetups(count, AVAILABLE), [count]);
   const nudge = tryNextTier(store.recentTiers, cards);
@@ -593,9 +609,12 @@ export default function Setup() {
       if (current.kind === 'custom') setTab('customize');
       return setShowErrors(true);
     }
+    if (network && (!room || count < module.minPlayers)) return setShowErrors(true);
     const dealt = dealRoles(roles, count, mathRng);
+    const mode = network ? 'network' : 'pass';
+    if (room) store.setNetMembers(network ? room.seating.slice() : null);
     store.start(
-      newGame(dealt, rules, { theme: store.theme, kids: level === 'kids' }),
+      newGame(dealt, rules, { theme: store.theme, kids: level === 'kids', mode }),
       current.kind === 'curated' ? current.tier : null,
     );
     router.push('/games/werewolf/play');
@@ -682,24 +701,74 @@ export default function Setup() {
             </Panel>
           ) : null}
 
-          <Stepper
-            testID="players"
-            icon="👥"
-            label={t('setup.players')}
-            sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
-            value={count}
-            min={module.minPlayers}
-            max={module.maxPlayers}
-            onChange={(n) =>
-              free && n > caps.players
-                ? openPaywall('cap', { game: 'werewolf', max: module.maxPlayers })
-                : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
-            }
-            decreaseLabel={t('setup.fewerPlayers')}
-            increaseLabel={t('setup.morePlayers')}
-            minHint={t('setup.minPlayers')}
-            maxHint={t('setup.maxPlayers')}
-          />
+          <View style={styles.stack}>
+            <Text variant="label">{t('net.phones')}</Text>
+            <View style={styles.cardButtons} accessibilityRole="radiogroup">
+              {(['one', 'all'] as const).map((v) => (
+                <View key={v} style={styles.flex}>
+                  <Chip
+                    compact
+                    testID={`phones-${v}`}
+                    title={v === 'one' ? t('net.phonesOne') : t('net.phonesAll')}
+                    selected={phones === v}
+                    onPress={() => {
+                      setPhones(v);
+                      if (v === 'one') closeRoom();
+                    }}
+                  />
+                </View>
+              ))}
+            </View>
+            {network ? (
+              <Text variant="caption" tone="muted">
+                {t('net.phonesAllSub')}
+              </Text>
+            ) : null}
+          </View>
+
+          {network ? (
+            <HostLobby
+              theme={store.theme}
+              kids={level === 'kids'}
+              game={
+                theme === 'mafia' ? t('common:games.mafia.title') : t('common:games.werewolf.title')
+              }
+            />
+          ) : null}
+          {network && count < module.minPlayers && (room || showErrors) ? (
+            <Hint>{t('net.needPlayers', { n: module.minPlayers })}</Hint>
+          ) : null}
+
+          {network ? null : (
+            <Stepper
+              testID="players"
+              icon="👥"
+              label={t('setup.players')}
+              sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
+              value={count}
+              min={module.minPlayers}
+              max={module.maxPlayers}
+              onChange={(n) =>
+                free && n > caps.players
+                  ? openPaywall('cap', { game: 'werewolf', max: module.maxPlayers })
+                  : setCount(clampPlayers(n, module.minPlayers, module.maxPlayers))
+              }
+              decreaseLabel={t('setup.fewerPlayers')}
+              increaseLabel={t('setup.morePlayers')}
+              minHint={t('setup.minPlayers')}
+              maxHint={t('setup.maxPlayers')}
+            />
+          )}
+          {network ? null : (
+            <Button
+              testID="join-game"
+              variant="ghost"
+              size="md"
+              icon="📶"
+              label={t('net.join')}
+              onPress={() => router.push('/games/werewolf/join' as Href)}
+            />
+          )}
 
           <Text variant="heading" accessibilityRole="header" accessibilityLabel={t('setup.setups')}>
             {`🃏 ${t('setup.setups')}`}
@@ -727,53 +796,55 @@ export default function Setup() {
         </>
       ) : (
         <>
-          <Panel title={t('setup.seating')} icon="🪑">
-            <Text variant="caption" tone="muted">
-              {t('setup.seatingHint')}
-            </Text>
-            <ReorderList
-              count={count}
-              onMove={move}
-              handleLabel={(i) => t('setup.dragSeat', { name: nameOf(i) })}
-              moveUpLabel={(i) => t('setup.moveUp', { name: nameOf(i) })}
-              moveDownLabel={(i) => t('setup.moveDown', { name: nameOf(i) })}
-              renderRow={(i) => {
-                const value = names[i] ?? '';
-                const placeholder = t('common:players.defaultName', { n: i + 1 });
-                return (
-                  <View
-                    style={[
-                      styles.seat,
-                      { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
-                    ]}
-                  >
-                    <Text variant="label" tone="muted" style={styles.seatNo}>
-                      {String(i + 1)}
-                    </Text>
-                    <Avatar player={i} size={32} />
-                    <TextInput
-                      testID={`seat-${i}`}
-                      value={value}
-                      onChangeText={(v) => setName(i, v)}
-                      placeholder={placeholder}
-                      placeholderTextColor={colors.textMuted}
-                      maxLength={MAX_NAME_LENGTH}
-                      accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-                      autoCorrect={false}
-                      maxFontSizeMultiplier={2}
+          {network ? null : (
+            <Panel title={t('setup.seating')} icon="🪑">
+              <Text variant="caption" tone="muted">
+                {t('setup.seatingHint')}
+              </Text>
+              <ReorderList
+                count={count}
+                onMove={move}
+                handleLabel={(i) => t('setup.dragSeat', { name: nameOf(i) })}
+                moveUpLabel={(i) => t('setup.moveUp', { name: nameOf(i) })}
+                moveDownLabel={(i) => t('setup.moveDown', { name: nameOf(i) })}
+                renderRow={(i) => {
+                  const value = names[i] ?? '';
+                  const placeholder = t('common:players.defaultName', { n: i + 1 });
+                  return (
+                    <View
                       style={[
-                        styles.seatInput,
-                        {
-                          color: colors.text,
-                          fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                        },
+                        styles.seat,
+                        { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
                       ]}
-                    />
-                  </View>
-                );
-              }}
-            />
-          </Panel>
+                    >
+                      <Text variant="label" tone="muted" style={styles.seatNo}>
+                        {String(i + 1)}
+                      </Text>
+                      <Avatar player={i} size={32} />
+                      <TextInput
+                        testID={`seat-${i}`}
+                        value={value}
+                        onChangeText={(v) => setName(i, v)}
+                        placeholder={placeholder}
+                        placeholderTextColor={colors.textMuted}
+                        maxLength={MAX_NAME_LENGTH}
+                        accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                        autoCorrect={false}
+                        maxFontSizeMultiplier={2}
+                        style={[
+                          styles.seatInput,
+                          {
+                            color: colors.text,
+                            fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                          },
+                        ]}
+                      />
+                    </View>
+                  );
+                }}
+              />
+            </Panel>
+          )}
 
           {saved.map((x) => (
             <SavedCard

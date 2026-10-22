@@ -136,6 +136,7 @@ describe('lobby', () => {
       kids: false,
       names: ['Hana', 'Omar', 'Lina', 'Sam'],
       online: [true, true, true, true],
+      host: 0,
     });
   });
 
@@ -494,7 +495,7 @@ describe('protocol', () => {
       name: 'Omar',
     });
     expect(ok({ t: 'hello', v: 1, deviceId: 'd', name: 'x'.repeat(40) })).toMatchObject({
-      name: 'x'.repeat(24),
+      name: 'x'.repeat(14),
     });
     expect(ok({ t: 'hello', v: 1, deviceId: 'd', name: 7 })).toMatchObject({ name: '' });
     expect(ok({ t: 'hello', v: 1, deviceId: '' })).toBeNull();

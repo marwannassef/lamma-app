@@ -239,6 +239,7 @@ export class HostSession {
       kids: this.opts.kids,
       names: this.members.map((m) => m.name),
       online: this.members.map((m) => m.isHost || this.peers.has(m.deviceId)),
+      host: this.hostSeat,
     };
   }
 

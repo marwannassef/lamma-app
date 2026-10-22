@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -51,9 +52,16 @@ export const usePlayers = create<PlayersState>()(
 
 export const customName = (names: readonly string[], index: number) => (names[index] ?? '').trim();
 
+/**
+ * Names to show instead of this phone's roster, e.g. a network game's players as the host
+ * seated them. Null means "use the roster".
+ */
+export const PlayerNamesContext = createContext<readonly string[] | null>(null);
+
 /** Returns a function that gives each player's display name. */
 export function usePlayerName() {
   const { t } = useTranslation();
-  const names = usePlayers((s) => s.names);
+  const roster = usePlayers((s) => s.names);
+  const names = useContext(PlayerNamesContext) ?? roster;
   return (index: number) => customName(names, index) || t('players.defaultName', { n: index + 1 });
 }

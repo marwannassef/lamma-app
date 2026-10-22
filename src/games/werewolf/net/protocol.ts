@@ -1,11 +1,14 @@
 // Messages between the host phone and guest phones (docs/games/werewolf-network.md §3.4).
 // Everything a guest sends is untrusted: the host parses it strictly and the engine validates it.
+import { MAX_NAME_LENGTH } from '@/core/players';
+
 import type { PlayerId, SeatAction, SeatView, Theme } from '../engine';
 
 /** Bumped on any incompatible change; phones on different versions can't play together. */
 export const PROTOCOL = 1;
 
-export const MAX_NAME = 24;
+/** Names are cut like the roster's, so they fit the same screens. */
+export const MAX_NAME = MAX_NAME_LENGTH;
 
 /** What a guest asks to do; the host turns it into a game event for that guest's seat. */
 export type Intent =
@@ -28,6 +31,8 @@ export interface Lobby {
   names: string[];
   /** Which of `names` are connected right now. */
   online: boolean[];
+  /** The host player's seat in `names`. */
+  host: number;
 }
 
 export type RejectReason = 'version' | 'full' | 'started' | 'removed';

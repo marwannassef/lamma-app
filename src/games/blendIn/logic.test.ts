@@ -289,3 +289,39 @@ describe('robustness', () => {
     expect(play(s, [{ t: 'nextRound', packs }]).phase).toEqual({ t: 'over', winners: [0] });
   });
 });
+
+describe("everyone's phone (network mode)", () => {
+  it('opens each round with everyone looking at once, in any order', () => {
+    const g = newGame(4, DEFAULT_SETTINGS, packs, memory, seededRng(2), true);
+    expect(g.network).toBe(true);
+    expect(g.phase).toEqual({ t: 'look', seen: [] });
+    const s = play(g, [
+      { t: 'seen', seat: 2 },
+      { t: 'seen', seat: 2 }, // twice counts once
+      { t: 'seen', seat: 7 }, // no such seat
+      { t: 'seen', seat: -1 },
+      { t: 'peeked' }, // the one-phone event does nothing here
+      { t: 'seen', seat: 0 },
+      { t: 'seen', seat: 3 },
+    ]);
+    expect(s.phase).toEqual({ t: 'look', seen: [2, 0, 3] });
+    expect(play(s, [{ t: 'seen', seat: 1 }]).phase).toEqual({
+      t: 'circle',
+      clueRound: 1,
+      turn: 0,
+    });
+    // One-phone games don't have it.
+    expect(newGame(4, DEFAULT_SETTINGS, packs, memory, seededRng(2)).network).toBeUndefined();
+  });
+
+  it('starts the next round with everyone looking again', () => {
+    const g = newGame(4, DEFAULT_SETTINGS, packs, memory, seededRng(2), true);
+    const looked = play(
+      g,
+      [0, 1, 2, 3].map((seat) => ({ t: 'seen', seat }) as const),
+    );
+    const done = play(clueAll(looked), [{ t: 'ruleBroken' }]);
+    expect(done.phase.t).toBe('result');
+    expect(play(done, [{ t: 'nextRound', packs }]).phase).toEqual({ t: 'look', seen: [] });
+  });
+});

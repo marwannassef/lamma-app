@@ -82,5 +82,12 @@
       "When you're ready, point at who you think the spy is, then reveal the answer.",
       "Spy not caught: spy +2. Caught but guessed the word: spy +1. Caught and wrong: everyone else +1."
     ]
+  },
+  "net": {
+    "seenCount": "Seen their card: {{n}}/{{total}}",
+    "hidden": "Card hidden. Ask and answer questions out loud.",
+    "peek": "Hold to peek at your card",
+    "talk": "Talk it out! The host reveals the word when you're ready.",
+    "waitNext": "Waiting for the next round…"
   }
 }

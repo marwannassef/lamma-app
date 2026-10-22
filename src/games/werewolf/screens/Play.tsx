@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HostAudioControls, pickLine, usePhaseAudio } from '@/core/audio';
 import { mathRng } from '@/core/rng';
-import { usePlayerName } from '@/core/players';
+import { PlayerNamesContext, usePlayerName } from '@/core/players';
+import { useSettings } from '@/core/settings/store';
 import { space, ThemeProvider, useTheme } from '@/core/theme';
 import {
   ConfirmInline,
@@ -36,15 +37,25 @@ import Discovery from './Discovery';
 import GameOver from './GameOver';
 import { Glance, NightIntro } from './Night';
 import Pass from './Pass';
+import { HostActions, HostOwnChoice, HostReveal } from './NetHost';
+import { getWerewolfRoom, openWerewolfRoom } from '../net/room';
 import { useWerewolfT } from '../components/i18n';
 
-const isSecret = (g: GameState) => g.phase.t === 'discovery' || g.phase.t === 'pass';
+const isSecret = (g: GameState) =>
+  g.phase.t === 'discovery' ||
+  g.phase.t === 'pass' ||
+  g.phase.t === 'reveal' ||
+  g.phase.t === 'actions';
 
 function PhaseScreen({ game }: { game: GameState }) {
   const ph = game.phase;
   switch (ph.t) {
     case 'discovery':
       return <Discovery key={`d-${ph.seat}`} game={game} seat={ph.seat} />;
+    case 'reveal':
+      return <HostReveal game={game} />;
+    case 'actions':
+      return <HostActions key={`a-${game.night}`} game={game} />;
     case 'nightIntro':
       return <NightIntro game={game} />;
     case 'glance':
@@ -54,6 +65,7 @@ function PhaseScreen({ game }: { game: GameState }) {
     case 'morning':
       return <Morning game={game} report={ph.report} story={ph.story} />;
     case 'deathEffects':
+      if (game.mode === 'network') return <HostOwnChoice game={game} />;
       return ph.queue[0] ? (
         <DeathEffects key={JSON.stringify(ph.queue[0])} game={game} effect={ph.queue[0]} />
       ) : null;
@@ -64,6 +76,7 @@ function PhaseScreen({ game }: { game: GameState }) {
     case 'vote':
       return <Vote game={game} />;
     case 'mayorTieBreak':
+      if (game.mode === 'network') return <HostOwnChoice game={game} />;
       return <MayorTieBreak game={game} tied={ph.tied} />;
     case 'execution':
       return <Execution game={game} playerId={ph.playerId} />;
@@ -125,6 +138,8 @@ const HOST_BAR_HEIGHT = 44;
 export default function Play() {
   useStayAwake();
   const game = useWerewolf((s) => s.game);
+  const netMembers = useWerewolf((s) => s.netMembers);
+  const myName = useSettings((s) => s.myName);
   const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const tell = useStoryText();
@@ -143,6 +158,16 @@ export default function Play() {
     return { ...cue, line: { text } };
   });
 
+  // A network game survives a relaunch: reopen the room so the phones find their seats again.
+  const network = game?.mode === 'network';
+  useEffect(() => {
+    if (!network || getWerewolfRoom() || !game) return;
+    const host = netMembers?.find((m) => m.isHost);
+    void openWerewolfRoom({ name: host?.name ?? myName, theme: game.theme, kids: game.kids }).catch(
+      () => undefined,
+    );
+  }, [game, myName, netMembers, network]);
+
   // The game is saved after every step; leaving by accident must not drop out of it.
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
@@ -153,24 +178,26 @@ export default function Play() {
   const secret = isSecret(game);
 
   return (
-    <ThemeProvider scheme="dark">
-      <ScreenBackground.Provider value={BACKDROP[game.theme]}>
-        <Stack.Screen options={{ gestureEnabled: false }} />
-        <StatusBar style="light" hidden={secret} />
-        {secret ? (
-          <SecretGuard>
-            <PhaseScreen game={game} />
-          </SecretGuard>
-        ) : (
-          <View style={styles.fill}>
-            <ScreenTopInset.Provider value={game.phase.t === 'gameOver' ? 0 : HOST_BAR_HEIGHT}>
+    <PlayerNamesContext.Provider value={network ? (netMembers?.map((m) => m.name) ?? null) : null}>
+      <ThemeProvider scheme="dark">
+        <ScreenBackground.Provider value={BACKDROP[game.theme]}>
+          <Stack.Screen options={{ gestureEnabled: false }} />
+          <StatusBar style="light" hidden={secret} />
+          {secret ? (
+            <SecretGuard>
               <PhaseScreen game={game} />
-            </ScreenTopInset.Provider>
-            {game.phase.t !== 'gameOver' ? <HostBar /> : null}
-          </View>
-        )}
-      </ScreenBackground.Provider>
-    </ThemeProvider>
+            </SecretGuard>
+          ) : (
+            <View style={styles.fill}>
+              <ScreenTopInset.Provider value={game.phase.t === 'gameOver' ? 0 : HOST_BAR_HEIGHT}>
+                <PhaseScreen game={game} />
+              </ScreenTopInset.Provider>
+              {game.phase.t !== 'gameOver' ? <HostBar /> : null}
+            </View>
+          )}
+        </ScreenBackground.Provider>
+      </ThemeProvider>
+    </PlayerNamesContext.Provider>
   );
 }
 

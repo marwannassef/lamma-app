@@ -10,6 +10,8 @@ env:
       - runFlow: subflows/launch.yaml
 - tapOn:
     id: game-spy
+- tapOn:
+    id: tab-customize
 - scrollUntilVisible:
     element:
       id: level-off

@@ -5,7 +5,7 @@ import { StyleSheet, View, type LayoutChangeEvent, type ScrollView } from 'react
 import Animated, { ZoomIn } from 'react-native-reanimated';
 
 import { localized, wordLines, type Pack, type Word } from '@/core/content';
-import { usePlayerName, usePlayers } from '@/core/players';
+import { usePlayerName } from '@/core/players';
 import { losersOf } from '@/core/punishments';
 import { fitScores, useSession } from '@/core/session';
 import { gradients, radius, space, useTheme } from '@/core/theme';
@@ -128,15 +128,16 @@ export default function Round({
   const lang = i18n.language;
   const { colors } = useTheme();
   const nameOf = usePlayerName();
-  const count = usePlayers((s) => s.count);
   const spySeesCategory = useSpy((s) => s.spySeesCategory);
   const setVerdict = useSpy((s) => s.setVerdict);
   const setGain = useSpy((s) => s.setGain);
+  const setRevealedInStore = useSpy((s) => s.setRevealed);
   const session = useSession();
 
   const scrollRef = useRef<ScrollView>(null);
   const reveal = useReveal(scrollRef);
-  const [revealed, setRevealed] = useState(round.gain != null);
+  // Kept in the store, so on everyone's phone the reveal reaches every phone too.
+  const revealed = round.revealed || round.gain != null;
   const [showHint, setShowHint] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
 
@@ -146,7 +147,7 @@ export default function Round({
   const addPoints = () => {
     if (!verdictsComplete(round.verdicts)) return setShowHint(true);
     setShowHint(false);
-    const gain = scoreRound(count, round.spies, round.verdicts);
+    const gain = scoreRound(round.players, round.spies, round.verdicts);
     session.addPoints(gain);
     setGain(gain);
     setCelebrate(true);
@@ -168,7 +169,7 @@ export default function Round({
               icon="🔍"
               label={t('round.reveal')}
               onPress={() => {
-                setRevealed(true);
+                setRevealedInStore();
                 reveal.request('answer');
               }}
             />
@@ -216,6 +217,11 @@ export default function Round({
           <Text variant="body" tone="muted">
             {t('round.rules')}
           </Text>
+          {round.network ? (
+            <Text variant="label" testID="seen-count" accessibilityLiveRegion="polite">
+              {t('net.seenCount', { n: round.seen.length, total: round.players })}
+            </Text>
+          ) : null}
         </Panel>
 
         {revealed ? (
@@ -321,7 +327,7 @@ export default function Round({
                       {t(`round.result.${result}`)}
                     </Text>
                     <Scoreboard
-                      scores={fitScores(session.scores, count)}
+                      scores={fitScores(session.scores, round.players)}
                       gains={round.gain}
                       testID="round-scores"
                     />

@@ -124,9 +124,21 @@ describe('Werewolf screens', () => {
     expect(router.push).toHaveBeenCalledWith('/games/werewolf/play');
   });
 
+  it('keeps setup short: rules and seating live on the Customize tab', () => {
+    render(<Setup />);
+    expect(screen.getByTestId('setup-basic')).toBeTruthy();
+    expect(screen.queryByTestId('discussion-60')).toBeNull();
+    expect(screen.getByTestId('customize-summary')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('customize-summary'));
+    expect(screen.getByTestId('seat-0')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('tab-play'));
+    expect(screen.queryByTestId('seat-0')).toBeNull();
+  });
+
   it('custom setup explains why it cannot start', () => {
     useEntitlements.setState({ devPremium: true });
     render(<Setup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('setup-custom'));
     fireEvent.press(screen.getByTestId('custom-werewolf-minus'));
     fireEvent.press(screen.getByTestId('start-game'));
@@ -167,6 +179,7 @@ describe('Mafia theme (§15)', () => {
 
   it('uses Mafia names on game screens and never mixes in Werewolf ones', () => {
     useWerewolf.setState({
+      theme: 'mafia',
       game: mafiaGame({ phase: { t: 'execution', playerId: 0, effects: [] }, day: 1 }),
     });
     render(<Play />);
@@ -177,6 +190,7 @@ describe('Mafia theme (§15)', () => {
 
   it('calls the Serial Killer "The Shadow" in Kids mode', () => {
     useWerewolf.setState({
+      theme: 'mafia',
       game: mafiaGame({
         kids: true,
         phase: {
@@ -189,11 +203,19 @@ describe('Mafia theme (§15)', () => {
     expect(screen.getByText('The Shadow wins! 🌑')).toBeTruthy();
   });
 
-  it('switches the theme in setup only when no game is running', () => {
+  it('keeps Werewolf and Mafia as separate games: no theme switch, resume only on its own tile', () => {
+    useWerewolf.setState({ game: mafiaGame({ night: 1, phase: { t: 'nightIntro', night: 1 } }) });
+    mockParams = { theme: 'werewolf' };
+    const { unmount } = render(<Setup />);
+    expect(screen.queryByTestId('theme-mafia')).toBeNull();
+    expect(useWerewolf.getState().theme).toBe('werewolf');
+    expect(screen.queryByTestId('in-progress')).toBeNull();
+    unmount();
+
+    mockParams = { theme: 'mafia' };
     render(<Setup />);
-    fireEvent.press(screen.getByTestId('theme-mafia'));
     expect(useWerewolf.getState().theme).toBe('mafia');
-    expect(screen.getByText('Mafia')).toBeTruthy();
+    expect(screen.getByTestId('in-progress')).toBeTruthy();
   });
 });
 
@@ -245,6 +267,7 @@ describe('Werewolf W5 setup', () => {
     render(<Setup />);
     expect(screen.getByTestId('setup-party')).toBeTruthy();
     expect(screen.getByTestId('setup-chaos')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('setup-custom'));
     for (const r of [
       'wolfCub',
@@ -263,6 +286,7 @@ describe('Werewolf W5 setup', () => {
   it('rolls a balanced Surprise me setup and starts it', () => {
     usePlayers.setState({ count: 9, names: [] });
     render(<Setup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('setup-surprise'));
     expect(screen.getByTestId('surprise-reroll')).toBeTruthy();
     fireEvent.press(screen.getByTestId('surprise-reroll'));
@@ -273,11 +297,13 @@ describe('Werewolf W5 setup', () => {
   it('only offers Surprise me from 7 players, and locks it on the free tier', () => {
     usePlayers.setState({ count: 6, names: [] });
     const { unmount } = render(<Setup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     expect(screen.queryByTestId('setup-surprise')).toBeNull();
     unmount();
     useEntitlements.setState({ devPremium: false });
     usePlayers.setState({ count: 7, names: [] });
     render(<Setup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('setup-surprise'));
     expect(router.push).toHaveBeenCalledWith(expect.objectContaining({ pathname: '/paywall' }));
     expect(screen.queryByTestId('surprise-reroll')).toBeNull();
@@ -286,6 +312,7 @@ describe('Werewolf W5 setup', () => {
   it('saves a custom setup as a card for that player count and deletes it after asking', () => {
     usePlayers.setState({ count: 6, names: [] });
     render(<Setup />);
+    fireEvent.press(screen.getByTestId('tab-customize'));
     fireEvent.press(screen.getByTestId('setup-custom'));
     fireEvent.changeText(screen.getByTestId('save-name'), 'Friday night');
     fireEvent.press(screen.getByTestId('save-setup'));

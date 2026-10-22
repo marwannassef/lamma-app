@@ -3,7 +3,7 @@ import type { Rng } from '@/core/rng';
 import { mayorTieBreak, resolveVote, type VoteOutcome } from './day';
 import { applyDeaths, effectsFor, hunterShot, mayorHandoff } from './deaths';
 import { resolveNight, wolfTargetable } from './night';
-import { ROLES, seerSees } from './roles';
+import { ROLES, seerSees, sorcererSees } from './roles';
 import { newStory, pickSetting, tellDawn } from './story';
 import {
   DEFAULT_RULES,
@@ -12,6 +12,7 @@ import {
   type GameState,
   type HouseRules,
   type PlayerId,
+  type PlayMode,
   type RoleId,
   type SeatAction,
   type Theme,
@@ -22,7 +23,12 @@ import { checkWin } from './win';
 export type GameEvent =
   | { t: 'revealRole' }
   | { t: 'hideRole' }
-  | { t: 'cupidLink'; lovers: [PlayerId, PlayerId] }
+  /** `seat`: the Cupid's own seat, required in network mode. */
+  | { t: 'cupidLink'; lovers: [PlayerId, PlayerId]; seat?: PlayerId }
+  /** Network mode: a seat has seen its card (§3.3 of werewolf-network.md). */
+  | { t: 'seatSeen'; seat: PlayerId }
+  /** Network mode: a seat's night action from its own phone, in any order. */
+  | { t: 'seatAction'; seat: PlayerId; action: SeatAction }
   | { t: 'nightIntroDone' }
   | { t: 'glanceDone' }
   | { t: 'openTurn' }
@@ -52,16 +58,19 @@ export const EXTRA_DISCUSSION_MS = 30 * SEC;
 export function newGame(
   roles: readonly RoleId[],
   rules: Partial<HouseRules> = {},
-  opts: { theme?: Theme; kids?: boolean } = {},
+  opts: { theme?: Theme; kids?: boolean; mode?: PlayMode } = {},
 ): GameState {
   const players = roles.map((role, id) => ({ id, role, dealtRole: role, alive: true }));
+  const mode = opts.mode ?? 'pass';
   return {
     players,
+    mode,
     theme: opts.theme ?? 'werewolf',
     kids: opts.kids ?? false,
     story: newStory(),
     rules: { ...DEFAULT_RULES, ...rules },
-    phase: { t: 'discovery', seat: 0, revealed: false },
+    phase:
+      mode === 'network' ? { t: 'reveal', seen: [] } : { t: 'discovery', seat: 0, revealed: false },
     night: 0,
     day: 0,
     lovers: null,
@@ -136,15 +145,39 @@ function record(state: GameState, seat: PlayerId, a: SeatAction): GameState {
   if (a.kind === 'wolf') actions.wolfVotes[seat] = a.targets;
   if (a.kind === 'doctor') actions.doctorTarget = a.target;
   if (a.kind === 'serialKiller') actions.serialKillerTarget = a.target;
+  const nightResults = { ...state.nightResults };
   if (a.kind === 'seer') {
     actions.seerCheck = { target: a.target, sawWolf: seerSees(state, a.target) === 'werewolf' };
+    nightResults[seat] = { kind: 'seer', ...actions.seerCheck };
+  }
+  if (a.kind === 'sorcerer') {
+    nightResults[seat] = {
+      kind: 'sorcerer',
+      target: a.target,
+      isSeer: sorcererSees(state, a.target),
+    };
   }
   if (a.kind === 'witch') {
     actions.witchHeal = a.heal;
     if (a.poison != null) actions.witchPoison = a.poison;
   }
-  return { ...state, actions };
+  return { ...state, actions, nightResults };
 }
+
+/** The night is over: resolve it (§7) and tell the dawn story (§16). */
+function dawn(state: GameState, ctx: Ctx): GameState {
+  const { state: resolved, report } = resolveNight(state, state.actions, ctx.rng);
+  const told = tellDawn(resolved, report, state.actions.seerCheck, ctx.rng);
+  return {
+    ...resolved,
+    story: told.story,
+    day: resolved.night,
+    phase: { t: 'morning', report, story: told.lines },
+  };
+}
+
+const validLovers = (s: GameState, [a, b]: [PlayerId, PlayerId]) =>
+  a !== b && !!s.players[a] && !!s.players[b];
 
 function startNight(state: GameState, rng: Rng): GameState {
   const night = state.night + 1;
@@ -154,6 +187,7 @@ function startNight(state: GameState, rng: Rng): GameState {
     story: { ...state.story, setting: pickSetting(state.theme, state.story.setting, rng) },
     startSeat: (night - 1) % state.players.length,
     actions: emptyNightActions(),
+    nightResults: {},
     phase: { t: 'nightIntro', night },
   };
 }
@@ -221,9 +255,8 @@ export function gameReducer(state: GameState, e: GameEvent, ctx: Ctx): GameState
       if (e.t === 'revealRole' && !ph.revealed)
         return { ...state, phase: { ...ph, revealed: true } };
       if (e.t === 'cupidLink' && ph.revealed && p?.role === 'cupid') {
-        const [a, b] = e.lovers;
-        if (a === b || !state.players[a] || !state.players[b]) return state;
-        return { ...state, lovers: [a, b] };
+        if (!validLovers(state, e.lovers)) return state;
+        return { ...state, lovers: e.lovers };
       }
       if (e.t === 'hideRole' && ph.revealed) {
         // Cupid can't finish their turn without linking the lovers.
@@ -235,6 +268,22 @@ export function gameReducer(state: GameState, e: GameEvent, ctx: Ctx): GameState
       return state;
     }
 
+    case 'reveal': {
+      const seat = e.t === 'cupidLink' || e.t === 'seatSeen' ? e.seat : undefined;
+      const p = seat == null ? undefined : state.players[seat];
+      if (seat == null || !p || ph.seen.includes(seat)) return state;
+      if (e.t === 'cupidLink') {
+        if (p.role !== 'cupid' || !validLovers(state, e.lovers)) return state;
+        return { ...state, lovers: e.lovers };
+      }
+      // Cupid can't finish their card without linking the lovers.
+      if (p.role === 'cupid' && !state.lovers) return state;
+      const seen = [...ph.seen, seat];
+      return seen.length < n
+        ? { ...state, phase: { t: 'reveal', seen } }
+        : startNight(state, ctx.rng);
+    }
+
     case 'nightIntro':
       if (e.t !== 'nightIntroDone') return state;
       return {
@@ -244,6 +293,9 @@ export function gameReducer(state: GameState, e: GameEvent, ctx: Ctx): GameState
 
     case 'glance':
       if (e.t !== 'glanceDone') return state;
+      if (state.mode === 'network') {
+        return { ...state, phase: { t: 'actions', startedAt: ctx.now, acted: [] } };
+      }
       return {
         ...state,
         phase: { t: 'pass', seat: state.startSeat, step: 'handoff', startedAt: 0, turn: 0 },
@@ -270,14 +322,19 @@ export function gameReducer(state: GameState, e: GameEvent, ctx: Ctx): GameState
           },
         };
       }
-      const { state: resolved, report } = resolveNight(recorded, recorded.actions, ctx.rng);
-      const told = tellDawn(resolved, report, recorded.actions.seerCheck, ctx.rng);
-      return {
-        ...resolved,
-        story: told.story,
-        day: resolved.night,
-        phase: { t: 'morning', report, story: told.lines },
-      };
+      return dawn(recorded, ctx);
+    }
+
+    case 'actions': {
+      if (e.t !== 'seatAction' || ph.acted.includes(e.seat) || !state.players[e.seat]) {
+        return state;
+      }
+      // Everyone started together, so the same minimum turn time applies to every phone (§2.2).
+      if (ctx.now - ph.startedAt < state.rules.minTurnSeconds * SEC) return state;
+      if (!validAction(state, e.seat, e.action)) return state;
+      const recorded = record(state, e.seat, e.action);
+      const acted = [...ph.acted, e.seat];
+      return acted.length < n ? { ...recorded, phase: { ...ph, acted } } : dawn(recorded, ctx);
     }
 
     case 'morning':

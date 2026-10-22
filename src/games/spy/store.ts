@@ -9,6 +9,13 @@ import { emptyVerdict, RANDOM, setupRound, type CategoryChoice, type Verdict } f
 
 export interface ActiveRound {
   no: number;
+  players: number;
+  /** Played on everyone's phone (network mode): each phone shows its own card. */
+  network: boolean;
+  /** Network mode: seats that have looked at their card. */
+  seen: number[];
+  /** The host revealed the word and the spies. */
+  revealed: boolean;
   packId: string;
   wordId: string;
   spies: number[];
@@ -31,9 +38,21 @@ interface SpyState {
   setSpies(n: number): void;
   setChoice(choice: CategoryChoice): void;
   setSpySeesCategory(on: boolean): void;
-  start(input: { players: number; spies: number; packs: Pack[]; no: number; rng?: Rng }): void;
+  start(input: {
+    players: number;
+    spies: number;
+    packs: Pack[];
+    no: number;
+    network?: boolean;
+    rng?: Rng;
+  }): void;
   setVerdict(spyIndex: number, patch: Partial<Verdict>): void;
   setGain(gain: number[]): void;
+  /** Network mode: a seat has looked at its card. */
+  markSeen(seat: number): void;
+  setRevealed(): void;
+  /** Leaves the round (back to setup); a network room goes back to its lobby. */
+  endRound(): void;
 }
 
 export const useSpy = create<SpyState>()(
@@ -48,7 +67,7 @@ export const useSpy = create<SpyState>()(
       setSpies: (spies) => set({ spies }),
       setChoice: (choice) => set({ choice }),
       setSpySeesCategory: (spySeesCategory) => set({ spySeesCategory }),
-      start: ({ players, spies, packs, no, rng = mathRng }) => {
+      start: ({ players, spies, packs, no, network = false, rng = mathRng }) => {
         const s = get();
         const r = setupRound({
           players,
@@ -64,6 +83,10 @@ export const useSpy = create<SpyState>()(
           usedByPack: { ...s.usedByPack, [r.packId]: r.used },
           round: {
             no,
+            players,
+            network,
+            seen: [],
+            revealed: false,
             packId: r.packId,
             wordId: r.wordId,
             spies: r.spies,
@@ -87,6 +110,14 @@ export const useSpy = create<SpyState>()(
           return { round: { ...s.round, verdicts } };
         }),
       setGain: (gain) => set((s) => (s.round ? { round: { ...s.round, gain } } : {})),
+      markSeen: (seat) =>
+        set((s) =>
+          s.round && seat >= 0 && seat < s.round.players && !s.round.seen.includes(seat)
+            ? { round: { ...s.round, seen: [...s.round.seen, seat] } }
+            : {},
+        ),
+      setRevealed: () => set((s) => (s.round ? { round: { ...s.round, revealed: true } } : {})),
+      endRound: () => set({ round: null }),
     }),
     {
       name: 'spy',

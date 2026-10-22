@@ -1,4 +1,10 @@
 {
-  "ios": { "CFBundleDisplayName": "Lamma", "NSHumanReadableCopyright": "© AN Ventures Labs" },
-  "android": { "app_name": "Lamma" }
+  "ios": {
+    "CFBundleDisplayName": "Lamma",
+    "NSHumanReadableCopyright": "© AN Ventures Labs",
+    "NSLocalNetworkUsageDescription": "Lamma finds and connects to the phones at your table on the same Wi-Fi or hotspot, so everyone can play on their own phone."
+  },
+  "android": {
+    "app_name": "Lamma"
+  }
 }

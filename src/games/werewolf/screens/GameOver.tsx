@@ -12,6 +12,7 @@ import { RoleIcon } from '../components/RoleIcon';
 import { ROLES, scoreGame, type GameState, type WinResult } from '../engine';
 import { useWerewolf } from '../store';
 import { useWerewolfT } from '../components/i18n';
+import { closeRoom } from '@/core/room';
 
 const EMOJI: Record<WinResult['outcome'], string> = {
   village: '🏡',
@@ -31,14 +32,18 @@ export default function GameOver({ game, result }: { game: GameState; result: Wi
   const session = useSession();
   const { scored, markScored, quit } = useWerewolf();
 
+  // The shared scoreboard follows this phone's roster; a network game's seats are the room's.
+  const network = game.mode === 'network';
   useEffect(() => {
-    if (scored) return;
+    if (scored || network) return;
     session.addPoints(scoreGame(result, game.players.length));
     markScored();
-  }, [game.players.length, markScored, result, scored, session]);
+  }, [game.players.length, markScored, network, result, scored, session]);
 
+  // Play again keeps the room open, so everyone stays connected for the next game.
   const leave = (to: '/' | '/games/werewolf') => {
     quit();
+    if (to === '/') closeRoom();
     router.replace(to);
   };
 
@@ -97,9 +102,11 @@ export default function GameOver({ game, result }: { game: GameState; result: Wi
             </View>
           ))}
         </Panel>
-        <Panel>
-          <Scoreboard scores={fitScores(session.scores, count)} gains={session.lastGain} />
-        </Panel>
+        {network ? null : (
+          <Panel>
+            <Scoreboard scores={fitScores(session.scores, count)} gains={session.lastGain} />
+          </Panel>
+        )}
         <SoftUpsell />
       </Screen>
       {result.winners.length ? <Confetti /> : null}

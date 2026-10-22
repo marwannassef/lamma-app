@@ -26,6 +26,9 @@ export type RoleId =
 
 export type Theme = 'werewolf' | 'mafia';
 
+/** Pass-and-play on one phone, or every player on their own phone (werewolf-network.md). */
+export type PlayMode = 'pass' | 'network';
+
 /** Whether the dawn story tells what the Seer saw last night (§6). */
 export type SeerAtDawn = 'off' | 'result' | 'named';
 
@@ -129,6 +132,11 @@ export interface NightActions {
 
 export const emptyNightActions = (): NightActions => ({ wolfVotes: {}, witchHeal: false });
 
+/** What a seat learned from its own night action, shown on its own phone (network mode). */
+export type SeatResult =
+  | { kind: 'seer'; target: PlayerId; sawWolf: boolean }
+  | { kind: 'sorcerer'; target: PlayerId; isSeer: boolean };
+
 export interface Death {
   playerId: PlayerId;
   cause: DeathCause;
@@ -168,9 +176,13 @@ export type VoteChoice =
 export type Phase =
   | { t: 'setup' }
   | { t: 'discovery'; seat: number; revealed: boolean }
+  /** Network mode: everyone looks at their own card at once; `seen` seats are done. */
+  | { t: 'reveal'; seen: PlayerId[] }
   | { t: 'nightIntro'; night: number }
   | { t: 'glance'; endsAt: number }
   | { t: 'pass'; seat: number; step: 'handoff' | 'action'; startedAt: number; turn: number }
+  /** Network mode: every seat acts on its own phone at once, in any order. */
+  | { t: 'actions'; startedAt: number; acted: PlayerId[] }
   | { t: 'morning'; report: NightReport; story: StoryLine[] }
   | { t: 'deathEffects'; queue: Effect[]; then: 'day' | 'night' }
   | { t: 'mayorElection' }
@@ -184,6 +196,8 @@ export type Phase =
 export interface GameState {
   players: Player[];
   theme: Theme;
+  /** Missing in games saved before network mode: treat as 'pass'. */
+  mode?: PlayMode;
   /** Kids mode: softer narration (§15.2). */
   kids: boolean;
   story: StoryState;
@@ -203,6 +217,8 @@ export interface GameState {
   startSeat: number;
   /** Actions collected during the current pass. */
   actions: NightActions;
+  /** Tonight's Seer and Sorcerer answers, per seat; cleared at nightfall. */
+  nightResults?: Partial<Record<PlayerId, SeatResult>>;
   /** Last night's report (for the morning screen and detailed narration). */
   lastReport: NightReport | null;
 }

@@ -8,6 +8,7 @@ import Animated, { ZoomIn } from 'react-native-reanimated';
 import { mixer } from '@/core/audio';
 import { localized, wordLines, type Pack } from '@/core/content';
 import { usePlayerName } from '@/core/players';
+import { closeRoom } from '@/core/room';
 import { usePacks } from '@/core/settings/content';
 import { radius, space, STEALTH, useTheme } from '@/core/theme';
 import {
@@ -32,7 +33,7 @@ import { isOver, playable, type BlendInState, type Outcome } from '../logic';
 import { useBlendIn } from '../store';
 
 const LEAF = '#6DBE45';
-const CHAMELEON = ['#6DBE45', '#3E8E5A', '#6B3FC6'] as const;
+export const CHAMELEON = ['#6DBE45', '#3E8E5A', '#6B3FC6'] as const;
 const PEEK_HOLD_MS = 500;
 const SECRET_TEXT = '#C9C2DA';
 
@@ -43,7 +44,18 @@ function useWord(pack: Pack, id: string | undefined) {
 }
 
 /** "Pass the phone to …", then hold to see your card; releasing hides it (§4 step 1). */
-export function Peek({ game, pack, seat }: { game: BlendInState; pack: Pack; seat: number }) {
+export function Peek({
+  game,
+  pack,
+  seat,
+  onDone,
+}: {
+  game: BlendInState;
+  pack: Pack;
+  seat: number;
+  /** After the card is hidden (default: the next seat's peek). Network mode marks the seat. */
+  onDone?(): void;
+}) {
   const { t, i18n } = useTranslation('blendIn');
   const nameOf = usePlayerName();
   const dispatch = useBlendIn((s) => s.dispatch);
@@ -140,7 +152,8 @@ export function Peek({ game, pack, seat }: { game: BlendInState; pack: Pack; sea
                 if (timer.current) clearTimeout(timer.current);
                 if (!showing) return;
                 setShowing(false);
-                dispatch({ t: 'peeked' });
+                if (onDone) onDone();
+                else dispatch({ t: 'peeked' });
               }}
               style={({ pressed }) => [styles.seal, pressed && styles.sealPressed]}
             >
@@ -593,8 +606,10 @@ export function Over({ game, winners }: { game: BlendInState; winners: number[] 
   const nameOf = usePlayerName();
   const quit = useBlendIn((s) => s.quit);
   const names = winners.map(nameOf).join(' & ');
+  // Play again keeps a network room open, so everyone stays connected for the next game.
   const leave = (to: '/' | '/games/blend-in') => {
     quit();
+    if (to === '/') closeRoom();
     router.replace(to);
   };
   return (

@@ -18,7 +18,9 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "NSBonjourServices": ["_lamma._tcp"],
+        "NSLocalNetworkUsageDescription": "Lamma finds and connects to the phones at your table on the same Wi-Fi or hotspot, so everyone can play on their own phone."
       }
     },
     "android": {

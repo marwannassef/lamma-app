@@ -22,6 +22,7 @@ export { Scoreboard } from './Scoreboard';
 export { Screen, ScreenBackground, ScreenTopInset } from './Screen';
 export { SecretGuard } from './SecretGuard';
 export { SoftUpsell } from './SoftUpsell';
+export { CustomizeSummary, SetupTabs, type SetupTab } from './SetupTabs';
 export { Stepper, type StepperProps } from './Stepper';
 export { Text, type AppTextProps } from './Text';
 export { Toggle } from './Toggle';

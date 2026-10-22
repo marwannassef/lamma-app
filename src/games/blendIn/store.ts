@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import type { Pack } from '@/core/content';
 import { mathRng } from '@/core/rng';
 import { useSession } from '@/core/session';
+import type { Member } from '@/core/room';
 import { storage } from '@/core/storage';
 
 import {
@@ -22,8 +23,12 @@ interface BlendInStore {
   /** Remembered across games: used secret words, last topic and last Chameleon. */
   memory: Memory;
   game: BlendInState | null;
+  /** A network game's players in seat order, so a relaunched host gives them their seats back. */
+  netMembers: Member[] | null;
+  setNetMembers(members: Member[] | null): void;
   setSettings(patch: Partial<Settings>): void;
-  start(players: number, packs: readonly Pack[]): void;
+  /** `network`: everyone plays on their own phone (werewolf-network.md §4.1). */
+  start(players: number, packs: readonly Pack[], network?: boolean): void;
   dispatch(e: BlendInEvent): void;
   quit(): void;
 }
@@ -40,9 +45,11 @@ export const useBlendIn = create<BlendInStore>()(
       settings: DEFAULT_SETTINGS,
       memory: { usedByPack: {}, lastPackId: null, lastChameleon: null },
       game: null,
+      netMembers: null,
+      setNetMembers: (netMembers) => set({ netMembers }),
       setSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
-      start: (players, packs) => {
-        const game = newGame(players, get().settings, packs, get().memory, mathRng);
+      start: (players, packs, network = false) => {
+        const game = newGame(players, get().settings, packs, get().memory, mathRng, network);
         set({ game, memory: memoryOf(game) });
       },
       dispatch: (e) => {

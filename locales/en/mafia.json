@@ -254,7 +254,11 @@
         "Silence over an empty city. Nobody made it. It's a draw.",
         "The streets are empty. Nobody won tonight. It's a draw."
       ]
-    }
+    },
+    "phonesStart": [
+      "Everyone, open your eyes and take your turn on your own phone. Keep it close.",
+      "Eyes open. Everyone takes a turn on their own phone. Keep a straight face."
+    ]
   },
   "story": {
     "mafia": {

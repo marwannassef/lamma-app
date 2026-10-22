@@ -144,19 +144,24 @@
       "Sneaky! {{name}} blended in and escaped!",
       "{{name}} guessed the word and vanished into the crowd!"
     ],
-    "town": [
-      "The Chameleon is exposed! The town wins!",
-      "No escape this time. The town wins!"
-    ],
+    "town": ["The Chameleon is exposed! The town wins!", "No escape this time. The town wins!"],
     "wrongPerson": [
       "Wrong person! It was {{name}} all along.",
       "Oops! The real Chameleon was {{name}}."
     ],
-    "ruleBroken": [
-      "A rule was broken! The Chameleon gets a point."
-    ],
-    "over": [
-      "That's the game! Let's see who blended in best."
-    ]
+    "ruleBroken": ["A rule was broken! The Chameleon gets a point."],
+    "over": ["That's the game! Let's see who blended in best."]
+  },
+  "net": {
+    "lookTitle": "Everyone: look at your card on your own phone.",
+    "looking": "Looked at their card: {{n}}/{{total}}",
+    "waitOthers": "Waiting for the others… {{n}}/{{total}}",
+    "yourTurn": "Your turn! Say one word.",
+    "guessing": "{{name}} is guessing on their own phone…",
+    "offlineSeat": "{{name}}'s phone is offline.",
+    "playHere": "Play {{name}}'s turn on this phone",
+    "peek": "Hold to peek at your card",
+    "lookUp": "Look up and listen to the table.",
+    "waitNext": "Waiting for the next round…"
   }
 }

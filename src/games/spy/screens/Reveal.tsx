@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import type { Pack, Word } from '@/core/content';
-import { customName, usePlayers } from '@/core/players';
+import { usePlayerName } from '@/core/players';
 import { useSettings } from '@/core/settings/store';
 import { radius, space, useTheme } from '@/core/theme';
 import { Avatar, Button, Pressable, Screen, seatOf, Text, useNoScreenCapture } from '@/core/ui';
@@ -27,6 +27,7 @@ const CARD_HEIGHT = 420;
  */
 export default function Reveal({
   player,
+  total,
   pack,
   word,
   isSpy,
@@ -34,6 +35,8 @@ export default function Reveal({
   onDone,
 }: {
   player: number;
+  /** Players in the round (for the progress bar). */
+  total: number;
   pack: Pack;
   word: Word;
   isSpy: boolean;
@@ -42,13 +45,14 @@ export default function Reveal({
 }) {
   const { t } = useTranslation(['spy', 'common']);
   const { colors } = useTheme();
-  const { count, names } = usePlayers();
+  const nameOf = usePlayerName();
+  const count = total;
   const haptics = useSettings((s) => s.haptics);
   const reduce = useReducedMotion();
   const [flipped, setFlipped] = useState(false);
   const [backgrounded, setBackgrounded] = useState(AppState.currentState !== 'active');
   const rotation = useSharedValue(0);
-  const name = customName(names, player) || t('common:players.defaultName', { n: player + 1 });
+  const name = nameOf(player);
 
   // Android: FLAG_SECURE blanks the recents thumbnail and screenshots. iOS: blocks recording.
   useNoScreenCapture('spy-card');

@@ -1,4 +1,10 @@
 {
-  "ios": { "CFBundleDisplayName": "لمّة", "NSHumanReadableCopyright": "© AN Ventures Labs" },
-  "android": { "app_name": "لمّة" }
+  "ios": {
+    "CFBundleDisplayName": "لمّة",
+    "NSHumanReadableCopyright": "© AN Ventures Labs",
+    "NSLocalNetworkUsageDescription": "لمّة بتلاقي الموبايلات اللي على نفس الواي فاي أو الهوت سبوت وبتوصّلها ببعض، عشان كل واحد يلعب من موبايله."
+  },
+  "android": {
+    "app_name": "لمّة"
+  }
 }

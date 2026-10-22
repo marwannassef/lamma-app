@@ -65,6 +65,17 @@ export default function Home() {
     <Screen>
       <View style={styles.topBar}>
         <Pressable
+          testID="join-game"
+          accessibilityLabel={t('net.joinTitle')}
+          onPress={() => router.push('/join' as Href)}
+          style={[styles.joinBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        >
+          <Text variant="label" accessible={false} numberOfLines={1}>
+            {`📶 ${t('net.joinTitle')}`}
+          </Text>
+        </Pressable>
+        <View style={styles.flex} />
+        <Pressable
           testID="open-shop"
           accessibilityLabel={t('shop.title')}
           onPress={() => router.push('/shop' as Href)}
@@ -168,7 +179,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  topBar: { flexDirection: 'row', justifyContent: 'flex-end', gap: space.sm },
+  topBar: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  joinBtn: {
+    minHeight: 48,
+    borderRadius: radius.pill,
+    borderWidth: 1.5,
+    paddingHorizontal: space.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   settingsBtn: {
     width: 48,
     height: 48,

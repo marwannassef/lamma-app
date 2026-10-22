@@ -19,15 +19,16 @@ export function RoleCard({
   isSpy,
   spySeesCategory,
 }: {
-  pack: Pack;
-  word: Word;
+  /** Null for a spy who doesn't see the category (a network phone never receives it). */
+  pack: Pack | null;
+  /** Null for a spy: their phone never receives the word. */
+  word: Word | null;
   isSpy: boolean;
   spySeesCategory: boolean;
 }) {
   const { t, i18n } = useTranslation('spy');
-  const category = `${pack.emoji} ${localized(pack.name, i18n.language)}`;
 
-  if (isSpy) {
+  if (isSpy || !pack || !word) {
     return (
       <View style={[styles.fill, styles.glow]} testID="card-spy">
         <LinearGradient
@@ -43,7 +44,7 @@ export function RoleCard({
             {t('card.spyTitle')}
           </Text>
           <Text variant="label" align="center" style={{ color: spyInk }}>
-            {spySeesCategory
+            {spySeesCategory && pack
               ? t('card.spyCategory', {
                   emoji: pack.emoji,
                   name: localized(pack.name, i18n.language),
@@ -55,6 +56,7 @@ export function RoleCard({
     );
   }
 
+  const category = `${pack.emoji} ${localized(pack.name, i18n.language)}`;
   const lines = wordLines(pack, word, i18n.language);
   return (
     <View style={styles.fill} testID="card-word">

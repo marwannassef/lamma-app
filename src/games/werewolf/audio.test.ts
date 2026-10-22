@@ -3,12 +3,16 @@ import ar from '@/locales/ar/werewolf.json';
 
 import { audioCue, audioKey } from './audio';
 import { game } from './engine/testing';
-import type { GameState, NightReport, Phase } from './engine';
+import type { GameState, NightReport, Phase, StoryLine } from './engine';
 
 const nameOf = (id: number) => `P${id}`;
 const roleName = (r: string) => r.toUpperCase();
 const at = (phase: Phase, g: GameState = game(['werewolf', 'seer', 'villager', 'villager'])) =>
-  audioCue({ ...g, phase }, nameOf, roleName);
+  audioCue({ ...g, phase }, nameOf, roleName, tell);
+const tell = (_g: GameState, lines: readonly StoryLine[]) =>
+  lines.map((l) => `${l.beat}#${l.variant}`);
+const line = (c: { line?: { key: string } | { text: string } }) =>
+  c.line && 'key' in c.line ? c.line.key : c.line?.text;
 
 const report = (deaths: number[]): NightReport => ({
   deaths: deaths.map((playerId) => ({ playerId, cause: 'wolves' })),
@@ -45,6 +49,9 @@ describe('Werewolf audio cues', () => {
       sfx: 'nightFall',
       line: { key: 'say.nightFall' },
     });
+    // With tonight's setting picked, nightfall uses the setting's line (§16.3).
+    const set = { ...g, story: { ...g.story, setting: 'fog' } };
+    expect(line(at({ t: 'nightIntro', night: 1 }, set))).toBe('story.werewolf.settings.fog.fall');
     expect(at({ t: 'discovery', seat: 0, revealed: false }).loops).toEqual({
       ambience: null,
       music: null,
@@ -57,25 +64,22 @@ describe('Werewolf audio cues', () => {
       line: { key: 'say.wolvesWake' },
     });
     const twice = game(['werewolf', 'seer', 'villager', 'villager'], { wolfKills: 2 });
-    expect(at({ t: 'glance', endsAt: 0 }, twice).line?.key).toBe('say.wolvesTwice');
+    expect(line(at({ t: 'glance', endsAt: 0 }, twice))).toBe('say.wolvesTwice');
     const pass = at({ t: 'pass', seat: 0, step: 'handoff', startedAt: 0, turn: 0 });
     expect(pass.loops?.ambience).toEqual({ id: 'nightAmbience', volume: 0.7 });
     expect(pass.sfx).toBeUndefined();
   });
 
-  it('announces the morning by the number of deaths', () => {
-    expect(at({ t: 'morning', report: report([]) })).toEqual({
+  it('reads the dawn story aloud as shown, with a sting only after a death', () => {
+    const story: StoryLine[] = [
+      { beat: 'openingFirst', variant: 2 },
+      { beat: 'quiet', variant: 0 },
+    ];
+    expect(at({ t: 'morning', report: report([]), story })).toEqual({
       loops: { ambience: null, music: null },
-      line: { key: 'say.morningNone' },
+      line: { text: 'openingFirst#2 quiet#0' },
     });
-    expect(at({ t: 'morning', report: report([1]) })).toMatchObject({
-      sfx: 'deathBell',
-      line: { key: 'say.morningSingle', params: { name: 'P1' } },
-    });
-    expect(at({ t: 'morning', report: report([1, 2]) }).line).toEqual({
-      key: 'say.morningMulti',
-      params: { names: 'P1, P2' },
-    });
+    expect(at({ t: 'morning', report: report([1]), story }).sfx).toBe('dawnSting');
   });
 
   it('plays tavern music for the discussion and counts down the vote', () => {
@@ -90,7 +94,7 @@ describe('Werewolf audio cues', () => {
 
   it('reveals the banished player by team, or not at all by house rule', () => {
     const exec = (playerId: number | null): Phase => ({ t: 'execution', playerId, effects: [] });
-    expect(at(exec(null)).line?.key).toBe('say.nobody');
+    expect(line(at(exec(null)))).toBe('say.nobody');
     expect(at(exec(0))).toMatchObject({
       sfx: 'revealWolves',
       line: { key: 'say.reveal.wolves', params: { name: 'P0', role: 'WEREWOLF' } },
@@ -103,7 +107,7 @@ describe('Werewolf audio cues', () => {
       rules: { revealRoleOnDeath: false },
     });
     expect(at(exec(1), hidden).line).toEqual({ key: 'say.banished', params: { name: 'P1' } });
-    expect(at(exec(9)).line?.key).toBe('say.banished');
+    expect(line(at(exec(9)))).toBe('say.banished');
   });
 
   it('ends with the outcome line', () => {
@@ -123,9 +127,6 @@ describe('Werewolf audio cues', () => {
       'say.wolvesTwice',
       'say.wolvesSleep',
       'say.passStart',
-      'say.morningSingle',
-      'say.morningMulti',
-      'say.morningNone',
       'say.voteCountdown',
       'say.banished',
       'say.nobody',
@@ -139,7 +140,5 @@ describe('Werewolf audio cues', () => {
       expect([k, has(ar, k)]).toEqual([k, true]);
     });
     expect(en.say.nightFall).toHaveLength(3);
-    expect(en.say.morningNone).toHaveLength(3);
-    expect(en.say.morningMulti).toHaveLength(2);
   });
 });

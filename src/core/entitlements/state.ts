@@ -17,7 +17,9 @@ interface EntitlementState {
    */
   storePremium: boolean;
   partyPassUntil: number | null;
-  setStore(s: { storePremium: boolean; partyPassUntil: number | null }): void;
+  /** Shop items bought one by one (store product ids, see ITEM_PREFIX). */
+  owned: string[];
+  setStore(s: { storePremium: boolean; partyPassUntil: number | null; owned?: string[] }): void;
   /** Preview Premium without a purchase: only where PREMIUM_PREVIEW_ALLOWED. */
   devPremium: boolean;
   /** Last time the soft "Loved it?" card was shown (ms). */
@@ -32,6 +34,7 @@ export const useEntitlements = create<EntitlementState>()(
       passTier: null,
       storePremium: false,
       partyPassUntil: null,
+      owned: [],
       devPremium: false,
       softShownAt: 0,
       setStore: (s) => set(s),

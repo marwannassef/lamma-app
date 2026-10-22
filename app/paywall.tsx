@@ -6,6 +6,8 @@ import { StyleSheet, View } from 'react-native';
 
 import type { PaywallTrigger } from '@/core/entitlements';
 import {
+  buyItem,
+  itemPrices,
   purchase,
   restorePurchases,
   storePrices,
@@ -16,6 +18,8 @@ import {
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { gradients, radius, space, useTheme } from '@/core/theme';
 import { Badge, Button, Hint, Panel, Pressable, Screen, Text } from '@/core/ui';
+import { findItem } from '@/shop/catalog';
+import { ItemRow } from '@/shop/ItemRow';
 
 const PRODUCTS: ProductId[] = ['partyPass', 'annual', 'lifetime'];
 const TRIGGERS: PaywallTrigger[] = ['cap', 'locked', 'gameEnd', 'offline', 'settings'];
@@ -25,7 +29,10 @@ export default function Paywall() {
   const { t } = useTranslation('common');
   const { colors } = useTheme();
   const config = useRemoteConfig();
-  const params = useLocalSearchParams<{ trigger?: string; max?: string }>();
+  const params = useLocalSearchParams<{ trigger?: string; max?: string; item?: string }>();
+  // A locked word pack or role card can also be bought on its own (Shop).
+  const item = params.item ? findItem(params.item, config) : undefined;
+  const [itemPrice, setItemPrice] = useState<string | undefined>();
   const trigger: PaywallTrigger = TRIGGERS.includes(params.trigger as PaywallTrigger)
     ? (params.trigger as PaywallTrigger)
     : 'settings';
@@ -37,10 +44,12 @@ export default function Paywall() {
   useEffect(() => {
     let live = true;
     void storePrices().then((p) => live && setLocal(p));
+    if (item) void itemPrices([item.id]).then((p) => live && setItemPrice(p[item.id]));
     return () => {
       live = false;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once per opened item
+  }, [params.item]);
   const price = { ...config.prices, ...local };
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const run = async (action: () => Promise<PurchaseResult>, unavailable: string) => {
@@ -150,6 +159,20 @@ export default function Paywall() {
           {t('premium.priceNote')}
         </Text>
       </View>
+
+      {item ? (
+        <View style={styles.stack} testID="paywall-item">
+          <Text variant="caption" tone="muted" align="center">
+            {t('premium.or')} · {t('shop.justThis')}
+          </Text>
+          <ItemRow
+            item={item}
+            price={itemPrice}
+            status="buy"
+            onBuy={() => run(() => buyItem(item.id), t('premium.unavailable'))}
+          />
+        </View>
+      ) : null}
 
       {trigger === 'cap' || trigger === 'locked' ? (
         <>

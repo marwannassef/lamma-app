@@ -3,11 +3,11 @@ import { clampPlayers, MAX_PLAYERS, usePlayers } from '.';
 describe('roster', () => {
   beforeEach(() => usePlayers.setState({ count: 5, names: ['Ana', 'Bo', '', 'Dee'] }));
 
-  it('goes up to 16 players, each game narrowing it', () => {
-    expect(MAX_PLAYERS).toBe(16);
-    expect(clampPlayers(20)).toBe(16);
+  it('goes up to 20 players, each game narrowing it', () => {
+    expect(MAX_PLAYERS).toBe(20);
+    expect(clampPlayers(25)).toBe(20);
     expect(clampPlayers(20, 3, 12)).toBe(12);
-    expect(clampPlayers(2, 4, 16)).toBe(4);
+    expect(clampPlayers(2, 4, 20)).toBe(4);
   });
 
   it('moves players to another seat', () => {

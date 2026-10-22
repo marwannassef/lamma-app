@@ -1,0 +1,503 @@
+{
+  "title": "Mafia",
+  "setup": {
+    "minPlayers": "Mafia needs at least 4 players.",
+    "tiers": {
+      "basic": {
+        "pitch": "The Mafia, a Detective and the city. Perfect first game."
+      },
+      "classic": {
+        "pitch": "The Avenger takes someone down with them."
+      },
+      "party": {
+        "pitch": "A Matchmaker, a Jester and other twists."
+      },
+      "chaos": {
+        "pitch": "A Serial Killer joins the chase."
+      }
+    },
+    "balance": {
+      "villageFriendly": "City-friendly",
+      "leansVillage": "Leans city",
+      "leansWolves": "Leans Mafia",
+      "wolfFriendly": "Mafia-friendly"
+    },
+    "villagersFill": "Citizens fill the rest: {{n}}",
+    "glance": "The Mafia's silent glance",
+    "ambience": "City ambience",
+    "errors": {
+      "noKiller": "Add at least one Mafia member.",
+      "alphaNeedsPack": "The Mafia Boss needs at least 2 in the Mafia family.",
+      "cubNeedsPack": "The Rookie needs at least 2 in the Mafia family.",
+      "loneWolfNeedsPack": "The Rogue needs at least 3 in the Mafia family."
+    },
+    "warnings": {
+      "favorsVillage": "This setup strongly favors the city.",
+      "favorsWolves": "This setup strongly favors the Mafia.",
+      "bigPack": "The Mafia family is a third of the table or more.",
+      "smallTableTwist": "The Matchmaker and the Jester work best with 7+ players.",
+      "noVillagers": "With no plain citizens, bluffing gets hard.",
+      "manyInfoRoles": "Lots of information roles make the Mafia easy to find."
+    },
+    "seerAtDawn": "Detective result at dawn",
+    "seerAtDawnNote": "Announcing the result also tells everyone whether the Detective is still in the game.",
+    "seerAtDawnHardcore": "With roles hidden, announcing the result still tells everyone whether the Detective is in the game."
+  },
+  "teams": {
+    "village": "City",
+    "wolves": "Mafia family",
+    "neutral": "Loners",
+    "lovers": "Lovers"
+  },
+  "roles": {
+    "villager": {
+      "name": "Citizen",
+      "ability": "No special power. Find the Mafia and get them arrested."
+    },
+    "werewolf": {
+      "name": "Mafia",
+      "ability": "Each night, agree with your family on a target."
+    },
+    "alpha": {
+      "name": "Mafia Boss",
+      "ability": "You lead the family: your pick is the one that counts."
+    },
+    "seer": {
+      "name": "Detective",
+      "ability": "Each night, investigate one player: Mafia or not?"
+    },
+    "doctor": {
+      "name": "Doctor",
+      "ability": "Each night, protect one player. Not the same player two nights in a row."
+    },
+    "witch": {
+      "name": "Chemist",
+      "ability": "One cure for the Mafia's target and one poison, each once per game."
+    },
+    "hunter": {
+      "name": "Avenger",
+      "ability": "When you're taken out, you take one player down with you."
+    },
+    "cupid": {
+      "name": "Matchmaker",
+      "ability": "Pick two lovers now. If one goes, the other goes too, heartbroken."
+    },
+    "tanner": {
+      "name": "Jester",
+      "ability": "You win alone if the city arrests you."
+    },
+    "wolfCub": {
+      "name": "Rookie Mafioso",
+      "ability": "If you're taken out, the Mafia strikes twice the next night."
+    },
+    "loneWolf": {
+      "name": "Rogue Mafioso",
+      "ability": "You work with the family, but you only win as the last one standing."
+    },
+    "sorcerer": {
+      "name": "Informant",
+      "ability": "You help the Mafia. Each night, check whether a player is the Detective."
+    },
+    "apprenticeSeer": {
+      "name": "Junior Detective",
+      "ability": "If the Detective is gone, you take over the case."
+    },
+    "mayor": {
+      "name": "Mayor",
+      "ability": "Everyone knows you. You break ties in the vote."
+    },
+    "lycan": {
+      "name": "Suspect",
+      "ability": "You're an honest citizen, but the Detective sees you as Mafia."
+    },
+    "cursed": {
+      "name": "Recruit",
+      "ability": "If the Mafia targets you, you join the family."
+    },
+    "serialKiller": {
+      "name": "Serial Killer",
+      "ability": "Take out one player every night. The Mafia can't touch you.",
+      "nameKids": "The Shadow",
+      "abilityKids": "Each night, sneak one player out of the game. The Mafia can't catch you."
+    }
+  },
+  "discovery": {
+    "caseFile": "CASE FILE",
+    "hold": "Hold the stamp to open your file",
+    "release": "Release to close it",
+    "pack": "Your family: {{names}}",
+    "packAlone": "You're the only Mafia member.",
+    "sorcererPack": "The Mafia: {{names}}"
+  },
+  "night": {
+    "fall": "The city goes quiet… Everyone, close your eyes.",
+    "wolvesWake": "Wake the Mafia",
+    "glance": "Mafia, open your eyes. Find your family and silently choose your target.",
+    "glanceTwice": "Tonight the Mafia strikes twice. Choose two targets.",
+    "glanceEnd": "Mafia, close your eyes… Everyone, open your eyes. Pass the phone around the table."
+  },
+  "pass": {
+    "dream": "You're asleep. Tap a window to look at the street.",
+    "wolf": "Tap the target your family agreed on.",
+    "wolfTwo": "Tap the two targets your family agreed on.",
+    "pack": "Family",
+    "alpha": "Boss",
+    "seer": "Tap a player to investigate them.",
+    "seerWolf": "🕴️ Mafia",
+    "seerInnocent": "👤 Not Mafia",
+    "sorcerer": "Tap a player to see if they're the Detective.",
+    "isSeer": "🔍 Is the Detective",
+    "notSeer": "❌ Not the Detective",
+    "witch": "Your vials",
+    "heal": "Cure tonight's Mafia target",
+    "noPotion": "Keep both vials tonight",
+    "serialKiller": "Tap your target.",
+    "bitten": "The Mafia recruited you. You're part of the family now.",
+    "promoted": "Your partner is gone. You take over the case as the Detective."
+  },
+  "effects": {
+    "hunter": "{{name}} was the Avenger and takes someone down with them. Who?"
+  },
+  "day": {
+    "electMayor": "Elect a Mayor: who did the city point at?",
+    "noExecution": "No arrest",
+    "banished": "The city has arrested {{name}}!",
+    "nobody": "Nobody was arrested today."
+  },
+  "over": {
+    "outcome": {
+      "village": "The city wins! 🏙️",
+      "wolves": "The Mafia wins! 🕴️",
+      "tanner": "The Jester wins alone! 🃏",
+      "serialKiller": "The Serial Killer wins! 🌑",
+      "serialKillerKids": "The Shadow wins! 🌑"
+    }
+  },
+  "howTo": {
+    "play": [
+      "Discovery: each player holds the TOP SECRET stamp to open their case file, then passes the phone on.",
+      "Night: everyone closes their eyes. The Mafia opens theirs and silently agrees on a target.",
+      "Then the phone goes around the table: everyone takes a secret turn, even with no power, so nobody can tell who's who.",
+      "Morning: find out who didn't make it through the night.",
+      "Day: talk it over, then point at who you think is Mafia. The city arrests one player.",
+      "The city wins when the whole Mafia family is arrested; the Mafia wins when it equals the rest of the city."
+    ]
+  },
+  "say": {
+    "nightFall": [
+      "The city goes quiet. Streetlights flicker… Everyone, close your eyes.",
+      "Rain on the windows, sirens far away… Close your eyes, everyone.",
+      "The last tram rolls by and the city sleeps. Eyes closed, everyone."
+    ],
+    "wolvesWake": [
+      "Mafia, open your eyes. Find your family and choose your target silently. Ten seconds.",
+      "Family, wake up. Look around, and pick your target without a sound."
+    ],
+    "wolvesTwice": [
+      "Mafia, open your eyes. Tonight the family strikes twice. Choose two targets.",
+      "The family wants revenge tonight. Mafia, wake up and choose two targets."
+    ],
+    "wolvesSleep": [
+      "Mafia, close your eyes… Everyone, open your eyes and pass the phone around the table.",
+      "Family, back to sleep… City, open your eyes. Pass the phone along."
+    ],
+    "passStart": [
+      "Pass the phone around. Everyone takes a turn, so nobody can tell who did what.",
+      "One by one, take the phone. Keep a straight face, then pass it on."
+    ],
+    "voteCountdown": ["Three… two… one… Point!", "On my count: three, two, one… Point!"],
+    "banished": ["The city has arrested {{name}}!", "Handcuffs click. {{name}} is under arrest!"],
+    "nobody": [
+      "Nobody was arrested today. Somewhere, the Mafia smiles.",
+      "No arrest today. The family breathes easy… for now."
+    ],
+    "reveal": {
+      "wolves": [
+        "The city has arrested {{name}}… the {{role}}! One less in the family.",
+        "{{name}} is taken downtown… the {{role}}! Good police work, everyone."
+      ],
+      "village": [
+        "The city has arrested {{name}}… but they were the {{role}}. An innocent citizen.",
+        "{{name}} spends the night in a cell… they were the {{role}}. Oops."
+      ],
+      "neutral": [
+        "The city has arrested {{name}}… the {{role}}! Nobody saw that coming.",
+        "{{name}} is led away in handcuffs… the {{role}}! What a twist."
+      ]
+    },
+    "win": {
+      "village": [
+        "The last Mafia member is behind bars. The city is clean! The city wins!",
+        "Case closed. The family is gone and the city sleeps safely. The city wins!"
+      ],
+      "wolves": [
+        "The Mafia outnumbers the city. The Mafia runs this town!",
+        "The city belongs to the family now. The Mafia wins!"
+      ],
+      "tanner": [
+        "The Jester wanted to be arrested all along… and you did it. The Jester wins!",
+        "The Jester laughs all the way to the cell. The Jester wins!"
+      ],
+      "serialKiller": [
+        "When the sirens fade, only the Serial Killer is left smiling. The Serial Killer wins!",
+        "Nobody caught the Serial Killer. The Serial Killer wins!"
+      ],
+      "serialKillerKids": [
+        "Nobody caught The Shadow! The Shadow wins!",
+        "The Shadow slipped away from everyone. The Shadow wins!"
+      ],
+      "lovers": [
+        "Love conquers the city. The lovers win together!",
+        "In the end, only love was left standing. The lovers win!"
+      ],
+      "draw": [
+        "Silence over an empty city. Nobody made it. It's a draw.",
+        "The streets are empty. Nobody won tonight. It's a draw."
+      ]
+    }
+  },
+  "story": {
+    "mafia": {
+      "settings": {
+        "powerCut": {
+          "scene": "a night of blackouts",
+          "fall": "The power cuts out across the city… Everyone, close your eyes."
+        },
+        "heatWave": {
+          "scene": "a sweltering night",
+          "fall": "A heat wave hangs over the city… Everyone, close your eyes."
+        },
+        "neonRain": {
+          "scene": "a night of rain on neon",
+          "fall": "Rain falls on the neon signs… Everyone, close your eyes."
+        },
+        "harborFog": {
+          "scene": "a night of fog over the harbor",
+          "fall": "Fog rolls in from the harbor… Everyone, close your eyes."
+        },
+        "festival": {
+          "scene": "a loud festival night",
+          "fall": "The city festival roars through the streets… Everyone, close your eyes."
+        },
+        "quietSunday": {
+          "scene": "a quiet Sunday night",
+          "fall": "A quiet Sunday night falls over the city… Everyone, close your eyes."
+        }
+      },
+      "openingFirst": [
+        "After {{scene}}, the city wakes up for the first time.",
+        "The sun rises after {{scene}}. Day one in the city begins.",
+        "After {{scene}}, the morning traffic starts to hum.",
+        "Morning light hits the windows after {{scene}}.",
+        "After {{scene}}, the newspaper boys hit the streets.",
+        "The first dawn comes after {{scene}}, and nobody trusts anybody."
+      ],
+      "openingMid": [
+        "After {{scene}}, the city wakes up again… with fresh headlines.",
+        "Another morning after {{scene}}. The coffee carts open.",
+        "After {{scene}}, sirens echo between the buildings.",
+        "The sun climbs over the rooftops after {{scene}}.",
+        "After {{scene}}, the morning paper is already out.",
+        "Dawn breaks after {{scene}}, and the city counts its secrets."
+      ],
+      "openingFinal": [
+        "After {{scene}}, the city feels almost empty.",
+        "Few lights come on this morning, after {{scene}}.",
+        "After {{scene}}, the whole city holds its breath.",
+        "The sun rises over quiet streets after {{scene}}.",
+        "After {{scene}}, every footstep echoes down the alleys.",
+        "Dawn comes after {{scene}}. This could be the last morning."
+      ],
+      "stopped": [
+        "A black car circled a house last night… and drove away empty-handed.",
+        "Someone was targeted last night, but made it home.",
+        "A plan went wrong in the dark. Its target is still with us.",
+        "Footsteps on a fire escape… then nothing. The attack failed.",
+        "The police found signs of a struggle, but the target got away.",
+        "Someone had a very close call last night."
+      ],
+      "savedDoctor": [
+        "A doctor's late-night visit saved {{name}}.",
+        "The Doctor patched up {{name}} just in time.",
+        "The Doctor kept watch over {{name}} all night."
+      ],
+      "savedWitch": [
+        "A mysterious cure brought {{name}} back.",
+        "The Chemist's vial saved {{name}} at the last second.",
+        "Someone slipped {{name}} a cure in the night. Lucky."
+      ],
+      "savedImmune": [
+        "The Mafia went after {{name}}… and came back shaken.",
+        "The family tried to take out {{name}}. It didn't work.",
+        "Whoever {{name}} really is, the Mafia can't touch them."
+      ],
+      "deathOne": [
+        "Sirens at dawn… {{name}} was found in a dark alley.",
+        "The morning paper has bad news: we lost {{name}}.",
+        "{{name}}'s apartment stayed dark this morning.",
+        "We lost {{name}} last night.",
+        "Police tape around {{name}}'s door. Too late.",
+        "The city wakes up without {{name}}."
+      ],
+      "deathOneKids": [
+        "Oh no! The Mafia kidnapped {{name}}. Out of the game!",
+        "{{name}} was taken away in a black car. Out of the game!",
+        "When the sun came up, {{name}} was missing. Out of the game!",
+        "The Mafia caught {{name}}, who is now out of the game.",
+        "There's an empty chair… {{name}} is out of the game.",
+        "Bad luck for {{name}}, who is out of the game this morning."
+      ],
+      "deathMany": [
+        "Sirens all night. {{count}} lost in one night: {{names}}.",
+        "A terrible night in the city. We lost {{names}}.",
+        "The morning paper lists the losses: {{names}}.",
+        "So many empty desks this morning… {{names}} are gone.",
+        "Dawn brings bad news. We lost {{names}}.",
+        "The night took {{count}} of us: {{names}}."
+      ],
+      "deathManyKids": [
+        "Oh no! The Mafia kidnapped {{names}}. Out of the game!",
+        "Busy night for the Mafia: {{names}} are out of the game.",
+        "{{count}} players are out this morning: {{names}}.",
+        "Empty chairs everywhere! {{names}} are out of the game.",
+        "What a night! The Mafia caught {{names}}.",
+        "Bye bye, {{names}}. You're out of the game!"
+      ],
+      "causeWolves": [
+        "A black car was seen speeding away from {{name}}'s street.",
+        "Tire marks and a dropped fedora near {{name}}'s door: the Mafia was here.",
+        "Neighbours heard a car door slam outside {{name}}'s place."
+      ],
+      "causeSerialKiller": [
+        "A calling card was left behind for {{name}}. Not the Mafia's style.",
+        "No car, no noise. A lone shadow took {{name}}.",
+        "The Mafia had nothing to do with {{name}}. Someone else is out there."
+      ],
+      "causePoison": [
+        "A spilled glass by {{name}}'s bed smelled bitter.",
+        "A strange bitter smell lingered in {{name}}'s kitchen.",
+        "Someone slipped {{name}} something bitter last night."
+      ],
+      "heartbreak": [
+        "{{name}} couldn't go on without {{lover}}.",
+        "Heartbroken over {{lover}}, {{name}} left the city by morning.",
+        "Losing {{lover}} was too much for {{name}}.",
+        "{{name}} followed {{lover}} into the night, out of love.",
+        "Two hearts, one fate: after {{lover}}, we lost {{name}} too.",
+        "A broken heart took {{name}} after {{lover}}."
+      ],
+      "heartbreakKids": [
+        "Missing {{lover}} so much, {{name}} is out of the game too.",
+        "{{name}} and {{lover}} were best friends, so {{name}} is out too.",
+        "Without {{lover}}, {{name}} doesn't want to play. Out of the game!",
+        "{{name}} misses {{lover}} too much and is out of the game.",
+        "Best friends stick together: {{name}} is out with {{lover}}.",
+        "{{name}} followed {{lover}} out of the game."
+      ],
+      "quiet": [
+        "Police found signs of a struggle, but everyone made it home.",
+        "A quiet night in the city. Every chair is still full.",
+        "Not a single siren last night. Suspicious?",
+        "Everyone wakes up safe. For now.",
+        "The night passed without trouble. The family is planning something.",
+        "All the lights come on this morning. Nobody was lost."
+      ],
+      "seerFound": [
+        "The Detective's investigation found a Mafia member among you…",
+        "Last night, the Detective cracked part of the case: one of you is Mafia.",
+        "The Detective came back with a name… and it belongs to the family.",
+        "A file on the Detective's desk is stamped MAFIA.",
+        "One of you was seen for who you really are: Mafia.",
+        "The Detective found a link to the family last night."
+      ],
+      "seerInnocent": [
+        "The Detective checked an innocent citizen last night.",
+        "The Detective's lead went nowhere. Just an honest citizen.",
+        "Last night's investigation turned up a clean record.",
+        "The Detective's file came back clean.",
+        "One of you was checked and found innocent.",
+        "The Detective crossed one name off the list last night."
+      ],
+      "seerFoundNamed": [
+        "The Detective investigated {{name}}… and found Mafia!",
+        "Case file update: {{name}} is Mafia!",
+        "The Detective followed {{name}} all night. Mafia!",
+        "Fingerprints don't lie: {{name}} is Mafia.",
+        "{{name}}, the Detective knows. Mafia!",
+        "Breaking news from the Detective: {{name}} is Mafia!"
+      ],
+      "seerInnocentNamed": [
+        "The Detective investigated {{name}}… clean record.",
+        "Good news for {{name}}: not Mafia.",
+        "The Detective followed {{name}} all night. Nothing.",
+        "{{name}}'s file came back clean.",
+        "The Detective cleared {{name}} last night.",
+        "Whatever you think of {{name}}, the Detective found no Mafia link."
+      ],
+      "seerNone": [
+        "No new leads came in last night.",
+        "The Detective's desk stayed empty last night.",
+        "No case files were opened last night.",
+        "Last night brought no new evidence.",
+        "No word from the Detective this morning.",
+        "The night kept its secrets. No leads."
+      ],
+      "callbackVote": [
+        "After yesterday's arrest of {{name}}, the city hoped for a quiet night…",
+        "Arresting {{name}} yesterday didn't make the streets safe.",
+        "The city still argues about yesterday's arrest: {{name}}.",
+        "Was arresting {{name}} the right call? Last night may tell.",
+        "Yesterday {{name}} was taken downtown. Today, new doubts.",
+        "Everyone is still talking about {{name}}'s arrest."
+      ],
+      "callbackNoVote": [
+        "Yesterday nobody was arrested… and the Mafia noticed.",
+        "The city let everyone walk yesterday. Was that wise?",
+        "No arrest yesterday. The doubts only grew.",
+        "Yesterday's mercy is still in the headlines.",
+        "Nobody was arrested yesterday. Someone here is relieved.",
+        "Yesterday ended with no arrest. Today, think harder."
+      ],
+      "callbackQuiet": [
+        "{{count}} nights in a row, everyone made it home… but the danger isn't over.",
+        "{{count}} quiet nights in a row. The family is waiting for something.",
+        "Another calm night: that makes {{count}}. Too calm?",
+        "{{count}} nights without a loss. Someone is being very patient.",
+        "The streak goes on: {{count}} quiet nights. Stay sharp.",
+        "{{count}} peaceful nights… the calm before the storm?"
+      ],
+      "tension": [
+        "Only {{count}} of you remain.",
+        "{{count}} players are still in the city.",
+        "The table is smaller now: {{count}} left.",
+        "{{count}} of you are left. Choose wisely.",
+        "Count the faces: {{count}}.",
+        "{{count}} remain. Every vote matters more now."
+      ],
+      "closingFirst": [
+        "Look around the table… someone here works for the family.",
+        "Talk, listen and watch closely. The Mafia is among you.",
+        "Somewhere at this table, a Mafia member is smiling.",
+        "Ask questions. The Mafia hates questions.",
+        "Trust carefully. Not every friend is a friend today.",
+        "The investigation starts now."
+      ],
+      "closingMid": [
+        "The evidence is piling up. Who doesn't fit?",
+        "Someone has been too quiet. Or too loud.",
+        "Remember who voted for whom yesterday.",
+        "The family is getting bolder. Find them today.",
+        "Look for the alibi that doesn't add up.",
+        "Another day, another chance to make an arrest."
+      ],
+      "closingFinal": [
+        "This is it. One wrong arrest and the Mafia wins.",
+        "Everything comes down to this day.",
+        "Look each other in the eye. The truth is right here.",
+        "The last few of you decide the city's fate.",
+        "No more hiding. Today could decide everything.",
+        "Choose carefully. There may be no tomorrow."
+      ]
+    }
+  }
+}

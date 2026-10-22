@@ -27,8 +27,8 @@ describe('curated setups (§5.2)', () => {
     expect(validateSetup(s.roles, s.players).errors).toEqual([]);
   });
 
-  it('offers Basic for every count from 4 to 16', () => {
-    for (let n = 4; n <= 16; n++) {
+  it('offers Basic for every count from 4 to 20', () => {
+    for (let n = 4; n <= 20; n++) {
       expect(recommendedSetups(n, ALL_ROLES).some((s) => s.tier === 'basic')).toBe(true);
       expect(recommendedSetups(n).some((s) => s.tier === 'basic')).toBe(true);
     }
@@ -67,7 +67,7 @@ describe('balance and length', () => {
       seer: 1,
       villager: 5,
     });
-    expect([4, 6, 7, 9, 10, 15, 16].map(packSizeFor)).toEqual([1, 1, 2, 2, 3, 3, 4]);
+    expect([4, 6, 7, 9, 10, 15, 16, 19, 20].map(packSizeFor)).toEqual([1, 1, 2, 2, 3, 3, 4, 4, 4]);
   });
 
   it('estimates the game length', () => {
@@ -150,7 +150,7 @@ describe('preselection (§5.4)', () => {
 
 describe('Surprise me', () => {
   it('always returns a valid, balanced setup from 7 players (seeded)', () => {
-    for (let n = 7; n <= 16; n++) {
+    for (let n = 7; n <= 20; n++) {
       for (const tier of ['classic', 'party', 'chaos'] as const) {
         for (let seed = 1; seed <= 5; seed++) {
           const roles = surpriseMe(n, tier, seededRng(seed * 100 + n));

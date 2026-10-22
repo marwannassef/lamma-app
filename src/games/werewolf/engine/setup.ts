@@ -1,14 +1,14 @@
 import { int, shuffle, type Rng } from '@/core/rng';
 
 import { CURATED, type CuratedSetup, type Tier } from '../content/presets';
-import { balanceLabel, ROLE_WEIGHTS, type BalanceLabel } from './balance';
+import { balanceLabel, ROLE_WEIGHTS, SEER_AT_DAWN_BONUS, type BalanceLabel } from './balance';
 import { ALL_ROLES, CORE_ROLES, isPackWolf, ROLES } from './roles';
-import type { RoleCounts, RoleId } from './types';
+import type { RoleCounts, RoleId, SeerAtDawn } from './types';
 
 export type { CuratedSetup, Tier };
 
 export const MIN_PLAYERS = 4;
-export const MAX_PLAYERS = 16;
+export const MAX_PLAYERS = 20;
 export const TIERS: readonly Tier[] = ['basic', 'gentle', 'classic', 'party', 'chaos'];
 
 const count = (roles: RoleCounts, r: RoleId) => roles[r] ?? 0;
@@ -40,8 +40,10 @@ export interface Balance {
   score: number;
   label: BalanceLabel;
 }
-export const balance = (roles: RoleCounts): Balance => {
-  const score = balanceScore(roles);
+/** The setup's balance; `seerAtDawn` adds its bonus when the setup has a Seer (§6). */
+export const balance = (roles: RoleCounts, seerAtDawn: SeerAtDawn = 'off'): Balance => {
+  const score =
+    balanceScore(roles) + (count(roles, 'seer') > 0 ? SEER_AT_DAWN_BONUS[seerAtDawn] : 0);
   return { score, label: balanceLabel(score) };
 };
 
@@ -120,7 +122,7 @@ const usesOnly = (roles: RoleCounts, available: readonly RoleId[]) =>
 
 /**
  * Curated setups for this table, in tier order. Setups using roles that aren't available yet
- * are hidden (never greyed out). Basic exists for every count from 4 to 16.
+ * are hidden (never greyed out). Basic exists for every count from 4 to 20.
  */
 export function recommendedSetups(
   players: number,

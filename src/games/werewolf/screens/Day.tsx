@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { mixer } from '@/core/audio';
@@ -8,11 +7,13 @@ import { radius, space, useTheme } from '@/core/theme';
 import { Avatar, Button, Panel, PlayerPicker, Screen, Text, useCountdown } from '@/core/ui';
 
 import { CountdownRing } from '../components/CountdownRing';
+import { useStoryText } from '../components/story';
 import { TEAM_COLOR } from '../components/meta';
 import { RoleIcon } from '../components/RoleIcon';
 import { RoleCard } from '../components/RoleCard';
-import type { Effect, GameState, NightReport, PlayerId } from '../engine';
+import type { Effect, GameState, NightReport, PlayerId, StoryLine } from '../engine';
 import { useWerewolf } from '../store';
+import { useWerewolfT } from '../components/i18n';
 
 const usePicker = () => {
   const { colors } = useTheme();
@@ -25,17 +26,20 @@ const usePicker = () => {
 };
 
 /** Morning: who died (and, by house rule, their role, causes and saves). */
-export function Morning({ game, report }: { game: GameState; report: NightReport }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+export function Morning({
+  game,
+  report,
+  story,
+}: {
+  game: GameState;
+  report: NightReport;
+  story: readonly StoryLine[];
+}) {
+  const { t } = useWerewolfT(['common']);
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
-  const names = report.deaths.map((d) => nameOf(d.playerId)).join(t('common:list.and'));
-  const headline =
-    report.deaths.length === 0
-      ? t('morning.none')
-      : report.deaths.length === 1
-        ? t('morning.single', { name: names })
-        : t('morning.multi', { names });
+  const tell = useStoryText();
+  const sentences = tell(game, story);
   return (
     <Screen
       footer={
@@ -53,9 +57,13 @@ export function Morning({ game, report }: { game: GameState; report: NightReport
       <Text variant="title" align="center">
         {t('morning.title')}
       </Text>
-      <Text variant="heading" align="center" testID="narration">
-        {headline}
-      </Text>
+      <View testID="narration" style={styles.story}>
+        {sentences.map((s, i) => (
+          <Text key={i} variant={i === 0 ? 'heading' : 'body'} align="center">
+            {s}
+          </Text>
+        ))}
+      </View>
       {report.deaths.map((d) => {
         const role = game.players[d.playerId]?.dealtRole;
         return (
@@ -70,30 +78,18 @@ export function Morning({ game, report }: { game: GameState; report: NightReport
                     {t('morning.was', { name: nameOf(d.playerId), role: t(`roles.${role}.name`) })}
                   </Text>
                 ) : null}
-                {game.rules.detailedNarration ? (
-                  <Text variant="caption" tone="muted">
-                    {t(`morning.cause.${d.cause as 'wolves'}`, { name: nameOf(d.playerId) })}
-                  </Text>
-                ) : null}
               </View>
             </View>
           </Panel>
         );
       })}
-      {game.rules.detailedNarration
-        ? report.saves.map((s, i) => (
-            <Text key={i} variant="body" tone="muted" align="center">
-              {t(`morning.saved.${s.by}`)}
-            </Text>
-          ))
-        : null}
     </Screen>
   );
 }
 
 /** Hunter's last shot and the Mayor's badge, handed to that player in public. */
 export function DeathEffects({ game, effect }: { game: GameState; effect: Effect }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -146,7 +142,7 @@ export function DeathEffects({ game, effect }: { game: GameState; effect: Effect
 }
 
 export function MayorElection({ game }: { game: GameState }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -188,7 +184,7 @@ export function Discussion({
   endsAt: number | null;
   pausedLeft: number | null;
 }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const dispatch = useWerewolf((s) => s.dispatch);
   const live = useCountdown(endsAt ?? 0);
   const left = endsAt != null ? live : pausedLeft;
@@ -275,7 +271,7 @@ export function Discussion({
 
 /** "3… 2… 1… Point!", then the host enters the most-pointed player, a tie, or no execution. */
 export function Vote({ game }: { game: GameState }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -377,7 +373,7 @@ export function Vote({ game }: { game: GameState }) {
 }
 
 export function MayorTieBreak({ game, tied }: { game: GameState; tied: PlayerId[] }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const picker = usePicker();
@@ -421,7 +417,7 @@ export function MayorTieBreak({ game, tied }: { game: GameState; tied: PlayerId[
 }
 
 export function Execution({ game, playerId }: { game: GameState; playerId: PlayerId | null }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const nameOf = usePlayerName();
   const dispatch = useWerewolf((s) => s.dispatch);
   const role = playerId != null ? game.players[playerId]?.dealtRole : undefined;
@@ -465,6 +461,7 @@ export function Execution({ game, playerId }: { game: GameState; playerId: Playe
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   big: { fontSize: 64, lineHeight: 80 },
+  story: { gap: space.sm },
   center: { alignItems: 'center', gap: space.md },
   stack: { gap: space.sm },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.md },

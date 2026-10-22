@@ -1,6 +1,5 @@
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { usePlayerName, usePlayers } from '@/core/players';
@@ -12,6 +11,7 @@ import { TEAM_COLOR } from '../components/meta';
 import { RoleIcon } from '../components/RoleIcon';
 import { ROLES, scoreGame, type GameState, type WinResult } from '../engine';
 import { useWerewolf } from '../store';
+import { useWerewolfT } from '../components/i18n';
 
 const EMOJI: Record<WinResult['outcome'], string> = {
   village: '🏡',
@@ -24,7 +24,7 @@ const EMOJI: Record<WinResult['outcome'], string> = {
 
 /** Who won, everyone's roles, and points added once to the shared scoreboard (§8). */
 export default function GameOver({ game, result }: { game: GameState; result: WinResult }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const { colors } = useTheme();
   const nameOf = usePlayerName();
   const count = usePlayers((s) => s.count);

@@ -75,16 +75,6 @@ def pluck(freq, sec, damping=0.996):
     return out
 
 
-def bell(freq, sec):
-    """Church-bell-like: inharmonic partials with long decay."""
-    parts = [(0.5, 0.6, 3.0), (1.0, 1.0, 2.2), (1.19, 0.5, 1.6), (1.56, 0.4, 1.2), (2.0, 0.35, 1.0), (2.74, 0.2, 0.6)]
-    n = int(sec * RATE)
-    return [
-        sum(a * math.exp(-i / (d * RATE)) * math.sin(2 * math.pi * freq * r * i / RATE) for r, a, d in parts)
-        for i in range(n)
-    ]
-
-
 def normalize(x, peak=0.85):
     m = max(1e-9, max(abs(v) for v in x))
     return [v * peak / m for v in x]
@@ -187,10 +177,102 @@ def lounge():
     return normalize(loopable(out, 0.1), 0.6)
 
 
+# ---- Mafia theme (werewolf.md §15.3): city rain, noir jazz, sirens -------------------------------
+
+def city_ambience():
+    """Rain on glass, distant traffic hum and a far-off two-tone siren; masks the action pass."""
+    sec = 28
+    rain = highpass(noise(sec), 1800)
+    rain = [r * 0.35 for r in rain]
+    traffic = lowpass(noise(sec), 140)
+    lfo = [0.6 + 0.4 * math.sin(2 * math.pi * i / (RATE * 9.0)) for i in range(len(traffic))]
+    out = [r + t * l * 1.4 for r, t, l in zip(rain, traffic, lfo)]
+    far = siren_wail(5.0)
+    mix(out, lowpass(far, 1200), at=13.0, gain=0.12)
+    return normalize(loopable(out, 1.5), 0.6)
+
+
+def noir_jazz():
+    """Brushed drums, walking bass and soft minor-seventh chords, 8 bars at 96 bpm, loops."""
+    beat = 60 / 96
+    bars = 8
+    out = silence(bars * 4 * beat + 1)
+    root = 110.0  # A2
+    walk = [0, 3, 5, 7, 8, 7, 5, 3, 0, 2, 3, 5, 7, 5, 3, 2]
+    for i in range(bars * 4):
+        f = root * 2 ** (walk[i % len(walk)] / 12)
+        mix(out, pluck(f, beat * 0.95, 0.993), at=i * beat, gain=0.55)
+        brush = highpass(noise(0.12), 4000)
+        mix(out, [v * e for v, e in zip(brush, env_ad(len(brush), 0.01, 0.05))], at=i * beat, gain=0.12)
+        if i % 2 == 1:
+            mix(out, [v * e for v, e in zip(brush, env_ad(len(brush), 0.005, 0.03))], at=(i + 0.66) * beat, gain=0.08)
+    chords = [(0, 3, 7, 10), (5, 8, 12, 15), (2, 5, 8, 12), (7, 10, 14, 17)]
+    for b in range(bars):
+        ch = chords[b % len(chords)]
+        for s in ch:
+            f = root * 2 * 2 ** (s / 12)
+            mix(out, tone(f, beat * 3.5, ((1, 1.0), (2, 0.2), (3, 0.06)), attack=0.03, decay=1.1), at=b * 4 * beat + 0.02, gain=0.1)
+    out = out[: int(bars * 4 * beat * RATE)]
+    return normalize(loopable(out, 0.05), 0.7)
+
+
+def siren_wail(sec=2.4, lo=650.0, hi=900.0, period=0.6):
+    out, phase = [], 0.0
+    for i in range(int(sec * RATE)):
+        t = i / RATE
+        f = lo if int(t / period) % 2 == 0 else hi
+        phase += 2 * math.pi * f / RATE
+        out.append(math.sin(phase) * 0.6 + math.sin(2 * phase) * 0.15)
+    return out
+
+
+def siren():
+    return normalize(fade(lowpass(siren_wail(2.4), 3000), 0.08, 0.6), 0.6)
+
+
+def camera_flash():
+    click = highpass(noise(0.03), 2000)
+    whine = []
+    for i in range(int(0.7 * RATE)):
+        t = i / RATE
+        f = 2400 + 3000 * t
+        whine.append(math.sin(2 * math.pi * f * t) * math.exp(-t / 0.25) * 0.25)
+    out = silence(0.8)
+    mix(out, click, 0.0, 1.0)
+    mix(out, whine, 0.04, 1.0)
+    return normalize(fade(out, 0.001, 0.2), 0.6)
+
+
+def jail_clang():
+    """A heavy cell door: a dull metallic hit with a short ring and a low thud."""
+    sec = 1.6
+    n = int(sec * RATE)
+    parts = [(180, 1.0, 0.35), (431, 0.6, 0.25), (697, 0.4, 0.18), (1124, 0.25, 0.1)]
+    ring = [sum(a * math.exp(-i / (d * RATE)) * math.sin(2 * math.pi * f * i / RATE) for f, a, d in parts) for i in range(n)]
+    out = silence(sec)
+    mix(out, ring, 0.0, 0.6)
+    mix(out, lowpass(tone(60, 0.4, ((1, 1.0),), attack=0.002, decay=0.1), 200), 0.0, 1.0)
+    return normalize(fade(out, 0.001, 0.4), 0.7)
+
+
+def soft_knock():
+    """Kids-mode replacement for the harsh stingers: two soft wooden knocks."""
+    out = silence(0.7)
+    for at in (0.0, 0.22):
+        mix(out, lowpass(tone(320, 0.18, ((1, 1.0), (2.7, 0.3)), attack=0.002, decay=0.05), 1500), at, 0.8)
+    return normalize(out, 0.5)
+
+
 # ---- one-shots ---------------------------------------------------------------------------------
 
-def death_bell():
-    return normalize(fade(bell(196, 4.0), 0.002, 1.0), 0.8)
+def dawn_sting():
+    """A sombre dawn: a low thump under a slowly swelling minor chord. No bells (werewolf.md §17)."""
+    sec = 3.5
+    out = silence(sec)
+    mix(out, tone(55, 1.2, ((1, 1.0), (2, 0.3)), attack=0.005, decay=0.35), 0.0, 0.9)
+    for f in (220.0, 261.63, 329.63, 440.0):
+        mix(out, tone(f, sec - 0.2, ((1, 1.0), (2, 0.25), (3, 0.08)), attack=0.9, decay=1.4), 0.15, 0.32)
+    return normalize(fade(lowpass(out, 2400), 0.005, 1.0), 0.75)
 
 
 def night_fall():
@@ -257,7 +339,7 @@ if __name__ == '__main__':
         ('heartbeat', heartbeat),
         ('tavern', tavern),
         ('lounge', lounge),
-        ('death-bell', death_bell),
+        ('dawn-sting', dawn_sting),
         ('night-fall', night_fall),
         ('reveal-wolves', reveal_wolves),
         ('reveal-village', reveal_village),
@@ -266,5 +348,11 @@ if __name__ == '__main__':
         ('tick', tick),
         ('swoosh', swoosh),
         ('countdown', countdown_beep),
+        ('city-ambience', city_ambience),
+        ('noir-jazz', noir_jazz),
+        ('siren', siren),
+        ('camera-flash', camera_flash),
+        ('jail-clang', jail_clang),
+        ('soft-knock', soft_knock),
     ]:
         write(name, fn())

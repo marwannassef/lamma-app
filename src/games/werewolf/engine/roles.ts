@@ -18,7 +18,7 @@ const role = (
 
 /** Role registry (§3). Adding a role means adding an entry here, not touching the engine core. */
 export const ROLES: Record<RoleId, RoleDef> = {
-  villager: role('villager', 'village', 'none', { maxPerGame: 16 }),
+  villager: role('villager', 'village', 'none', { maxPerGame: 20 }),
   werewolf: role('werewolf', 'wolves', 'wolfKill', { isPackWolf: true, maxPerGame: 4 }),
   alpha: role('alpha', 'wolves', 'wolfKill', { isPackWolf: true }),
   seer: role('seer', 'village', 'inspectWolf'),

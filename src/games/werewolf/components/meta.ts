@@ -55,3 +55,24 @@ export const ROLE_ART: Record<RoleId, number> = {
   tanner: require('@/assets/images/roles/tanner.png'),
   serialKiller: require('@/assets/images/roles/serial-killer.png'),
 };
+
+/** Mafia theme role art (scripts/generate-mafia-art.py): noir case-file portraits, no weapons (§15.3). */
+export const MAFIA_ROLE_ART: Record<RoleId, number> = {
+  villager: require('@/assets/images/mafia-roles/villager.png'),
+  werewolf: require('@/assets/images/mafia-roles/werewolf.png'),
+  alpha: require('@/assets/images/mafia-roles/alpha.png'),
+  wolfCub: require('@/assets/images/mafia-roles/wolf-cub.png'),
+  loneWolf: require('@/assets/images/mafia-roles/lone-wolf.png'),
+  sorcerer: require('@/assets/images/mafia-roles/sorcerer.png'),
+  seer: require('@/assets/images/mafia-roles/seer.png'),
+  apprenticeSeer: require('@/assets/images/mafia-roles/apprentice-seer.png'),
+  doctor: require('@/assets/images/mafia-roles/doctor.png'),
+  witch: require('@/assets/images/mafia-roles/witch.png'),
+  hunter: require('@/assets/images/mafia-roles/hunter.png'),
+  cupid: require('@/assets/images/mafia-roles/cupid.png'),
+  mayor: require('@/assets/images/mafia-roles/mayor.png'),
+  lycan: require('@/assets/images/mafia-roles/lycan.png'),
+  cursed: require('@/assets/images/mafia-roles/cursed.png'),
+  tanner: require('@/assets/images/mafia-roles/tanner.png'),
+  serialKiller: require('@/assets/images/mafia-roles/serial-killer.png'),
+};

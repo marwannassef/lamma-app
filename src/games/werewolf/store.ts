@@ -7,13 +7,16 @@ import { storage } from '@/core/storage';
 import {
   DEFAULT_RULES,
   gameReducer,
+  newStory,
   resumePhase,
   type GameEvent,
   type GameState,
   type HouseRules,
   type RoleCounts,
+  type Theme,
   type Tier,
 } from './engine';
+import { regionTheme } from './theme';
 
 export type SetupChoice =
   | { kind: 'curated'; tier: Tier }
@@ -45,6 +48,11 @@ interface WerewolfState {
   /** Last custom roles, so Custom reopens where it was left. */
   customRoles: RoleCounts | null;
   savedSetups: SavedSetup[];
+  /** The theme picked in setup (§15.4). */
+  theme: Theme;
+  /** The theme of the last game started; it goes first on the home screen. */
+  lastTheme: Theme | null;
+  setTheme(theme: Theme): void;
   setRules(patch: Partial<HouseRules>): void;
   setCustomRoles(roles: RoleCounts): void;
   /** Saves a setup and returns its id. */
@@ -54,6 +62,19 @@ interface WerewolfState {
   dispatch(e: GameEvent): void;
   markScored(): void;
   quit(): void;
+}
+
+/** Fills in fields a game saved by an older app version doesn't have. */
+function upgrade(g: GameState): GameState {
+  const phase = g.phase.t === 'morning' && !g.phase.story ? { ...g.phase, story: [] } : g.phase;
+  return {
+    ...g,
+    theme: g.theme ?? 'werewolf',
+    kids: g.kids ?? false,
+    story: g.story ?? newStory(),
+    rules: { ...DEFAULT_RULES, ...g.rules },
+    phase,
+  };
 }
 
 export const useWerewolf = create<WerewolfState>()(
@@ -66,6 +87,9 @@ export const useWerewolf = create<WerewolfState>()(
       recentTiers: [],
       customRoles: null,
       savedSetups: [],
+      theme: regionTheme(),
+      lastTheme: null,
+      setTheme: (theme) => set({ theme }),
       setRules: (patch) => set((s) => ({ rules: { ...s.rules, ...patch } })),
       setCustomRoles: (customRoles) => set({ customRoles }),
       saveSetup: (name, players, roles) => {
@@ -82,6 +106,7 @@ export const useWerewolf = create<WerewolfState>()(
         set((s) => ({
           game,
           scored: false,
+          lastTheme: game.theme,
           ...(tier && {
             lastTierByCount: { ...s.lastTierByCount, [game.players.length]: tier },
             recentTiers: [...s.recentTiers, tier].slice(-5),
@@ -103,7 +128,12 @@ export const useWerewolf = create<WerewolfState>()(
       // A relaunch never resumes on a secret screen (§4).
       merge: (persisted, current) => {
         const p = persisted as Partial<WerewolfState>;
-        return { ...current, ...p, game: p.game ? resumePhase(p.game) : null };
+        return {
+          ...current,
+          ...p,
+          rules: { ...DEFAULT_RULES, ...p.rules },
+          game: p.game ? resumePhase(upgrade(p.game)) : null,
+        };
       },
     },
   ),

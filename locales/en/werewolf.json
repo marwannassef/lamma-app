@@ -6,7 +6,7 @@
     "fewerPlayers": "Fewer players",
     "morePlayers": "More players",
     "minPlayers": "Werewolf needs at least 4 players.",
-    "maxPlayers": "16 players is the most.",
+    "maxPlayers": "20 players is the most.",
     "seating": "Seating order",
     "seatingHint": "Put players in order clockwise around the table. Drag ≡ to move someone.",
     "moveUp": "Move {{name}} up",
@@ -109,7 +109,20 @@
     "savedDone": "Saved. You'll find it with the setups for this many players.",
     "delete": "Delete",
     "deleteConfirm": "Delete \"{{name}}\"?",
-    "dragSeat": "Drag to move {{name}}"
+    "dragSeat": "Drag to move {{name}}",
+    "seerAtDawn": "Seer result at dawn",
+    "seerAtDawnOptions": {
+      "off": "Off",
+      "result": "Result only",
+      "named": "Name and result"
+    },
+    "seerAtDawnNote": "Announcing the result also tells everyone whether the Seer is still alive.",
+    "seerAtDawnHardcore": "With roles hidden on death, announcing the result still tells everyone whether the Seer is alive.",
+    "theme": "Theme",
+    "themes": {
+      "werewolf": "🐺 Werewolf",
+      "mafia": "🕴️ Mafia"
+    }
   },
   "teams": {
     "village": "Village",
@@ -200,7 +213,8 @@
     "cupidPick": "Pick the two lovers",
     "cupidHint": "Tap two players. You can pick yourself.",
     "cupidConfirm": "Link them ❤️",
-    "lover": "❤️ Your lover: {{name}}"
+    "lover": "❤️ Your lover: {{name}}",
+    "caseFile": "CASE FILE"
   },
   "night": {
     "title": "Night {{n}}",
@@ -243,21 +257,7 @@
   },
   "morning": {
     "title": "Morning",
-    "single": "The church bells toll… {{name}} did not survive the night.",
-    "multi": "A bloodbath in the shadows… {{names}} did not survive the night.",
-    "none": "A violent struggle in the dark… but no one was harmed.",
     "was": "{{name}} was the {{role}}.",
-    "cause": {
-      "wolves": "{{name}} was taken by the wolves.",
-      "serialKiller": "{{name}} was killed by the Serial Killer.",
-      "poison": "{{name}} was poisoned.",
-      "heartbreak": "{{name}} died of a broken heart."
-    },
-    "saved": {
-      "doctor": "The Doctor saved someone tonight.",
-      "witch": "The Witch's potion saved someone tonight.",
-      "immune": "Someone shrugged off the wolves' attack."
-    },
     "continue": "Continue"
   },
   "effects": {
@@ -334,7 +334,8 @@
       "Wolves, wake up. Look around, and choose your prey without a sound."
     ],
     "wolvesTwice": [
-      "Werewolves, open your eyes. Tonight the pack hunts twice. Agree on two victims."
+      "Werewolves, open your eyes. Tonight the pack hunts twice. Agree on two victims.",
+      "The pack is hungry for revenge. Werewolves, wake up and agree on two victims."
     ],
     "wolvesSleep": [
       "Werewolves, close your eyes… Everyone, open your eyes and pass the phone around the table.",
@@ -344,28 +345,14 @@
       "Pass the phone around. Everyone takes a turn, so nobody can tell who did what.",
       "One by one, take the phone. Act quietly, then pass it on."
     ],
-    "morningSingle": [
-      "The church bells toll… {{name}} did not survive the night.",
-      "A scream at dawn… {{name}} was found this morning.",
-      "The village wakes to bad news. {{name}} is gone."
-    ],
-    "morningMulti": [
-      "A bloodbath in the shadows… {{names}} did not survive the night.",
-      "Dawn brings grief. {{names}} were lost in the night."
-    ],
-    "morningNone": [
-      "A violent struggle in the dark… but no one was harmed.",
-      "The village wakes, and everyone is still here. Lucky… for now.",
-      "Howls in the night, yet not a single victim. Someone was watching over you."
-    ],
-    "voteCountdown": [
-      "Three… two… one… Point!"
-    ],
+    "voteCountdown": ["Three… two… one… Point!", "On my count: three, two, one… Point!"],
     "banished": [
-      "The village has banished {{name}}!"
+      "The village has banished {{name}}!",
+      "The village has spoken: {{name}} must leave!"
     ],
     "nobody": [
-      "Nobody was banished today. The wolves smile in the shadows."
+      "Nobody was banished today. The wolves smile in the shadows.",
+      "No one leaves the village today. The wolves are pleased."
     ],
     "reveal": {
       "wolves": [
@@ -377,27 +364,278 @@
         "{{name}} leaves the village forever… they were the {{role}}. Oh no."
       ],
       "neutral": [
-        "The village has banished {{name}}… the {{role}}! Nobody saw that coming."
+        "The village has banished {{name}}… the {{role}}! Nobody saw that coming.",
+        "{{name}} is sent away… the {{role}}! What a twist."
       ]
     },
     "win": {
       "village": [
-        "The last wolf has fallen. The village is safe! Villagers win!"
+        "The last wolf has fallen. The village is safe! Villagers win!",
+        "Every wolf is gone. The village sleeps safely tonight. Villagers win!"
       ],
       "wolves": [
-        "The wolves outnumber the village. The howling never stops. Werewolves win!"
+        "The wolves outnumber the village. The howling never stops. Werewolves win!",
+        "The village belongs to the pack now. Werewolves win!"
       ],
       "tanner": [
-        "The Tanner wanted out all along… and you gave it to them. The Tanner wins!"
+        "The Tanner wanted out all along… and you gave it to them. The Tanner wins!",
+        "The Tanner laughs all the way out of town. The Tanner wins!"
       ],
       "serialKiller": [
-        "When the dust settles, only the Serial Killer is smiling. The Serial Killer wins!"
+        "When the dust settles, only the Serial Killer is smiling. The Serial Killer wins!",
+        "Nobody stopped the Serial Killer. The Serial Killer wins!"
       ],
       "lovers": [
-        "Love conquers all. The lovers win together!"
+        "Love conquers all. The lovers win together!",
+        "In the end, only love was left standing. The lovers win!"
       ],
       "draw": [
-        "Silence over an empty village. Nobody survived. It's a draw."
+        "Silence over an empty village. Nobody survived. It's a draw.",
+        "The village is empty. Nobody won. It's a draw."
+      ]
+    }
+  },
+  "story": {
+    "werewolf": {
+      "settings": {
+        "rain": {
+          "scene": "a night of heavy rain",
+          "fall": "Rain hammers the rooftops as night falls on the village… Everyone, close your eyes."
+        },
+        "fog": {
+          "scene": "a night of thick fog",
+          "fall": "A thick fog rolls into the village… Everyone, close your eyes."
+        },
+        "fullMoon": {
+          "scene": "a night under the full moon",
+          "fall": "The full moon rises over the village… Everyone, close your eyes."
+        },
+        "wind": {
+          "scene": "a night of howling wind",
+          "fall": "The wind howls between the houses as night falls… Everyone, close your eyes."
+        },
+        "snow": {
+          "scene": "the night of the first snow",
+          "fall": "The first snow begins to fall on the village… Everyone, close your eyes."
+        },
+        "warm": {
+          "scene": "a warm, still night",
+          "fall": "A warm, still night settles over the village… Everyone, close your eyes."
+        }
+      },
+      "openingFirst": [
+        "After {{scene}}, the village wakes for the very first time.",
+        "The sun rises after {{scene}}. The first morning has come.",
+        "After {{scene}}, the roosters crow and the village stirs.",
+        "Morning light breaks after {{scene}}. Day one begins.",
+        "After {{scene}}, doors creak open all over the village.",
+        "The first dawn arrives after {{scene}}, and nobody feels quite safe."
+      ],
+      "openingMid": [
+        "After {{scene}}, the village wakes up again… but not everyone is relieved.",
+        "Another morning comes after {{scene}}.",
+        "The sun climbs over the rooftops after {{scene}}.",
+        "After {{scene}}, the town clock strikes six.",
+        "Dawn breaks after {{scene}}, and the market slowly wakes.",
+        "After {{scene}}, the newspaper boy runs through quiet streets."
+      ],
+      "openingFinal": [
+        "After {{scene}}, the end feels very close.",
+        "Few doors open this morning, after {{scene}}.",
+        "After {{scene}}, the village holds its breath.",
+        "The sun rises on an almost empty village after {{scene}}.",
+        "After {{scene}}, every step echoes in the empty streets.",
+        "Dawn comes after {{scene}}. This could be the last morning."
+      ],
+      "stopped": [
+        "Something prowled near a house last night, but its target lived to see the sun.",
+        "Claws scratched at a door in the dark… but the door held.",
+        "One attack in the dark went wrong. Its target is still with us.",
+        "A shadow crept toward a house… and left empty-handed.",
+        "There was a struggle in the night, but the attack failed.",
+        "Someone was hunted last night and somehow survived."
+      ],
+      "savedDoctor": [
+        "The Doctor arrived just in time to save {{name}}.",
+        "A careful Doctor kept {{name}} safe through the night.",
+        "{{name}} should thank the Doctor this morning."
+      ],
+      "savedWitch": [
+        "A strange potion pulled {{name}} back from the brink.",
+        "The Witch's healing brew saved {{name}}.",
+        "The Witch used a potion, and {{name}} is still with us."
+      ],
+      "savedImmune": [
+        "The wolves attacked {{name}}… and the wolves were the ones who ran.",
+        "Teeth closed on {{name}}, but nothing happened. Strange…",
+        "A wolf attack on {{name}} did nothing at all."
+      ],
+      "deathOne": [
+        "The sun rises over the rooftops… {{name}} did not survive the night.",
+        "A scream at dawn… {{name}} was found this morning.",
+        "The village wakes to bad news: {{name}} is gone.",
+        "{{name}}'s door stayed shut this morning. The village knows why.",
+        "We lost {{name}} last night.",
+        "By the well, the village found {{name}}. Too late."
+      ],
+      "deathOneKids": [
+        "Oh no! {{name}} was taken out of the game last night.",
+        "The wolves sneaked off with {{name}}. Out of the game!",
+        "When the sun came up, {{name}} was missing. Out of the game!",
+        "The wolves caught {{name}}, who is now out of the game.",
+        "There's an empty chair… {{name}} is out of the game.",
+        "Bad luck for {{name}}, who is out of the game this morning."
+      ],
+      "deathMany": [
+        "{{count}} lives were lost in a single night: {{names}}.",
+        "A terrible night. {{names}} did not see the morning.",
+        "The village counts its losses: {{names}}.",
+        "So many empty chairs this morning… {{names}} are gone.",
+        "Dawn brings grief. We lost {{names}}.",
+        "The night took {{count}} of us: {{names}}."
+      ],
+      "deathManyKids": [
+        "Oh no! {{names}} are all out of the game!",
+        "The wolves were busy: {{names}} are out of the game.",
+        "{{count}} players are out this morning: {{names}}.",
+        "Empty chairs everywhere! {{names}} are out of the game.",
+        "What a night! The wolves caught {{names}}.",
+        "Bye bye, {{names}}. You're out of the game!"
+      ],
+      "causeWolves": [
+        "Deep claw marks were found near {{name}}'s door.",
+        "Wolf tracks led straight to {{name}}'s house.",
+        "Torn curtains and claw marks: the wolves came for {{name}}."
+      ],
+      "causeSerialKiller": [
+        "A single silent strike: whoever took {{name}} was not a wolf.",
+        "No tracks, no noise. A lone killer took {{name}}.",
+        "There were no claw marks near {{name}} at all. Someone else is hunting."
+      ],
+      "causePoison": [
+        "A strange bitter smell hung around {{name}}'s bed.",
+        "An empty glass and a bitter smell: someone poisoned {{name}}.",
+        "{{name}}'s cup still smelled of a dark potion."
+      ],
+      "heartbreak": [
+        "{{name}} could not live without {{lover}}.",
+        "Heartbroken over {{lover}}, {{name}} faded away by morning.",
+        "Love can be cruel: losing {{lover}} was too much for {{name}}.",
+        "{{name}} followed {{lover}} into the dark, out of love.",
+        "Two hearts, one fate: after {{lover}}, we lost {{name}} too.",
+        "A broken heart took {{name}} after {{lover}}."
+      ],
+      "heartbreakKids": [
+        "Missing {{lover}} so much, {{name}} is out of the game too.",
+        "{{name}} and {{lover}} were best friends, so {{name}} is out too.",
+        "Without {{lover}}, {{name}} doesn't want to play. Out of the game!",
+        "{{name}} misses {{lover}} too much and is out of the game.",
+        "Best friends stick together: {{name}} is out with {{lover}}.",
+        "{{name}} followed {{lover}} out of the game."
+      ],
+      "quiet": [
+        "A struggle in the dark… but no one was harmed.",
+        "Nothing stirred last night. Every chair is still full.",
+        "The night passed quietly. Too quietly?",
+        "Everyone wakes up safe and sound. For now.",
+        "Not a single scream in the night. Lucky village.",
+        "All doors open this morning. Nobody was lost."
+      ],
+      "seerFound": [
+        "The Seer's vision found a werewolf among you…",
+        "Last night, the Seer looked into a heart and saw fur and fangs.",
+        "The Seer woke up shaking: a werewolf was found.",
+        "The Seer's crystal glowed red last night. A wolf was seen.",
+        "One of you was seen for what you really are: a werewolf.",
+        "The Seer knows something now. Last night's vision showed a wolf."
+      ],
+      "seerInnocent": [
+        "The Seer looked into an innocent heart last night.",
+        "The Seer's vision showed someone innocent. A wasted night?",
+        "Last night, the Seer saw no fangs, only a frightened heart.",
+        "The Seer's crystal stayed calm and blue last night.",
+        "One of you was checked and found innocent.",
+        "The Seer found a clean heart last night."
+      ],
+      "seerFoundNamed": [
+        "The Seer looked into {{name}}… and saw a werewolf!",
+        "Last night's vision was clear: {{name}} is a werewolf!",
+        "The Seer's crystal turned red over {{name}}. A wolf!",
+        "The Seer pointed at {{name}} in a dream and saw fangs.",
+        "{{name}}, the Seer saw your fur. A werewolf!",
+        "Shocking news from the Seer: {{name}} is a werewolf!"
+      ],
+      "seerInnocentNamed": [
+        "The Seer looked into {{name}}… and saw an innocent heart.",
+        "Good news for {{name}}: the Seer saw no werewolf.",
+        "The Seer's crystal stayed calm over {{name}}.",
+        "The Seer checked {{name}} last night: not a werewolf.",
+        "The Seer's vision cleared {{name}}. No fangs there.",
+        "Whatever you think of {{name}}, the Seer saw no wolf."
+      ],
+      "seerNone": [
+        "No visions came last night.",
+        "The Seer saw nothing last night.",
+        "The crystal stayed dark. No vision this time.",
+        "Last night brought no visions at all.",
+        "No word from the Seer this morning.",
+        "The night kept its secrets. No vision came."
+      ],
+      "callbackVote": [
+        "After yesterday's vote against {{name}}, everyone hoped for a quiet night…",
+        "Banishing {{name}} yesterday didn't end the danger.",
+        "The village still argues about yesterday's choice: {{name}}.",
+        "Was banishing {{name}} the right call? Last night may tell.",
+        "Yesterday {{name}} was sent away. Today, new doubts.",
+        "{{name}}'s banishment still echoes through the streets."
+      ],
+      "callbackNoVote": [
+        "Yesterday nobody was banished… and the wolves noticed.",
+        "The village spared everyone yesterday. Was that wise?",
+        "No one was voted out yesterday. The doubts only grew.",
+        "Yesterday's mercy is still the talk of the market.",
+        "Nobody left the village yesterday. Somebody here is grateful.",
+        "Yesterday's vote ended with nobody. Today, think harder."
+      ],
+      "callbackQuiet": [
+        "{{count}} nights in a row, everyone woke up… but the danger isn't over.",
+        "{{count}} quiet nights in a row. The wolves are waiting for something.",
+        "Another calm night: that makes {{count}}. Too calm?",
+        "{{count}} nights without a loss. Someone is being very patient.",
+        "The streak goes on: {{count}} quiet nights. Don't relax.",
+        "{{count}} peaceful nights… the calm before the storm?"
+      ],
+      "tension": [
+        "Only {{count}} of you remain.",
+        "{{count}} players are still standing.",
+        "The circle is smaller now: {{count}} left.",
+        "{{count}} of you are left. Choose wisely.",
+        "Count the faces: {{count}}.",
+        "{{count}} remain. Every vote matters more now."
+      ],
+      "closingFirst": [
+        "Look around the table… someone here knows more than they say.",
+        "Talk, listen and watch closely. The wolves are among you.",
+        "Somewhere at this table, a wolf is smiling.",
+        "Ask questions. Wolves hate questions.",
+        "Trust carefully. Not every friend is a friend today.",
+        "The hunt for the wolves begins now."
+      ],
+      "closingMid": [
+        "The clues are piling up. Who doesn't fit?",
+        "Someone has been too quiet. Or too loud.",
+        "Remember who voted for whom yesterday.",
+        "The wolves are getting bolder. Find them today.",
+        "Look for the story that doesn't add up.",
+        "Another day, another chance to catch a wolf."
+      ],
+      "closingFinal": [
+        "This is it. One wrong vote and the night wins.",
+        "Everything comes down to this day.",
+        "Look each other in the eye. The truth is right here.",
+        "The last few of you must decide the village's fate.",
+        "No more hiding. Today could decide everything.",
+        "Choose carefully. There may be no tomorrow."
       ]
     }
   }

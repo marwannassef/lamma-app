@@ -367,7 +367,7 @@ def moonlit():
     stars = ''.join(
         f'<circle cx="{rnd.uniform(0, w):.0f}" cy="{rnd.uniform(0, h * .62):.0f}" r="{rnd.uniform(1.2, 3.2):.1f}" opacity="{rnd.uniform(.25, .8):.2f}"/>'
         for _ in range(70))
-    # village skyline: houses, a steeple and trees along the bottom
+    # village skyline: houses, the town clock tower and trees along the bottom
     base = h - 300
     houses = []
     x = -20
@@ -380,8 +380,12 @@ def moonlit():
             wx = x + hw * rnd.uniform(.25, .6)
             houses.append(f'<rect x="{wx:.0f}" y="{top + 24}" width="18" height="22" rx="3" fill="#F3C64A" opacity="{rnd.uniform(.35, .7):.2f}"/>')
         x += hw + rnd.randint(-10, 30)
-    steeple = (f'<path d="M700 {h} L700 {base - 170} L740 {base - 330} L780 {base - 170} L780 {h} Z"/>'
-               f'<rect x="736" y="{base - 380}" width="8" height="60"/><rect x="722" y="{base - 360}" width="36" height="8"/>')
+    # The town clock tower (no religious buildings, werewolf.md §17): a square tower with a lit clock face.
+    steeple = (f'<path d="M694 {h} L694 {base - 250} L688 {base - 250} L688 {base - 272} L792 {base - 272} '
+               f'L792 {base - 250} L786 {base - 250} L786 {h} Z"/>'
+               f'<circle cx="740" cy="{base - 200}" r="30" fill="#F3D58E" opacity=".75"/>'
+               f'<path d="M740 {base - 200} L740 {base - 222} M740 {base - 200} L756 {base - 192}" '
+               f'stroke="#090415" stroke-width="5" stroke-linecap="round"/>')
     trees = ''.join(
         f'<path d="M{tx} {base + 40} L{tx + 40} {base - 120 - k * 20} L{tx + 80} {base + 40} Z"/>'
         for k, tx in enumerate((40, 330, 930)))

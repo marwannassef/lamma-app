@@ -6,7 +6,7 @@ import { storage } from '@/core/storage';
 
 /** Limits of the shared roster; each game narrows them with its own min/max players. */
 export const MIN_PLAYERS = 3;
-export const MAX_PLAYERS = 16;
+export const MAX_PLAYERS = 20;
 export const MAX_NAME_LENGTH = 14;
 const DEFAULT_PLAYERS = 5;
 

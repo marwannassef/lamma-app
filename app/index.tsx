@@ -1,4 +1,4 @@
-import { Redirect, router } from 'expo-router';
+import { Redirect, router, type Href } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,9 @@ import Animated, {
 import { useAge, useContentLevel } from '@/core/age';
 import { gradients, radius, space, useTheme } from '@/core/theme';
 import { Badge, Button, Pressable, Screen, Text } from '@/core/ui';
-import { games, type GameModule } from '@/games/registry';
+import { games, homeOrder, type GameModule } from '@/games/registry';
+import { useWerewolf } from '@/games/werewolf/store';
+import { regionTheme } from '@/games/werewolf/theme';
 
 function Logo() {
   const { colors } = useTheme();
@@ -118,6 +120,7 @@ export default function Home() {
   const { colors } = useTheme();
   const audience = useAge((s) => s.audience);
   const pin = useAge((s) => s.pin);
+  const firstTheme = useWerewolf((s) => s.lastTheme) ?? regionTheme();
   const level = useContentLevel();
 
   // First launch asks "Who's playing tonight?" before anything else.
@@ -127,6 +130,19 @@ export default function Home() {
   return (
     <Screen>
       <View style={styles.topBar}>
+        <Pressable
+          testID="open-shop"
+          accessibilityLabel={t('shop.title')}
+          onPress={() => router.push('/shop' as Href)}
+          style={[
+            styles.settingsBtn,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Text style={styles.gear} accessible={false}>
+            🛍️
+          </Text>
+        </Pressable>
         <Pressable
           testID="open-settings"
           accessibilityLabel={t('home.openSettings')}
@@ -165,7 +181,7 @@ export default function Home() {
         {`🎮 ${t('home.pickGame')}`}
       </Text>
 
-      {games.map((game) => (
+      {homeOrder(games, firstTheme).map((game) => (
         <GameCard key={game.id} game={game} />
       ))}
 
@@ -179,7 +195,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  topBar: { flexDirection: 'row', justifyContent: 'flex-end' },
+  topBar: { flexDirection: 'row', justifyContent: 'flex-end', gap: space.sm },
   settingsBtn: {
     width: 48,
     height: 48,

@@ -1,9 +1,16 @@
 import { Platform } from 'react-native';
 import type PurchasesSdk from 'react-native-purchases';
-import type { CustomerInfo, PurchasesPackage } from 'react-native-purchases';
+import type { CustomerInfo, PurchasesPackage, PurchasesStoreProduct } from 'react-native-purchases';
 
 import { useEntitlements } from './state';
-import { ENTITLEMENT, partyPassUntil, productIdFor, STORE_PRODUCTS, type ProductId } from './store';
+import {
+  ENTITLEMENT,
+  ownedItems,
+  partyPassUntil,
+  productIdFor,
+  STORE_PRODUCTS,
+  type ProductId,
+} from './store';
 
 export { STORE_PRODUCTS, type ProductId } from './store';
 
@@ -62,11 +69,16 @@ function load(): Sdk | null {
 
 /** Copies what the store says the user owns into the entitlement store. */
 export function applyCustomerInfo(
-  info: Pick<CustomerInfo, 'entitlements' | 'nonSubscriptionTransactions'>,
+  info: Pick<CustomerInfo, 'entitlements' | 'nonSubscriptionTransactions'> &
+    Partial<Pick<CustomerInfo, 'allPurchasedProductIdentifiers'>>,
 ) {
   useEntitlements.getState().setStore({
     storePremium: info.entitlements.active[ENTITLEMENT] != null,
     partyPassUntil: partyPassUntil(info.nonSubscriptionTransactions),
+    owned: ownedItems([
+      ...(info.allPurchasedProductIdentifiers ?? []),
+      ...info.nonSubscriptionTransactions.map((t) => t.productIdentifier),
+    ]),
   });
 }
 
@@ -145,6 +157,43 @@ export async function restorePurchases(): Promise<PurchaseResult> {
     applyCustomerInfo(await Purchases.restorePurchases());
     return { ok: true };
   } catch (e) {
+    return { ok: false, reason: 'failed', detail: errorDetail(e) };
+  }
+}
+
+async function storeItems(ids: readonly string[]): Promise<PurchasesStoreProduct[]> {
+  const Purchases = load();
+  if (!Purchases || !configurePurchases() || ids.length === 0) return [];
+  return Purchases.getProducts([...ids], Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION);
+}
+
+/** Localized prices of Shop items the store sells, by product id. Missing ones aren't on sale yet. */
+export async function itemPrices(ids: readonly string[]): Promise<Record<string, string>> {
+  try {
+    const products = await storeItems(ids);
+    return Object.fromEntries(products.map((p) => [p.identifier.split(':')[0], p.priceString]));
+  } catch {
+    return {};
+  }
+}
+
+/** Buys one Shop item (a word pack or a role card). */
+export async function buyItem(id: string): Promise<PurchaseResult> {
+  const Purchases = load();
+  if (!Purchases) return NO_KEY;
+  let product: PurchasesStoreProduct | undefined;
+  try {
+    product = (await storeItems([id])).find((p) => p.identifier.split(':')[0] === id);
+  } catch (e) {
+    return { ok: false, reason: 'failed', detail: errorDetail(e) };
+  }
+  if (!product) return { ok: false, reason: 'unavailable', detail: `${id} is not on sale yet` };
+  try {
+    const { customerInfo } = await Purchases.purchaseStoreProduct(product);
+    applyCustomerInfo(customerInfo);
+    return { ok: true };
+  } catch (e) {
+    if ((e as { userCancelled?: boolean }).userCancelled) return { ok: false, reason: 'cancelled' };
     return { ok: false, reason: 'failed', detail: errorDetail(e) };
   }
 }

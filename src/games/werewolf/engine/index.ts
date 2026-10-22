@@ -7,3 +7,4 @@ export * from './roles';
 export * from './setup';
 export * from './types';
 export * from './win';
+export * from './story';

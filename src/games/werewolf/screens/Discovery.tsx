@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 import Animated, { FlipInEasyY } from 'react-native-reanimated';
 
@@ -18,15 +17,20 @@ import {
 import { RoleCard } from '../components/RoleCard';
 import { isPackWolf, packOf, type GameState, type PlayerId } from '../engine';
 import { useWerewolf } from '../store';
+import { useWerewolfT } from '../components/i18n';
 
 /** Same hold before the card shows for every role, so timing gives nothing away (§2.2). */
 const SEAL_HOLD_MS = 500;
 const FLIP_MS = 380;
-const SEAL = require('@/assets/images/werewolf/seal.png');
+// Werewolf's wax seal, or Mafia's TOP SECRET stamp (§15.3).
+const SEAL = {
+  werewolf: require('@/assets/images/werewolf/seal.png'),
+  mafia: require('@/assets/images/mafia/stamp.png'),
+};
 
 /** Who you can see on your card: the pack for wolves and the Sorcerer, your lover if linked. */
 export function useRoleExtras(game: GameState, seat: PlayerId) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const nameOf = usePlayerName();
   const me = game.players[seat];
   const lines: string[] = [];
@@ -54,7 +58,7 @@ export function useRoleExtras(game: GameState, seat: PlayerId) {
 }
 
 export default function Discovery({ game, seat }: { game: GameState; seat: PlayerId }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const dispatch = useWerewolf((s) => s.dispatch);
   const nameOf = usePlayerName();
   const [step, setStep] = useState<'handoff' | 'seal' | 'cupid'>('handoff');
@@ -180,7 +184,7 @@ export default function Discovery({ game, seat }: { game: GameState; seat: Playe
         style={({ pressed }) => [styles.seal, pressed && styles.sealPressed]}
       >
         <Image
-          source={SEAL}
+          source={SEAL[game.theme]}
           style={styles.sealImage}
           accessible={false}
           accessibilityIgnoresInvertColors

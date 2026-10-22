@@ -1,4 +1,4 @@
-import type { RoleId } from './types';
+import type { RoleId, SeerAtDawn } from './types';
 
 /**
  * Role weights for the balance score (§5.5). Starting values: tune them from playtests here,
@@ -23,6 +23,9 @@ export const ROLE_WEIGHTS: Record<RoleId, number> = {
   serialKiller: -8,
   doctor: 5,
 };
+
+/** Announcing the Seer's result at dawn helps the village (§6): +1 for the result, +3 named. */
+export const SEER_AT_DAWN_BONUS: Record<SeerAtDawn, number> = { off: 0, result: 1, named: 3 };
 
 export type BalanceLabel =
   'villageFriendly' | 'leansVillage' | 'balanced' | 'leansWolves' | 'wolfFriendly';

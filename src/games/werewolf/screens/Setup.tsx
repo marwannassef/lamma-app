@@ -1,10 +1,10 @@
-import { router } from 'expo-router';
+import { useContentLevel } from '@/core/age';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { clampPlayers, MAX_NAME_LENGTH, usePlayerName, usePlayers } from '@/core/players';
-import { openPaywall, useTier } from '@/core/entitlements';
+import { openPaywall, roleProductId, useOwned, useTier } from '@/core/entitlements';
 import { useRemoteConfig } from '@/core/remoteConfig';
 import { mathRng } from '@/core/rng';
 import { useSettings } from '@/core/settings/store';
@@ -49,9 +49,14 @@ import {
   validateSetup,
   type HouseRules,
   type RoleCounts,
+  type RoleId,
   type Tier,
 } from '../engine';
 import { useWerewolf, type SavedSetup, type SetupChoice } from '../store';
+import { mafia } from '../mafia';
+import { isTheme } from '../theme';
+import { firstLockedRole, roleUnlocked, setupUnlocked } from '../shop';
+import { useWerewolfT } from '../components/i18n';
 
 /** Every role ships, core and expansion (W5). */
 const AVAILABLE = ALL_ROLES;
@@ -60,7 +65,7 @@ const SURPRISE_FROM = 7;
 const COMPLEXITY: Record<Tier, number> = { basic: 1, gentle: 1, classic: 2, party: 3, chaos: 3 };
 
 function RoleChips({ roles }: { roles: RoleCounts }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   return (
     <View style={styles.chips}>
       {ALL_ROLES.filter((r) => roles[r]).map((r) => (
@@ -80,9 +85,12 @@ function RoleChips({ roles }: { roles: RoleCounts }) {
 
 /** Balance meter from −10 (wolves) to +10 (village) with its label (§5.3). */
 function BalanceMeter({ roles }: { roles: RoleCounts }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const { colors } = useTheme();
-  const b = balance(roles);
+  const b = balance(
+    roles,
+    useWerewolf((s) => s.rules.seerAtDawn),
+  );
   const pos = Math.max(0, Math.min(1, (b.score + 10) / 20));
   return (
     <View
@@ -111,6 +119,7 @@ function SetupCard({
   onEdit,
   discussion,
   locked,
+  lockedItem,
 }: {
   tier: Tier;
   roles: RoleCounts;
@@ -121,11 +130,14 @@ function SetupCard({
   discussion: number | null;
   /** Premium-only setup: visible with a 🔒; every button opens the paywall. */
   locked: boolean;
+  /** A role card to offer on its own in the paywall (Shop). */
+  lockedItem?: string;
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const { colors } = useTheme();
-  const pick = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onPick;
-  const editOrPay = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onEdit;
+  const pay = () => openPaywall('locked', { game: 'werewolf', item: lockedItem });
+  const pick = locked ? pay : onPick;
+  const editOrPay = locked ? pay : onEdit;
   return (
     <Pressable
       testID={`setup-${tier}`}
@@ -190,12 +202,16 @@ function CustomEditor({
   roles,
   players,
   onChange,
+  locked = () => false,
 }: {
   roles: RoleCounts;
   players: number;
   onChange(roles: RoleCounts): void;
+  /** Role cards a free user hasn't bought: shown with a 🔒 that opens the paywall. */
+  locked?: (role: RoleId) => boolean;
 }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT(['common']);
+  const { colors } = useTheme();
   const filled = fillVillagers(roles, players);
   const teams = ['wolves', 'village', 'neutral'] as const;
   return (
@@ -205,22 +221,39 @@ function CustomEditor({
           <Text variant="label" style={{ color: TEAM_COLOR[team] }}>
             {t(`teams.${team}`)}
           </Text>
-          {AVAILABLE.filter((r) => r !== 'villager' && ROLES[r].team === team).map((r) => (
-            <Stepper
-              key={r}
-              testID={`custom-${r}`}
-              icon={<RoleIcon role={r} size={36} />}
-              label={t(`roles.${r}.name`)}
-              value={roles[r] ?? 0}
-              min={0}
-              max={ROLES[r].maxPerGame}
-              onChange={(n) => onChange({ ...roles, [r]: n })}
-              decreaseLabel={`− ${t(`roles.${r}.name`)}`}
-              increaseLabel={`+ ${t(`roles.${r}.name`)}`}
-              minHint=" "
-              maxHint={t('setup.errors.tooManyOfRole')}
-            />
-          ))}
+          {AVAILABLE.filter((r) => r !== 'villager' && ROLES[r].team === team).map((r) =>
+            locked(r) ? (
+              <Pressable
+                key={r}
+                testID={`custom-${r}-locked`}
+                haptic={false}
+                accessibilityLabel={`${t(`roles.${r}.name`)}, ${t('common:premium.lockedTag')}`}
+                onPress={() => openPaywall('locked', { game: 'werewolf', item: roleProductId(r) })}
+                style={[styles.lockedRole, { borderColor: colors.border }]}
+              >
+                <RoleIcon role={r} size={36} />
+                <Text variant="label" style={styles.flex}>
+                  {t(`roles.${r}.name`)}
+                </Text>
+                <Badge tone="gold" icon="🔒" label={t('common:premium.lockedTag')} />
+              </Pressable>
+            ) : (
+              <Stepper
+                key={r}
+                testID={`custom-${r}`}
+                icon={<RoleIcon role={r} size={36} />}
+                label={t(`roles.${r}.name`)}
+                value={roles[r] ?? 0}
+                min={0}
+                max={ROLES[r].maxPerGame}
+                onChange={(n) => onChange({ ...roles, [r]: n })}
+                decreaseLabel={`− ${t(`roles.${r}.name`)}`}
+                increaseLabel={`+ ${t(`roles.${r}.name`)}`}
+                minHint=" "
+                maxHint={t('setup.errors.tooManyOfRole')}
+              />
+            ),
+          )}
         </View>
       ))}
       <View style={styles.cardHead}>
@@ -318,7 +351,7 @@ function SurpriseCard({
   locked: boolean;
   onRoll(): void;
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const roll = locked ? () => openPaywall('locked', { game: 'werewolf' }) : onRoll;
   return (
     <CardFrame
@@ -366,7 +399,7 @@ function SavedCard({
   onPick(): void;
   onDelete(): void;
 }) {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t } = useWerewolfT(['common']);
   const [ask, setAsk] = useState(false);
   return (
     <CardFrame
@@ -420,7 +453,7 @@ function SavedCard({
 
 /** Names and saves the custom setup being edited. */
 function SaveCustom({ onSave }: { onSave(name: string): void }) {
-  const { t } = useTranslation('werewolf');
+  const { t } = useWerewolfT();
   const { colors } = useTheme();
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
@@ -473,20 +506,36 @@ function SaveCustom({ onSave }: { onSave(name: string): void }) {
 }
 
 export default function Setup() {
-  const { t } = useTranslation(['werewolf', 'common']);
+  const { t, theme } = useWerewolfT(['common']);
   const { colors } = useTheme();
   const { count, names, setCount, setName, move } = usePlayers();
+  const params = useLocalSearchParams<{ theme?: string }>();
   const nameOf = usePlayerName();
   const store = useWerewolf();
   const narration = useSettings((st) => st.narration);
   const setNarration = useSettings((st) => st.setNarration);
   const free = useTier() === 'free';
+  const level = useContentLevel();
   const caps = useRemoteConfig().caps.werewolf;
+  const owned = useOwned();
   const tierLocked = (tier: Tier) => free && !caps.setupTiers.includes(tier);
+  // A setup unlocks with Premium, a free tier, or every one of its role cards bought (Shop).
+  const cardLocked = (c: { tier: Tier; roles: RoleCounts }) =>
+    tierLocked(c.tier) && !setupUnlocked(c.roles, owned);
+  const roleLocked = (r: RoleId) => free && !roleUnlocked(r, owned);
+  // Custom opens for free users who bought at least one role card; it offers only their roles.
+  const customOpen = !free || owned.some((id) => id.startsWith('lamma_role_'));
   // Free games use the default house rules (monetization §3: "all house rules" is Premium).
   const rules = free ? DEFAULT_RULES : store.rules;
 
-  // The roster is shared with Spy (3+); Werewolf needs 4–16.
+  const playing = !!store.game && store.game.phase.t !== 'gameOver';
+  // The home tile picks the theme; it can't change while a game is running (§15.4).
+  useEffect(() => {
+    if (isTheme(params.theme) && !playing) store.setTheme(params.theme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.theme]);
+
+  // The roster is shared with Spy (3+); Werewolf needs 4–20.
   useEffect(() => {
     if (count < module.minPlayers) setCount(module.minPlayers);
   }, [count, setCount]);
@@ -495,7 +544,7 @@ export default function Setup() {
   const nudge = tryNextTier(store.recentTiers, cards);
   const [choice, setChoice] = useState<SetupChoice | null>(null);
   const preselected = preselect(
-    cards.filter((c) => !tierLocked(c.tier)),
+    cards.filter((c) => !cardLocked(c)),
     { lastTier: store.lastTierByCount[count] ?? null },
   );
   // Keep the chosen tier across player-count changes when it still exists (§5.4).
@@ -508,8 +557,7 @@ export default function Setup() {
         : choice?.kind === 'saved' && saved.some((x) => x.id === choice.id)
           ? choice
           : choice?.kind === 'curated' &&
-              cards.some((c) => c.tier === choice.tier) &&
-              !tierLocked(choice.tier)
+              cards.some((c) => c.tier === choice.tier && !cardLocked(c))
             ? choice
             : { kind: 'curated', tier: preselected?.tier ?? 'basic' };
   const roles: RoleCounts =
@@ -533,9 +581,16 @@ export default function Setup() {
     if (free && count > caps.players) {
       return openPaywall('cap', { game: 'werewolf', max: module.maxPlayers });
     }
+    if (free && !setupUnlocked(roles, owned)) {
+      const role = firstLockedRole(roles, owned);
+      return openPaywall('locked', { game: 'werewolf', item: role && roleProductId(role) });
+    }
     if (check.errors.length > 0) return setShowErrors(true);
     const dealt = dealRoles(roles, count, mathRng);
-    store.start(newGame(dealt, rules), current.kind === 'curated' ? current.tier : null);
+    store.start(
+      newGame(dealt, rules, { theme: store.theme, kids: level === 'kids' }),
+      current.kind === 'curated' ? current.tier : null,
+    );
     router.push('/games/werewolf/play');
   };
 
@@ -556,10 +611,23 @@ export default function Setup() {
     <Screen
       footer={<Button testID="start-game" icon="🌙" label={t('setup.start')} onPress={start} />}
     >
-      <BackHeader title={t('title')} image={module.icon} />
+      <BackHeader title={t('title')} image={theme === 'mafia' ? mafia.icon : module.icon} />
       <Text variant="body" tone="muted" align="center">
         {t('setup.lead')}
       </Text>
+
+      {!playing ? (
+        <Options
+          testID="theme"
+          label={t('setup.theme')}
+          value={store.theme}
+          onChange={(v) => store.setTheme(v)}
+          options={(['werewolf', 'mafia'] as const).map((v) => ({
+            value: v,
+            label: t(`setup.themes.${v}`),
+          }))}
+        />
+      ) : null}
 
       <HowToPlay
         setup={t('howTo.setup', { returnObjects: true }) as string[]}
@@ -671,7 +739,11 @@ export default function Setup() {
           onPick={() => setChoice({ kind: 'curated', tier: c.tier })}
           onEdit={() => edit(c.roles)}
           discussion={rules.discussionSeconds}
-          locked={tierLocked(c.tier)}
+          locked={cardLocked(c)}
+          lockedItem={(() => {
+            const r = firstLockedRole(c.roles, owned);
+            return r && roleProductId(r);
+          })()}
         />
       ))}
 
@@ -699,7 +771,7 @@ export default function Setup() {
         accessibilityRole="radio"
         accessibilityState={{ checked: current.kind === 'custom' }}
         onPress={() =>
-          free
+          !customOpen
             ? openPaywall('locked', { game: 'werewolf' })
             : current.kind !== 'custom' &&
               edit(store.customRoles ?? cards[0]?.roles ?? { werewolf: 1, seer: 1 })
@@ -713,7 +785,7 @@ export default function Setup() {
         ]}
       >
         <Text variant="heading">
-          {free
+          {!customOpen
             ? `🔒 ✏️ ${t('setup.custom')}`
             : current.kind === 'custom'
               ? `✓ ✏️ ${t('setup.custom')}`
@@ -726,6 +798,7 @@ export default function Setup() {
           <CustomEditor
             roles={current.roles}
             players={count}
+            locked={roleLocked}
             onChange={(r) => {
               store.setCustomRoles(r);
               setChoice({ kind: 'custom', roles: r });
@@ -840,6 +913,22 @@ export default function Setup() {
           value={rules.revealRoleOnDeath}
           onChange={(v) => setRules({ revealRoleOnDeath: v })}
         />
+        <Options
+          testID="seer-at-dawn"
+          locked={free}
+          label={t('setup.seerAtDawn')}
+          value={rules.seerAtDawn}
+          onChange={(v) => setRules({ seerAtDawn: v })}
+          options={(['off', 'result', 'named'] as const).map((v) => ({
+            value: v,
+            label: t(`setup.seerAtDawnOptions.${v}`),
+          }))}
+        />
+        {rules.seerAtDawn !== 'off' ? (
+          <Text variant="caption" tone={rules.revealRoleOnDeath ? 'muted' : 'danger'}>
+            {t(rules.revealRoleOnDeath ? 'setup.seerAtDawnNote' : 'setup.seerAtDawnHardcore')}
+          </Text>
+        ) : null}
         <Toggle
           surface={false}
           testID="detailed"
@@ -856,6 +945,15 @@ export default function Setup() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   stack: { gap: space.sm },
+  lockedRole: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    minHeight: 48,
+    borderWidth: 1.5,
+    borderRadius: radius.md,
+    padding: space.sm,
+  },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   roleChip: {
     flexDirection: 'row',

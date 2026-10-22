@@ -7,7 +7,33 @@
     "playersRange": "{{min}}–{{max}} players",
     "comingSoon": "Coming soon",
     "openSettings": "Settings",
-    "play": "Play"
+    "play": "Play",
+    "view": {
+      "wheel": "Card wheel",
+      "list": "List with search"
+    },
+    "search": "Search games",
+    "clearSearch": "Clear search",
+    "noResults": "No game matches \"{{query}}\".",
+    "info": "How to play {{game}}",
+    "flipBack": "Back to the card",
+    "previous": "Previous game",
+    "next": "Next game",
+    "position": "Game {{n}} of {{total}}",
+    "stories": {
+      "spy": "Everyone knows the secret word… except one sneaky spy pretending very, very hard.",
+      "werewolf": "Nice village, lovely people, one tiny problem: some of them grow fur at night.",
+      "mafia": "The city sleeps. The Mafia doesn't. Find them before they find you.",
+      "blendIn": "Say one word about the secret. The Chameleon will say one too… and hope you don't notice.",
+      "mystery": "Something is coming to the table. Even we're not allowed to say what."
+    },
+    "cheers": {
+      "spy": "Psst… someone here is bluffing 🤫",
+      "werewolf": "Awooo! The moon is up 🌕",
+      "mafia": "Keep your friends close… 🕶️",
+      "blendIn": "Blend in, or get spotted 🦎",
+      "mystery": "Shh… it's a surprise 🎁"
+    }
   },
   "players": {
     "defaultName": "Player {{n}}",

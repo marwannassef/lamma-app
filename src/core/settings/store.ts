@@ -19,6 +19,9 @@ interface SettingsState {
   volume: number;
   /** Enabled content regions; null means "pick from the device region". */
   regions: string[] | null;
+  /** How the home screen shows the games: a searchable list or the 3D wheel. */
+  homeView: 'wheel' | 'list';
+  setHomeView(view: 'wheel' | 'list'): void;
   setLanguage(language: LanguagePref): void;
   setAppearance(appearance: Appearance): void;
   setHaptics(on: boolean): void;
@@ -38,6 +41,8 @@ export const useSettings = create<SettingsState>()(
       narration: true,
       volume: 1,
       regions: null,
+      homeView: 'wheel',
+      setHomeView: (homeView) => set({ homeView }),
       setLanguage: (language) => set({ language }),
       setAppearance: (appearance) => set({ appearance }),
       setHaptics: (haptics) => set({ haptics }),

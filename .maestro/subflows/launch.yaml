@@ -5,3 +5,6 @@ appId: com.anventureslabs.lamma
     clearState: true
 - runFlow: open.yaml
 - runFlow: welcome.yaml
+# Home opens on the card wheel; the flows pick games from the list view.
+- tapOn:
+    id: view-list

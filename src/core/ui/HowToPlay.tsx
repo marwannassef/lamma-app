@@ -7,7 +7,15 @@ import { radius, space, useTheme } from '@/core/theme';
 import { Pressable } from './Pressable';
 import { Text } from './Text';
 
-function Steps({ title, icon, steps }: { title: string; icon: string; steps: readonly string[] }) {
+export function Steps({
+  title,
+  icon,
+  steps,
+}: {
+  title: string;
+  icon: string;
+  steps: readonly string[];
+}) {
   const { colors } = useTheme();
   return (
     <View style={styles.section}>

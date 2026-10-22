@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import Home from '../app/index';
 import { useAge } from '../src/core/age';
 import { i18n, initI18n } from '../src/core/i18n';
+import { useSettings } from '../src/core/settings/store';
+import { frontIndex, wheelOffset } from '../src/home/GameWheel';
 
 jest.mock('expo-router', () => {
   const { Text } = jest.requireActual('react-native');
@@ -17,6 +19,8 @@ describe('Home', () => {
     initI18n('en');
     useAge.setState({ audience: 'teen', pin: '1234' });
   });
+
+  beforeEach(() => useSettings.setState({ homeView: 'list' }));
 
   it('renders in English', async () => {
     await i18n.changeLanguage('en');
@@ -45,5 +49,39 @@ describe('Home', () => {
     expect(screen.getByText('لمّة')).toBeTruthy();
     expect(screen.getByText('الجاسوس')).toBeTruthy();
     expect(screen.getByText('المستذئب')).toBeTruthy();
+  });
+
+  it('searches games in the list view', async () => {
+    await i18n.changeLanguage('en');
+    render(<Home />);
+    fireEvent.changeText(screen.getByTestId('game-search'), 'wolf');
+    expect(screen.getByText('Werewolf')).toBeTruthy();
+    expect(screen.queryByText('Spy')).toBeNull();
+    fireEvent.changeText(screen.getByTestId('game-search'), 'zzz');
+    expect(screen.getByTestId('no-games')).toBeTruthy();
+    fireEvent.press(screen.getByTestId('game-search-clear'));
+    expect(screen.getByText('Spy')).toBeTruthy();
+  });
+
+  it('shows the 3D wheel, flips a card to How to play, and switches views', async () => {
+    await i18n.changeLanguage('en');
+    useSettings.setState({ homeView: 'wheel' });
+    render(<Home />);
+    expect(screen.getByTestId('game-wheel')).toBeTruthy();
+    expect(screen.getByText(/except one sneaky spy/)).toBeTruthy();
+    expect(screen.getByTestId('wheel-cheer')).toBeTruthy();
+    await act(async () => fireEvent.press(screen.getByTestId('info-spy')));
+    expect(screen.getByText(/Choose how many players and spies/)).toBeTruthy();
+    fireEvent.press(screen.getByTestId('view-list'));
+    expect(useSettings.getState().homeView).toBe('list');
+    expect(screen.getByTestId('game-search')).toBeTruthy();
+  });
+
+  it('loops the wheel: offsets wrap around and the front card follows', () => {
+    expect(wheelOffset(0, 0, 5)).toBe(0);
+    expect(wheelOffset(4, 0, 5)).toBe(-1);
+    expect(wheelOffset(1, 4, 5)).toBe(2);
+    expect(frontIndex(-1, 5)).toBe(4);
+    expect(frontIndex(7, 5)).toBe(2);
   });
 });

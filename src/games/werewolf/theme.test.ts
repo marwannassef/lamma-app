@@ -16,20 +16,8 @@ describe('Werewolf / Mafia themes (§15)', () => {
 
   it('shows two home tiles and swaps them by the preferred theme', () => {
     const ids = (list: readonly { id: string }[]) => list.map((g) => g.id);
-    expect(ids(homeOrder(games, 'werewolf'))).toEqual([
-      'spy',
-      'werewolf',
-      'mafia',
-      'blendIn',
-      'mystery',
-    ]);
-    expect(ids(homeOrder(games, 'mafia'))).toEqual([
-      'spy',
-      'mafia',
-      'werewolf',
-      'blendIn',
-      'mystery',
-    ]);
+    expect(ids(homeOrder(games, 'werewolf'))).toEqual(['spy', 'werewolf', 'mafia', 'blendIn']);
+    expect(ids(homeOrder(games, 'mafia'))).toEqual(['spy', 'mafia', 'werewolf', 'blendIn']);
   });
 
   const cue = (phase: Phase, patch: Partial<GameState> = {}) =>

@@ -10,7 +10,7 @@ export { GameBackground } from './GameBackground';
 export { HiddenFromScreenReader } from './HiddenFromScreenReader';
 export { Hint } from './Hint';
 export { HoldButton, useCountdown } from './HoldButton';
-export { HowToPlay } from './HowToPlay';
+export { HowToPlay, Steps } from './HowToPlay';
 export { Panel } from './Panel';
 export { PinInput } from './PinInput';
 export { PlayerPicker, type PickablePlayer, type PickerTag } from './PlayerPicker';

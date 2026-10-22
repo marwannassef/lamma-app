@@ -30,8 +30,8 @@ describe('Home', () => {
     expect(screen.getAllByText(/3–12 players/)).toHaveLength(2); // Spy and Blend In
     expect(screen.getByText('Werewolf')).toBeTruthy();
     expect(screen.getByText('Blend In')).toBeTruthy();
-    expect(screen.getByText('Mystery game')).toBeTruthy();
-    expect(screen.getAllByText('Coming soon')).toHaveLength(1);
+    // The mystery teaser is hidden for now.
+    expect(screen.queryByText('Mystery game')).toBeNull();
     expect(screen.getByText('Mafia')).toBeTruthy();
     expect(screen.getAllByText(/4–20 players/)).toHaveLength(2); // Werewolf and Mafia
   });

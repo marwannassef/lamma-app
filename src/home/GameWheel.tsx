@@ -166,7 +166,12 @@ function CardFace({
                   </Text>
                 </Pressable>
               </View>
-              <ScrollView style={styles.flex} contentContainerStyle={styles.backBody}>
+              <ScrollView
+                style={styles.flex}
+                contentContainerStyle={styles.backBody}
+                nestedScrollEnabled
+                showsVerticalScrollIndicator
+              >
                 {f.howTo ? (
                   <>
                     <Steps title={t('howTo.setup')} icon="🛠️" steps={steps('setup')} />
@@ -239,33 +244,36 @@ function WheelCard({
   const open = () => router.push(game.entryRoute);
   return (
     <Animated.View style={[styles.slot, { width, height }, style]}>
-      <Pressable
-        testID={`wheel-${game.id}`}
-        haptic={false}
-        accessible={!front}
-        accessibilityLabel={front ? undefined : game.id}
-        onPress={() => (front ? undefined : onSelect(i))}
-        style={StyleSheet.absoluteFill}
-      >
-        <CardFace
-          game={game}
-          side="front"
-          flip={flip}
-          onPlay={open}
-          onFlip={toggle}
-          front={front && !flipped}
-          height={height}
+      <CardFace
+        game={game}
+        side="front"
+        flip={flip}
+        onPlay={open}
+        onFlip={toggle}
+        front={front && !flipped}
+        height={height}
+      />
+      <CardFace
+        game={game}
+        side="back"
+        flip={flip}
+        onPlay={open}
+        onFlip={toggle}
+        front={front && flipped}
+        height={height}
+      />
+
+      {front ? null : (
+        // Side cards: a tap brings them to the front. The front card has no wrapper, so its
+        // buttons and the How to play list (which scrolls) get the touches.
+        <Pressable
+          testID={`wheel-${game.id}`}
+          haptic={false}
+          accessibilityLabel={game.id}
+          onPress={() => onSelect(i)}
+          style={StyleSheet.absoluteFill}
         />
-        <CardFace
-          game={game}
-          side="back"
-          flip={flip}
-          onPlay={open}
-          onFlip={toggle}
-          front={front && flipped}
-          height={height}
-        />
-      </Pressable>
+      )}
     </Animated.View>
   );
 }

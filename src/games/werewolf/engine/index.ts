@@ -8,3 +8,4 @@ export * from './setup';
 export * from './types';
 export * from './win';
 export * from './story';
+export * from './views';

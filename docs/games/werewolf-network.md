@@ -60,6 +60,7 @@ The host player's turns on the host phone work like today's pass-and-play turn: 
 - Guest phones get **only their own secrets**: their role, their action options and their results. The full game state never leaves the host (§3.2).
 - The leak guards apply on every phone: stealth background, dimmed brightness, the app-switcher snapshot hidden, back blocked during secret phases, relaunch lands on a neutral screen.
 - Wolves still find each other in the silent glance. Their action screens also label packmates, as today.
+- **Seer and Sorcerer answers come after confirming.** A guest phone doesn't know anyone's role, so it can't show the answer on tap like the one-phone pass does. Instead, every phone shows a 3 s card right after its hold-to-confirm: the Seer's or Sorcerer's answer, or the dream card for everyone else. The choice is final once sent, so nobody can peek at several players.
 
 ---
 

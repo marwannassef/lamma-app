@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Keyboard, StyleSheet, View } from 'react-native';
 
 import { capFor, isValidPin, useAge } from '@/core/age';
 import { space } from '@/core/theme';
@@ -26,6 +26,8 @@ export default function Welcome() {
   const go = (next: Step) => {
     setValue('');
     setError(null);
+    // The choice step has no text field: put the number pad away (Android keeps it open).
+    if (next === 'choose') Keyboard.dismiss();
     setStep(next);
   };
 

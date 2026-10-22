@@ -43,6 +43,9 @@ export const frontIndex = (pos: number, n: number) => (((Math.round(pos) % n) + 
 
 const SPRING = { damping: 18, stiffness: 150 };
 
+/** The logo shrinks on short cards so the story and Play button always fit. */
+const artSize = (cardHeight: number) => Math.round(Math.min(132, Math.max(84, cardHeight * 0.26)));
+
 function CardFace({
   game,
   side,
@@ -113,13 +116,25 @@ function CardFace({
               </View>
               <Image
                 source={game.icon}
-                style={[styles.art, !game.ready && styles.dim]}
+                style={[
+                  styles.art,
+                  { width: artSize(height), height: artSize(height) },
+                  !game.ready && styles.dim,
+                ]}
                 accessibilityIgnoresInvertColors
               />
               <Text variant="title" align="center" numberOfLines={1} adjustsFontSizeToFit>
                 {title}
               </Text>
-              <Text variant="body" tone="muted" align="center" style={styles.story}>
+              <Text
+                variant="body"
+                tone="muted"
+                align="center"
+                numberOfLines={4}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+                style={styles.story}
+              >
                 {t(`home.stories.${game.id}` as 'home.stories.spy')}
               </Text>
               {game.ready ? (
@@ -412,7 +427,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  art: { width: 132, height: 132, borderRadius: 28, alignSelf: 'center' },
+  art: { borderRadius: 28, alignSelf: 'center' },
   dim: { opacity: 0.55 },
   story: { flexShrink: 1 },
   backBody: { gap: space.xs, paddingBottom: space.sm },

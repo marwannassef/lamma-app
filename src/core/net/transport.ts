@@ -29,6 +29,8 @@ export interface ClientHandlers {
 }
 
 export interface Client {
+  /** The host's resolved address, when the transport knows it (reconnect there next time). */
+  remote?: string;
   send(text: string): void;
   close(): void;
 }

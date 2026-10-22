@@ -122,7 +122,8 @@ both          ping / pong every 2 s
 - **Discovery:**
   - The host advertises a Bonjour/NSD service `_lamma._tcp`. Guests list the rooms nearby.
   - Fallback: a **room code**, the host's local IP and port encoded as 6 characters, which guests can type.
-- **Native libraries:** `react-native-tcp-socket` and `react-native-zeroconf`, or a small local Expo module if either fails on RN 0.86 with the New Architecture. Either way it needs **new store builds**; an OTA update can't add native code.
+- **Native code:** a local Expo module, `modules/lamma-net`. On iOS it uses Network.framework (an `NWListener` that advertises Bonjour, `NWConnection`, `NWBrowser`). On Android it uses sockets and `NsdManager`. Messages are UTF-8 lines. The room code comes from the phone's own Wi-Fi or hotspot address (`localAddresses`): on a phone that is itself the hotspot, Android's Wi-Fi manager reports `0.0.0.0`. The third-party libraries were dropped because they use the legacy bridge, and the zeroconf one needs a release candidate for the New Architecture. The module needs **new store builds**; an OTA update can't add native code.
+- **Reconnecting:** once connected, a guest remembers the host's resolved `ip:port`, so it can reconnect after browsing has stopped.
 - **Config** (`app.json` / config plugin only, never edit `ios/` or `android/`):
   - iOS: `NSLocalNetworkUsageDescription` (en and ar) and `NSBonjourServices: ["_lamma._tcp"]`;
   - Android: `ACCESS_WIFI_STATE` and `CHANGE_WIFI_MULTICAST_STATE`. **No location permission.**

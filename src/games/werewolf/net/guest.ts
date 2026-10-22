@@ -53,6 +53,8 @@ export interface GuestOptions {
 
 export class GuestSession {
   private client: Client | null = null;
+  /** Where to (re)connect: the given address, then the host's resolved one. */
+  private address: string;
   private attempt = 0;
   private rev = 0;
   private lastHeard = 0;
@@ -68,6 +70,7 @@ export class GuestSession {
   };
 
   constructor(private readonly opts: GuestOptions) {
+    this.address = opts.address;
     void this.connect();
   }
 
@@ -104,7 +107,7 @@ export class GuestSession {
     if (this.done) return;
     let client: Client;
     try {
-      client = await this.opts.transport.connect(this.opts.address, {
+      client = await this.opts.transport.connect(this.address, {
         onMessage: (text) => this.onMessage(client, text),
         onClose: () => this.onClose(client),
       });
@@ -113,6 +116,8 @@ export class GuestSession {
     }
     if (this.done) return client.close();
     this.client = client;
+    // A room found by Bonjour is only reachable while browsing; its IP works after that too.
+    if (client.remote) this.address = client.remote;
     this.lastHeard = this.opts.now();
     this.write({ t: 'hello', v: PROTOCOL, deviceId: this.opts.deviceId, name: this.opts.name });
     this.heartbeat();

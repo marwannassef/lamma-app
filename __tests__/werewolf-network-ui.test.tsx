@@ -14,6 +14,7 @@ import {
   getRoom,
   leaveRoom,
   openRoom,
+  resumeRoom,
   setRoomBrowser,
   setTransportFactory,
 } from '../src/games/werewolf/net/room';
@@ -132,6 +133,45 @@ describe('hosting on everyone’s phone', () => {
     ]);
     expect(router.push).toHaveBeenCalledWith('/games/werewolf/play');
     expect(guests[0]?.getSnapshot()).toMatchObject({ status: 'playing', seat: 1 });
+  });
+
+  it('shows the free limit in the lobby and closes the room when leaving setup', async () => {
+    useSettings.setState({ myName: 'Hana' });
+    const { unmount } = render(<Setup />);
+    fireEvent.press(screen.getByTestId('phones-all'));
+    fireEvent.press(screen.getByTestId('open-room'));
+    await settle();
+    expect(screen.getByTestId('free-cap')).toHaveTextContent('Free: up to 8 players');
+    const phone = guestPhone('Omar');
+    await settle();
+    unmount();
+    await settle();
+    expect(getRoom()).toBeNull();
+    expect(phone.getSnapshot()).toMatchObject({ status: 'rejected', reason: 'closed' });
+  });
+
+  it('reopens the room at launch for a network game saved mid-way, with the same seats', async () => {
+    const members = [
+      { deviceId: 'device-Omar', name: 'Omar', isHost: false },
+      { deviceId: 'host-phone', name: 'Hana', isHost: true },
+    ];
+    useWerewolf.setState({
+      game: newGame(['werewolf', 'seer'], {}, { mode: 'network' }),
+      netMembers: members,
+    });
+    resumeRoom();
+    await settle();
+    expect(getRoom()?.seating).toEqual(members);
+    const omar = guestPhone('Omar');
+    await settle();
+    expect(omar.getSnapshot()).toMatchObject({ status: 'playing', seat: 0 });
+
+    // Nothing to resume: a finished or one-phone game.
+    closeRoom();
+    useWerewolf.setState({ game: newGame(['werewolf', 'seer']) });
+    resumeRoom();
+    await settle();
+    expect(getRoom()).toBeNull();
   });
 
   it('offers to join someone else’s game from one-phone setup', () => {
@@ -282,6 +322,18 @@ describe('a guest phone', () => {
     expect(screen.getByTestId('turn-result', { includeHiddenElements: true })).toHaveTextContent(
       '🐺 Werewolf',
     );
+  });
+
+  it('is told when the host closes the room', async () => {
+    await openRoom({ name: 'Hana', theme: 'werewolf', kids: false });
+    useSettings.setState({ myName: 'Omar' });
+    asGuestPhone();
+    render(<Join />);
+    fireEvent.press(screen.getByTestId('room-Hana'));
+    await settle();
+    closeRoom();
+    await settle();
+    expect(screen.getByText('The host closed the room.')).toBeTruthy();
   });
 
   it('explains why the host turned it away', async () => {

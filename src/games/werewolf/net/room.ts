@@ -1,6 +1,7 @@
 // Keeps this phone's network room alive across screens: the host's session (setup → lobby →
 // game → play again) or a guest's. Screens read them with the hooks below.
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { AppState } from 'react-native';
 
 import type { Transport } from '@/core/net';
 import type { Room } from '@/core/net/native';
@@ -62,7 +63,7 @@ const subscribe = (l: () => void) => {
 
 let host: HostSession | null = null;
 let opening: Promise<HostSession> | null = null;
-let stopHost: (() => void) | null = null;
+let stopHost: ((goodbye: boolean) => void) | null = null;
 let guest: GuestSession | null = null;
 
 /** The phone's id for network games, saved so a relaunched phone rejoins its own seat. */
@@ -99,10 +100,10 @@ export function openRoom(opts: { name: string; theme: Theme; kids: boolean }) {
     const unsubscribe = useWerewolf.subscribe((s, prev) => {
       if (s.game !== prev.game) session.sync();
     });
-    stopHost = () => {
+    stopHost = (goodbye) => {
       clearInterval(tick);
       unsubscribe();
-      session.close();
+      session.close(goodbye);
     };
     host = session;
     changed();
@@ -113,14 +114,45 @@ export function openRoom(opts: { name: string; theme: Theme; kids: boolean }) {
   return opening;
 }
 
+/** Ends this phone's room and tells the phones in it (they stop trying to reconnect). */
 export function closeRoom() {
-  stopHost?.();
+  stopHost?.(true);
   stopHost = null;
   host = null;
   changed();
 }
 
 export const getRoom = () => host;
+
+/**
+ * At app start: a network game saved mid-way gets its room back, so the phones find their
+ * seats again without the host first opening the game.
+ */
+export function resumeRoom() {
+  const game = networkGame();
+  if (!game || game.phase.t === 'gameOver') return;
+  const { netMembers } = useWerewolf.getState();
+  const name = netMembers?.find((m) => m.isHost)?.name ?? useSettings.getState().myName;
+  void openRoom({ name, theme: game.theme, kids: game.kids }).catch(() => undefined);
+}
+
+/** A background stay shorter than this keeps the connections (nothing to repair). */
+const BACKGROUND_REPAIR_MS = 3000;
+let backgroundSince: number | null = null;
+
+// iOS suspends an app's sockets in the background. Coming back, the host listens again and a
+// guest redials at once; everyone's seat is kept.
+AppState.addEventListener('change', (state) => {
+  if (state !== 'active') {
+    backgroundSince ??= Date.now();
+    return;
+  }
+  const away = backgroundSince == null ? 0 : Date.now() - backgroundSince;
+  backgroundSince = null;
+  if (away < BACKGROUND_REPAIR_MS) return;
+  void host?.relisten().catch(() => undefined);
+  guest?.wake();
+});
 
 export function joinRoom(address: string, name: string) {
   leaveRoom();

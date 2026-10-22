@@ -7,11 +7,19 @@ import { roomCode } from '@/core/net/roomCode';
 import { MAX_NAME_LENGTH } from '@/core/players';
 import { useSettings } from '@/core/settings/store';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
-import { Avatar, Button, Hint, Panel, Pressable, ReorderList, Text } from '@/core/ui';
+import { useTier } from '@/core/entitlements';
+import { useRemoteConfig } from '@/core/remoteConfig';
+import { Avatar, Button, Hint, Panel, Pressable, ReorderList, Text, useStayAwake } from '@/core/ui';
 
 import { useWerewolfT } from '../components/i18n';
 import type { Theme } from '../engine';
 import { openRoom, useHostRoom } from '../net/room';
+
+/** A sleeping host phone drops every connection, so it stays awake while the room is open. */
+function StayAwake() {
+  useStayAwake();
+  return null;
+}
 
 /** "192.168.1.5:47777" → its room code, or null when the phone has no local address. */
 function codeOf(address: string) {
@@ -26,6 +34,8 @@ export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; 
   const myName = useSettings((s) => s.myName);
   const setMyName = useSettings((s) => s.setMyName);
   const { room, snapshot } = useHostRoom();
+  const free = useTier() === 'free';
+  const cap = useRemoteConfig().caps.werewolf.players;
   const [state, setState] = useState<'idle' | 'opening' | 'failed' | 'needName'>('idle');
 
   if (!room || !snapshot) {
@@ -76,6 +86,7 @@ export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; 
   const members = snapshot.members;
   return (
     <Panel title={t('net.roomCode')} icon="📶" testID="lobby">
+      <StayAwake />
       {code ? (
         <Text
           variant="hero"
@@ -92,6 +103,11 @@ export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; 
         {t('net.howToJoin', { game })}
       </Text>
       <Text variant="label">{t('net.players', { n: members.length })}</Text>
+      {free ? (
+        <Text variant="caption" tone="muted" testID="free-cap">
+          {t('common:premium.freeCap', { n: cap })}
+        </Text>
+      ) : null}
       <Text variant="caption" tone="muted">
         {t('net.seatHint')}
       </Text>

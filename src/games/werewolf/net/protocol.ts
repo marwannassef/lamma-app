@@ -35,7 +35,8 @@ export interface Lobby {
   host: number;
 }
 
-export type RejectReason = 'version' | 'full' | 'started' | 'removed';
+/** Why a phone can't (or can no longer) play in this room. 'closed': the host ended the room. */
+export type RejectReason = 'version' | 'full' | 'started' | 'removed' | 'closed';
 
 export type HostMsg =
   | { t: 'welcome'; v: number }

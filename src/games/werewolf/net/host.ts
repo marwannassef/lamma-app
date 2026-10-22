@@ -75,6 +75,12 @@ export class HostSession {
   private listeners = new Set<() => void>();
   private snapshot: HostSnapshot;
 
+  private readonly handlers = {
+    onOpen: (peer: Peer) => this.onOpen(peer),
+    onMessage: (peerId: string, text: string) => this.onMessage(peerId, text),
+    onClose: (peerId: string) => this.onClose(peerId),
+  };
+
   private constructor(private readonly opts: HostOptions) {
     this.members = opts.members ?? [{ ...opts.host, isHost: true }];
     this.snapshot = this.makeSnapshot();
@@ -82,11 +88,7 @@ export class HostSession {
 
   static async open(opts: HostOptions): Promise<HostSession> {
     const session = new HostSession(opts);
-    session.server = await opts.transport.listen({
-      onOpen: (peer) => session.onOpen(peer),
-      onMessage: (peerId, text) => session.onMessage(peerId, text),
-      onClose: (peerId) => session.onClose(peerId),
-    });
+    session.server = await opts.transport.listen(session.handlers);
     session.changed();
     return session;
   }
@@ -155,10 +157,30 @@ export class HostSession {
     }
   }
 
-  close() {
+  /**
+   * Ends the room. With `goodbye`, every phone is told the room closed (so it stops trying to
+   * reconnect); without it, they keep retrying, e.g. while the host app restarts.
+   */
+  close(goodbye = false) {
+    if (goodbye) {
+      for (const peer of this.peers.values()) {
+        peer.send(encode({ t: 'reject', reason: 'closed' }));
+        peer.close();
+      }
+    }
     this.server?.close();
     this.server = null;
     this.listeners.clear();
+  }
+
+  /**
+   * Listens again on the same port, e.g. after the app was in the background (iOS suspends its
+   * sockets there). Phones reconnect on their own and get their seats back.
+   */
+  async relisten() {
+    this.server?.close();
+    this.server = await this.opts.transport.listen(this.handlers);
+    this.changed();
   }
 
   // --- network ---

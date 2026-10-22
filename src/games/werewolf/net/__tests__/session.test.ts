@@ -333,6 +333,53 @@ describe('playing', () => {
   });
 });
 
+describe('leaving and coming back', () => {
+  it('a host that closes the room on purpose tells every phone, and they stop retrying', async () => {
+    const t = await table(['Omar', 'Lina']);
+    t.host.close(true);
+    await t.settle();
+    for (const g of t.guests) {
+      expect(g.getSnapshot()).toMatchObject({ status: 'rejected', reason: 'closed' });
+    }
+    await t.advance(10_000);
+    expect(t.net.openPeers()).toHaveLength(0);
+  });
+
+  it('a host back from the background listens again and every phone keeps its seat', async () => {
+    const t = await table(['Omar', 'Lina']);
+    t.game = newGame(['werewolf', 'seer', 'villager'], {}, { mode: 'network' });
+    t.host.sync();
+    await t.settle();
+    await t.host.relisten();
+    await t.settle();
+    expect(t.guests.map((g) => g.getSnapshot().status)).toEqual(['reconnecting', 'reconnecting']);
+    await t.advance(RETRY_MS[0] as number);
+    expect(t.guests.map((g) => [g.getSnapshot().status, g.getSnapshot().seat])).toEqual([
+      ['playing', 1],
+      ['playing', 2],
+    ]);
+  });
+
+  it('a guest back from the background redials at once if the line went quiet', async () => {
+    const t = await table(['Omar']);
+    const g = t.guests[0] as GuestSession;
+    g.wake(); // just heard from the host: nothing to do
+    await t.settle();
+    expect(g.getSnapshot().status).toBe('lobby');
+
+    t.tick(PING_MS * 2); // asleep: no pings went out, nothing came in
+    g.wake();
+    await t.settle();
+    expect(g.getSnapshot().status).toBe('reconnecting');
+    await t.advance(RETRY_MS[0] as number);
+    expect(g.getSnapshot()).toMatchObject({ status: 'lobby', seat: 1 });
+
+    g.leave();
+    g.wake(); // after leaving, nothing
+    expect(g.getSnapshot().status).toBe('closed');
+  });
+});
+
 describe('heartbeat', () => {
   it('phones ping the host; a silent host gets dropped and retried', async () => {
     const t = await table(['Omar']);

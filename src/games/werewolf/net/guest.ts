@@ -86,6 +86,16 @@ export class GuestSession {
     this.write({ t: 'intent', intent });
   }
 
+  /**
+   * Call when the app comes back to the foreground: a connection that went quiet while the phone
+   * slept is dropped now and redialled at once, instead of after the silence timeout.
+   */
+  wake() {
+    if (this.done) return;
+    this.attempt = 0;
+    if (this.client && this.opts.now() - this.lastHeard > PING_MS * 1.5) this.client.close();
+  }
+
   leave() {
     this.update({ status: 'closed' });
     this.stop();

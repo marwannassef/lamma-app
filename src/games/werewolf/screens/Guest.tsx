@@ -1,6 +1,7 @@
 // A guest phone in a network game (werewolf-network.md §2): join a room, wait in the lobby, then
 // play: your card, your night action, your Hunter or Mayor choice, and the public outcome.
 // The host's phone narrates; this phone stays quiet.
+import * as Haptics from 'expo-haptics';
 import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -481,11 +482,28 @@ function GuestPhase({ view }: { view: SeatView }) {
 
 const SECRET = new Set(['reveal', 'nightIntro', 'glance', 'actions', 'pass']);
 
+/**
+ * A short buzz when this phone has something new to do (its card, its night turn, its Hunter or
+ * Mayor choice). Every phone gets the same buzz for the shared steps, so it gives nothing away.
+ */
+function useTaskBuzz(view: SeatView | null) {
+  const haptics = useSettings((s) => s.haptics);
+  const task = view?.task;
+  const key =
+    task && !('done' in task && task.done) && !(task.t === 'reveal' && task.seen)
+      ? `${task.t}-${view.public.night}-${view.public.day}`
+      : null;
+  useEffect(() => {
+    if (key && haptics) void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }, [haptics, key]);
+}
+
 /** The game on a guest phone, in the host's theme, names and Kids mode. */
 function GuestGame({ snapshot }: { snapshot: GuestSnapshot }) {
   const { t } = useWerewolfT(['common']);
   const [askLeave, setAskLeave] = useState(false);
   const view = snapshot.view;
+  useTaskBuzz(view);
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
     return () => sub.remove();

@@ -678,7 +678,8 @@
       "version": "Every phone needs the same Lamma version. Update Lamma and try again.",
       "full": "That game is full.",
       "started": "That game has already started. Ask the host to start a new one.",
-      "removed": "The host took you out of this game."
+      "removed": "The host took you out of this game.",
+      "closed": "The host closed the room."
     },
     "seen": "I've seen it",
     "waitOthers": "Waiting for the others… {{done}}/{{total}}",

@@ -4,15 +4,18 @@ import { useTranslation } from 'react-i18next';
 
 import type { GuestSnapshot, Lobby } from '@/core/room';
 import { JoinScreen } from '@/core/room/ui';
+import { getGame } from '@/games/registry';
+import { SpyGuest } from '@/games/spy/screens/Guest';
 import { WerewolfGuest } from '@/games/werewolf/screens/Guest';
 
 /** Each game's guest screens, by the room's game id. */
 const GUEST: Record<string, (s: GuestSnapshot) => ReactNode> = {
   werewolf: (s) => <WerewolfGuest snapshot={s} />,
+  spy: (s) => <SpyGuest snapshot={s} />,
 };
 
 export default function Join() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['common', 'spy', 'blendIn']);
   return (
     <JoinScreen
       renderGame={(s) => (s.game ? (GUEST[s.game]?.(s) ?? null) : null)}
@@ -20,7 +23,8 @@ export default function Join() {
         if (!GUEST[lobby.game]) return null;
         // Werewolf and Mafia are one game with two themes.
         const id = lobby.game === 'werewolf' && lobby.theme === 'mafia' ? 'mafia' : lobby.game;
-        return t(`games.${id}.title` as 'games.werewolf.title');
+        const game = getGame(id);
+        return game ? t(game.titleKey as 'common:games.werewolf.title') : null;
       }}
     />
   );

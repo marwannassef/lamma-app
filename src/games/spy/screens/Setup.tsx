@@ -1,12 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { localized, type Pack } from '@/core/content';
-import { clampPlayers, MAX_NAME_LENGTH, usePlayers } from '@/core/players';
-import { useAge } from '@/core/age';
+import { clampPlayers, MAX_NAME_LENGTH, PlayerNamesContext, usePlayers } from '@/core/players';
+import { closeRoom } from '@/core/room';
+import { HostLobby, PhonesChoice, type Phones } from '@/core/room/ui';
+import { useAge, useContentLevel } from '@/core/age';
 import { openPaywall, packProductId, usePackLocked, useTier } from '@/core/entitlements';
 import { LEVELS, usePunishments, type PunishmentLevel } from '@/core/punishments';
 import { useRemoteConfig } from '@/core/remoteConfig';
@@ -35,6 +37,7 @@ import {
 
 import { spy as spyGame } from '..';
 import { clampSpies, maxSpies, RANDOM } from '../logic';
+import { getSpyRoom, isNewRoomSession, openSpyRoom, SPY_ROOM, useSpyRoom } from '../net';
 import { useSpy } from '../store';
 
 const LEVEL_EMOJI: Record<PunishmentLevel, string> = {
@@ -51,7 +54,14 @@ export default function Setup() {
   const { colors } = useTheme();
   const lang = i18n.language;
 
-  const { count, names, setCount, setName } = usePlayers();
+  const { count: rosterCount, names, setCount, setName } = usePlayers();
+  const { room, snapshot: lobby } = useSpyRoom();
+  // One phone passed around, or everyone on their own phone (werewolf-network.md §4.1).
+  const [phones, setPhones] = useState<Phones>(() => (getSpyRoom() ? 'all' : 'one'));
+  const network = phones === 'all';
+  // In a network game the players are whoever joined the room, in the order the host seated them.
+  const count = network ? (lobby?.members.length ?? 1) : rosterCount;
+  const level = useContentLevel();
   const spy = useSpy();
   const session = useSession();
   const punishments = usePunishments();
@@ -76,8 +86,17 @@ export default function Setup() {
 
   // The shared roster goes up to 20 (Werewolf); Spy plays with at most 12.
   useEffect(() => {
-    if (count > spyGame.maxPlayers) setCount(spyGame.maxPlayers);
-  }, [count, setCount]);
+    if (rosterCount > spyGame.maxPlayers) setCount(spyGame.maxPlayers);
+  }, [rosterCount, setCount]);
+
+  // Leaving setup closes an open room, unless a round is being played in it.
+  useEffect(
+    () => () => {
+      if (!useSpy.getState().round?.network) closeRoom();
+    },
+    [],
+  );
+  const [needPlayers, setNeedPlayers] = useState(false);
 
   const spies = Math.min(clampSpies(spy.spies, count), free ? caps.spies : Infinity);
   const scores = fitScores(session.scores, count);
@@ -100,7 +119,16 @@ export default function Setup() {
       setTab('customize');
       return setNoPacksHint(true);
     }
-    spy.start({ players: count, spies, packs: playable, no: session.startRound() });
+    if (network && (!room || count < spyGame.minPlayers)) return setNeedPlayers(true);
+    // A room's seats are new people: its first round starts the scoreboard afresh.
+    if (network && room && isNewRoomSession(room)) session.reset();
+    spy.start({
+      players: count,
+      spies,
+      packs: playable,
+      no: useSession.getState().startRound(),
+      network,
+    });
     router.push('/games/spy/play');
   };
 
@@ -136,271 +164,307 @@ export default function Setup() {
   ];
 
   return (
-    <Screen
-      footer={
-        <Button
-          testID="start"
-          icon="🚀"
-          label={t('setup.start', { n: session.round })}
-          onPress={start}
-        />
-      }
+    <PlayerNamesContext.Provider
+      value={network ? (lobby?.members.map((m) => m.name) ?? null) : null}
     >
-      <BackHeader title={t('title')} image={spyGame.icon} />
-      <Text variant="body" tone="muted" align="center">
-        {t('setup.lead')}
-      </Text>
-
-      <SetupTabs value={tab} onChange={setTab} />
-
-      {tab === 'play' ? (
-        <>
-          <HowToPlay
-            setup={t('howTo.setup', { returnObjects: true }) as string[]}
-            play={t('howTo.play', { returnObjects: true }) as string[]}
+      <Screen
+        footer={
+          <Button
+            testID="start"
+            icon="🚀"
+            label={t('setup.start', { n: session.round })}
+            onPress={start}
           />
+        }
+      >
+        <BackHeader title={t('title')} image={spyGame.icon} />
+        <Text variant="body" tone="muted" align="center">
+          {t('setup.lead')}
+        </Text>
 
-          <Stepper
-            testID="players"
-            icon="👥"
-            label={t('setup.players')}
-            sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
-            value={count}
-            min={spyGame.minPlayers}
-            max={spyGame.maxPlayers}
-            onChange={changePlayers}
-            decreaseLabel={t('setup.fewerPlayers')}
-            increaseLabel={t('setup.morePlayers')}
-            minHint={t('setup.minPlayers')}
-            maxHint={t('setup.maxPlayers')}
-          />
-          <Stepper
-            testID="spies"
-            icon="🕵️"
-            label={t('setup.spies')}
-            sublabel={t('setup.spiesSub')}
-            value={spies}
-            min={1}
-            max={maxSpies(count)}
-            onChange={(n) =>
-              free && n > caps.spies ? openPaywall('locked', { game: 'spy' }) : spy.setSpies(n)
-            }
-            decreaseLabel={t('setup.fewerSpies')}
-            increaseLabel={t('setup.moreSpies')}
-            minHint={t('setup.minSpies')}
-            maxHint={count < 7 ? t('setup.needMorePlayers') : t('setup.maxSpies')}
-          />
+        <SetupTabs value={tab} onChange={setTab} />
 
-          {hasScores ? (
-            <Panel title={t('common:scores.title')}>
-              <Scoreboard scores={scores} testID="setup-scores" />
-              {confirmReset ? (
-                <ConfirmInline
-                  testID="reset-confirm"
-                  question={t('common:scores.resetConfirm')}
-                  confirmLabel={t('common:scores.resetYes')}
-                  cancelLabel={t('common:actions.cancel')}
-                  onConfirm={() => {
-                    session.reset();
-                    setConfirmReset(false);
-                  }}
-                  onCancel={() => setConfirmReset(false)}
-                />
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="md"
-                  icon="♻️"
-                  testID="reset-scores"
-                  label={t('common:scores.reset')}
-                  onPress={() => setConfirmReset(true)}
-                />
-              )}
-            </Panel>
-          ) : null}
+        {tab === 'play' ? (
+          <>
+            <HowToPlay
+              setup={t('howTo.setup', { returnObjects: true }) as string[]}
+              play={t('howTo.play', { returnObjects: true }) as string[]}
+            />
 
-          <CustomizeSummary lines={summary} onPress={() => setTab('customize')} />
-        </>
-      ) : (
-        <>
-          <Panel title={t('setup.names')} icon="✍️">
-            <View style={styles.names}>
-              {Array.from({ length: count }, (_, i) => {
-                const value = names[i] ?? '';
-                const placeholder = t('common:players.defaultName', { n: i + 1 });
-                return (
-                  <View
-                    key={i}
-                    style={[
-                      styles.nameCell,
-                      { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
-                    ]}
-                  >
-                    <Avatar player={i} size={32} />
-                    <TextInput
-                      testID={`name-${i}`}
-                      value={value}
-                      onChangeText={(v) => setName(i, v)}
-                      placeholder={placeholder}
-                      placeholderTextColor={colors.textMuted}
-                      maxLength={MAX_NAME_LENGTH}
-                      accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
-                      autoCorrect={false}
-                      returnKeyType="done"
-                      maxFontSizeMultiplier={2}
-                      style={[
-                        styles.nameInput,
-                        {
-                          color: colors.text,
-                          fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
-                        },
-                      ]}
-                    />
-                  </View>
-                );
-              })}
-            </View>
-          </Panel>
-
-          <Panel title={t('setup.categories')} icon="🗂️">
-            <Pressable
-              testID="cat-random"
-              accessibilityRole="radio"
-              accessibilityState={{ checked: randomSelected }}
-              accessibilityLabel={`${t('setup.random')}, ${t('setup.randomSub')}`}
-              onPress={() => spy.setChoice(RANDOM)}
-              style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
-            >
-              <LinearGradient
-                colors={
-                  randomSelected
-                    ? colors.secondaryGradient
-                    : [colors.surfaceRaised, colors.surfaceRaised]
-                }
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[
-                  styles.random,
-                  {
-                    borderColor: randomSelected ? colors.glow : colors.border,
-                    borderStyle: randomSelected ? 'solid' : 'dashed',
-                  },
-                ]}
-              >
-                <Text style={styles.dice} accessible={false}>
-                  🎲
-                </Text>
-                <View style={styles.randomText}>
-                  <Text
-                    variant="heading"
-                    style={{ color: randomSelected ? colors.onSecondary : colors.text }}
-                  >
-                    {randomSelected ? `✓ ${t('setup.random')}` : t('setup.random')}
-                  </Text>
-                  <Text
-                    variant="caption"
-                    style={{ color: randomSelected ? colors.onSecondary : colors.textMuted }}
-                  >
-                    {t('setup.randomSub')}
-                  </Text>
-                </View>
-              </LinearGradient>
-            </Pressable>
-
-            <Text variant="label" tone="muted">
-              {t('setup.orPick')}
-            </Text>
-            {groups.map((g) => (
-              <View key={g.region} style={styles.group}>
-                {groups.length > 1 ? (
-                  <Text variant="caption" tone="muted">
-                    {t(`common:regions.${g.region}` as 'common:regions.global', {
-                      defaultValue: g.region.toUpperCase(),
-                    })}
-                  </Text>
-                ) : null}
-                <View style={styles.grid} accessibilityRole="radiogroup">
-                  {g.packs.map((p) => (
-                    <View key={p.id} style={styles.cell}>
-                      <Chip
-                        testID={`cat-${p.id}`}
-                        emoji={p.emoji}
-                        title={localized(p.name, lang)}
-                        subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
-                        selected={!randomSelected && spy.choice === p.id}
-                        locked={isLocked(p)}
-                        lockedLabel={t('common:premium.lockedTag')}
-                        onPress={() => choosePack(p)}
-                      />
-                    </View>
-                  ))}
-                </View>
-              </View>
-            ))}
-            {teenPacks.map((p) => (
-              <Chip
-                key={p.id}
-                testID={`cat-${p.id}`}
-                emoji={p.emoji}
-                title={`${localized(p.name, lang)} · ${t('common:teen.tag')}`}
-                subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
-                selected={!randomSelected && spy.choice === p.id}
-                warning
-                locked={isLocked(p)}
-                lockedLabel={t('common:premium.lockedTag')}
-                onPress={() => choosePack(p)}
-              />
-            ))}
-            {askTeenFor ? (
-              <ConfirmInline
-                testID="teen-confirm"
-                question={t('common:teen.ask')}
-                confirmLabel={t('common:teen.yes')}
-                cancelLabel={t('common:actions.cancel')}
-                onConfirm={() => {
-                  confirmTeen();
-                  spy.setChoice(askTeenFor.id);
-                  setAskTeenFor(null);
-                }}
-                onCancel={() => setAskTeenFor(null)}
+            <PhonesChoice
+              value={phones}
+              onChange={(v) => {
+                setPhones(v);
+                if (v === 'one') closeRoom();
+              }}
+            />
+            {network ? (
+              <HostLobby
+                game={SPY_ROOM}
+                freeCap={free ? caps.players : null}
+                open={(name) => openSpyRoom(name, level === 'kids')}
               />
             ) : null}
-            {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
-          </Panel>
+            {network && count < spyGame.minPlayers && (room || needPlayers) ? (
+              <Hint>{t('common:net.needPlayers', { n: spyGame.minPlayers })}</Hint>
+            ) : null}
 
-          <Panel title={t('common:punishments.title')} icon="😈">
-            <View style={styles.levels} accessibilityRole="radiogroup">
-              {LEVELS.map((level) => (
-                <View key={level} style={styles.levelCell}>
-                  <Chip
-                    compact
-                    testID={`level-${level}`}
-                    emoji={LEVEL_EMOJI[level]}
-                    title={t(`common:punishments.levels.${level}`)}
-                    selected={punishments.level === level}
-                    locked={levelLocked(level)}
-                    lockedLabel={t('common:premium.lockedTag')}
-                    onPress={() =>
-                      levelLocked(level)
-                        ? openPaywall('locked', { game: 'spy' })
-                        : punishments.setLevel(level)
-                    }
+            {network ? null : (
+              <Stepper
+                testID="players"
+                icon="👥"
+                label={t('setup.players')}
+                sublabel={free ? t('common:premium.freeCap', { n: caps.players }) : undefined}
+                value={count}
+                min={spyGame.minPlayers}
+                max={spyGame.maxPlayers}
+                onChange={changePlayers}
+                decreaseLabel={t('setup.fewerPlayers')}
+                increaseLabel={t('setup.morePlayers')}
+                minHint={t('setup.minPlayers')}
+                maxHint={t('setup.maxPlayers')}
+              />
+            )}
+            {network ? null : (
+              <Button
+                testID="join-game"
+                variant="ghost"
+                size="md"
+                icon="📶"
+                label={t('common:net.join')}
+                onPress={() => router.push('/join' as Href)}
+              />
+            )}
+            <Stepper
+              testID="spies"
+              icon="🕵️"
+              label={t('setup.spies')}
+              sublabel={t('setup.spiesSub')}
+              value={spies}
+              min={1}
+              max={maxSpies(count)}
+              onChange={(n) =>
+                free && n > caps.spies ? openPaywall('locked', { game: 'spy' }) : spy.setSpies(n)
+              }
+              decreaseLabel={t('setup.fewerSpies')}
+              increaseLabel={t('setup.moreSpies')}
+              minHint={t('setup.minSpies')}
+              maxHint={count < 7 ? t('setup.needMorePlayers') : t('setup.maxSpies')}
+            />
+
+            {hasScores ? (
+              <Panel title={t('common:scores.title')}>
+                <Scoreboard scores={scores} testID="setup-scores" />
+                {confirmReset ? (
+                  <ConfirmInline
+                    testID="reset-confirm"
+                    question={t('common:scores.resetConfirm')}
+                    confirmLabel={t('common:scores.resetYes')}
+                    cancelLabel={t('common:actions.cancel')}
+                    onConfirm={() => {
+                      session.reset();
+                      setConfirmReset(false);
+                    }}
+                    onCancel={() => setConfirmReset(false)}
                   />
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    icon="♻️"
+                    testID="reset-scores"
+                    label={t('common:scores.reset')}
+                    onPress={() => setConfirmReset(true)}
+                  />
+                )}
+              </Panel>
+            ) : null}
+
+            <CustomizeSummary lines={summary} onPress={() => setTab('customize')} />
+          </>
+        ) : (
+          <>
+            {network ? null : (
+              <Panel title={t('setup.names')} icon="✍️">
+                <View style={styles.names}>
+                  {Array.from({ length: count }, (_, i) => {
+                    const value = names[i] ?? '';
+                    const placeholder = t('common:players.defaultName', { n: i + 1 });
+                    return (
+                      <View
+                        key={i}
+                        style={[
+                          styles.nameCell,
+                          { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
+                        ]}
+                      >
+                        <Avatar player={i} size={32} />
+                        <TextInput
+                          testID={`name-${i}`}
+                          value={value}
+                          onChangeText={(v) => setName(i, v)}
+                          placeholder={placeholder}
+                          placeholderTextColor={colors.textMuted}
+                          maxLength={MAX_NAME_LENGTH}
+                          accessibilityLabel={t('setup.nameLabel', { n: i + 1 })}
+                          autoCorrect={false}
+                          returnKeyType="done"
+                          maxFontSizeMultiplier={2}
+                          style={[
+                            styles.nameInput,
+                            {
+                              color: colors.text,
+                              fontFamily: fontFamilyFor(value || placeholder, 'body', 'bold'),
+                            },
+                          ]}
+                        />
+                      </View>
+                    );
+                  })}
+                </View>
+              </Panel>
+            )}
+
+            <Panel title={t('setup.categories')} icon="🗂️">
+              <Pressable
+                testID="cat-random"
+                accessibilityRole="radio"
+                accessibilityState={{ checked: randomSelected }}
+                accessibilityLabel={`${t('setup.random')}, ${t('setup.randomSub')}`}
+                onPress={() => spy.setChoice(RANDOM)}
+                style={({ pressed }) => pressed && { transform: [{ scale: 0.98 }] }}
+              >
+                <LinearGradient
+                  colors={
+                    randomSelected
+                      ? colors.secondaryGradient
+                      : [colors.surfaceRaised, colors.surfaceRaised]
+                  }
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[
+                    styles.random,
+                    {
+                      borderColor: randomSelected ? colors.glow : colors.border,
+                      borderStyle: randomSelected ? 'solid' : 'dashed',
+                    },
+                  ]}
+                >
+                  <Text style={styles.dice} accessible={false}>
+                    🎲
+                  </Text>
+                  <View style={styles.randomText}>
+                    <Text
+                      variant="heading"
+                      style={{ color: randomSelected ? colors.onSecondary : colors.text }}
+                    >
+                      {randomSelected ? `✓ ${t('setup.random')}` : t('setup.random')}
+                    </Text>
+                    <Text
+                      variant="caption"
+                      style={{ color: randomSelected ? colors.onSecondary : colors.textMuted }}
+                    >
+                      {t('setup.randomSub')}
+                    </Text>
+                  </View>
+                </LinearGradient>
+              </Pressable>
+
+              <Text variant="label" tone="muted">
+                {t('setup.orPick')}
+              </Text>
+              {groups.map((g) => (
+                <View key={g.region} style={styles.group}>
+                  {groups.length > 1 ? (
+                    <Text variant="caption" tone="muted">
+                      {t(`common:regions.${g.region}` as 'common:regions.global', {
+                        defaultValue: g.region.toUpperCase(),
+                      })}
+                    </Text>
+                  ) : null}
+                  <View style={styles.grid} accessibilityRole="radiogroup">
+                    {g.packs.map((p) => (
+                      <View key={p.id} style={styles.cell}>
+                        <Chip
+                          testID={`cat-${p.id}`}
+                          emoji={p.emoji}
+                          title={localized(p.name, lang)}
+                          subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+                          selected={!randomSelected && spy.choice === p.id}
+                          locked={isLocked(p)}
+                          lockedLabel={t('common:premium.lockedTag')}
+                          onPress={() => choosePack(p)}
+                        />
+                      </View>
+                    ))}
+                  </View>
                 </View>
               ))}
-            </View>
-          </Panel>
+              {teenPacks.map((p) => (
+                <Chip
+                  key={p.id}
+                  testID={`cat-${p.id}`}
+                  emoji={p.emoji}
+                  title={`${localized(p.name, lang)} · ${t('common:teen.tag')}`}
+                  subtitle={p.subtitle ? localized(p.subtitle, lang) : undefined}
+                  selected={!randomSelected && spy.choice === p.id}
+                  warning
+                  locked={isLocked(p)}
+                  lockedLabel={t('common:premium.lockedTag')}
+                  onPress={() => choosePack(p)}
+                />
+              ))}
+              {askTeenFor ? (
+                <ConfirmInline
+                  testID="teen-confirm"
+                  question={t('common:teen.ask')}
+                  confirmLabel={t('common:teen.yes')}
+                  cancelLabel={t('common:actions.cancel')}
+                  onConfirm={() => {
+                    confirmTeen();
+                    spy.setChoice(askTeenFor.id);
+                    setAskTeenFor(null);
+                  }}
+                  onCancel={() => setAskTeenFor(null)}
+                />
+              ) : null}
+              {packs.length === 0 || noPacksHint ? <Hint>{t('setup.noPacks')}</Hint> : null}
+            </Panel>
 
-          <Toggle
-            testID="spy-sees"
-            label={t('setup.spySees')}
-            sublabel={t('setup.spySeesSub')}
-            value={spy.spySeesCategory}
-            onChange={spy.setSpySeesCategory}
-          />
-        </>
-      )}
-    </Screen>
+            <Panel title={t('common:punishments.title')} icon="😈">
+              <View style={styles.levels} accessibilityRole="radiogroup">
+                {LEVELS.map((level) => (
+                  <View key={level} style={styles.levelCell}>
+                    <Chip
+                      compact
+                      testID={`level-${level}`}
+                      emoji={LEVEL_EMOJI[level]}
+                      title={t(`common:punishments.levels.${level}`)}
+                      selected={punishments.level === level}
+                      locked={levelLocked(level)}
+                      lockedLabel={t('common:premium.lockedTag')}
+                      onPress={() =>
+                        levelLocked(level)
+                          ? openPaywall('locked', { game: 'spy' })
+                          : punishments.setLevel(level)
+                      }
+                    />
+                  </View>
+                ))}
+              </View>
+            </Panel>
+
+            <Toggle
+              testID="spy-sees"
+              label={t('setup.spySees')}
+              sublabel={t('setup.spySeesSub')}
+              value={spy.spySeesCategory}
+              onChange={spy.setSpySeesCategory}
+            />
+          </>
+        )}
+      </Screen>
+    </PlayerNamesContext.Provider>
   );
 }
 

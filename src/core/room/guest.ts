@@ -1,14 +1,12 @@
-// A guest phone's side of a network game (docs/games/werewolf-network.md §3.5). It shows what the
-// host sends and keeps reconnecting with the same device id when the connection drops.
+// A guest phone's side of a network game (docs/games/werewolf-network.md §3.5), for any game.
+// It keeps what the host sends and reconnects with the same device id when the connection drops.
 import type { Client, Transport } from '@/core/net';
 
-import type { SeatView } from '../engine';
 import {
   encode,
   parseHostMsg,
   PROTOCOL,
   type GuestMsg,
-  type Intent,
   type Lobby,
   type RejectReason,
 } from './protocol';
@@ -38,7 +36,9 @@ export interface GuestSnapshot {
   /** This phone's seat in the lobby or game. */
   seat: number | null;
   names: string[];
-  view: SeatView | null;
+  /** The running game's id, and this seat's view of it (the game's own type). */
+  game: string | null;
+  view: unknown;
 }
 
 export interface GuestOptions {
@@ -66,6 +66,7 @@ export class GuestSession {
     lobby: null,
     seat: null,
     names: [],
+    game: null,
     view: null,
   };
 
@@ -82,7 +83,7 @@ export class GuestSession {
   getSnapshot = () => this.snapshot;
 
   /** Sends this phone's choice; the host checks it and answers with a new view. */
-  send(intent: Intent) {
+  send(intent: Record<string, unknown>) {
     this.write({ t: 'intent', intent });
   }
 
@@ -171,12 +172,24 @@ export class GuestSession {
         this.rev = 0;
         return;
       case 'lobby':
-        return this.update({ status: 'lobby', lobby: m.lobby, seat: m.seat, view: null });
+        return this.update({
+          status: 'lobby',
+          lobby: m.lobby,
+          seat: m.seat,
+          view: null,
+          game: null,
+        });
       case 'view':
         // The host numbers views; an older one can't replace a newer one.
         if (m.rev <= this.rev) return;
         this.rev = m.rev;
-        return this.update({ status: 'playing', view: m.view, names: m.names, seat: m.view.seat });
+        return this.update({
+          status: 'playing',
+          game: m.game,
+          seat: m.seat,
+          view: m.view,
+          names: m.names,
+        });
       case 'reject':
         this.update({ status: 'rejected', reason: m.reason });
         return this.stop();

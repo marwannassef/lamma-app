@@ -1,77 +1,36 @@
-// Keeps this phone's network room alive across screens: the host's session (setup → lobby →
-// game → play again) or a guest's. Screens read them with the hooks below.
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import { AppState } from 'react-native';
-
-import type { Transport } from '@/core/net';
-import type { Room } from '@/core/net/native';
+// Werewolf/Mafia in the shared room (src/core/room): which views the phones get and what they
+// may do, from this game's engine and store.
+import { openRoom, useHostRoom, getRoom, type RoomGame } from '@/core/room';
 import { useSettings } from '@/core/settings/store';
 
-import type { Theme } from '../engine';
+import {
+  actingSeat,
+  viewFor,
+  type GameEvent,
+  type GameState,
+  type PlayerId,
+  type Theme,
+} from '../engine';
 import { useWerewolf } from '../store';
-import { GuestSession, type GuestSnapshot } from './guest';
-import { HostSession, type HostSnapshot } from './host';
+import { parseIntent, type Intent } from './intents';
 
-type TransportFactory = (roomName: string) => Promise<Transport>;
+/** The room's game id: Werewolf and Mafia share one engine, told apart by the theme. */
+export const ROOM_GAME = 'werewolf';
 
-// The native module is loaded only when a room is used (tests swap in a fake network).
-let makeTransport: TransportFactory = async (roomName) =>
-  (await import('@/core/net/native')).nativeTransport(roomName);
-
-/** Tests: use another transport (e.g. the in-memory fake network). */
-export function setTransportFactory(factory: TransportFactory) {
-  makeTransport = factory;
-}
-
-type Browser = (onChange: (rooms: Room[]) => void) => () => void;
-
-let browser: Browser = (onChange) => {
-  let stop = () => undefined as void;
-  let stopped = false;
-  void import('@/core/net/native').then((m) => {
-    if (!stopped) stop = m.browseRooms(onChange);
-  });
-  return () => {
-    stopped = true;
-    stop();
-  };
-};
-
-/** Tests: list rooms from somewhere else. */
-export function setRoomBrowser(b: Browser) {
-  browser = b;
-}
-
-/**
- * Games advertised nearby, while `enabled`. Keep it on until the phone has joined: on iOS a room
- * found by Bonjour can only be reached while browsing (after that, its IP is remembered).
- */
-export function useNearbyRooms(enabled = true): Room[] {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  useEffect(() => (enabled ? browser(setRooms) : undefined), [enabled]);
-  return rooms;
-}
-
-const listeners = new Set<() => void>();
-const changed = () => listeners.forEach((l) => l());
-const subscribe = (l: () => void) => {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-};
-
-let host: HostSession | null = null;
-let opening: Promise<HostSession> | null = null;
-let stopHost: ((goodbye: boolean) => void) | null = null;
-let guest: GuestSession | null = null;
-
-/** The phone's id for network games, saved so a relaunched phone rejoins its own seat. */
-function deviceId() {
-  const s = useSettings.getState();
-  // Writing it once makes sure it's persisted even if no other setting ever changed.
-  useSettings.setState({ deviceId: s.deviceId });
-  return s.deviceId;
+/** Turns a guest's intent into an event for their own seat, or null if it isn't theirs to send. */
+export function eventFor(game: GameState, seat: PlayerId, intent: Intent): GameEvent | null {
+  switch (intent.t) {
+    case 'seen':
+      return { t: 'seatSeen', seat };
+    case 'cupidLink':
+      return { t: 'cupidLink', lovers: intent.lovers, seat };
+    case 'seatAction':
+      return { t: 'seatAction', seat, action: intent.action };
+    case 'hunterShoot':
+    case 'passBadge':
+    case 'mayorDecide':
+      return actingSeat(game) === seat ? intent : null;
+  }
 }
 
 const networkGame = () => {
@@ -79,124 +38,54 @@ const networkGame = () => {
   return g?.mode === 'network' ? g : null;
 };
 
-/** Opens (or returns) this phone's room. `name` is the host player's name. */
-export function openRoom(opts: { name: string; theme: Theme; kids: boolean }) {
-  if (host) return Promise.resolve(host);
-  if (opening) return opening;
-  opening = (async () => {
-    const transport = await makeTransport(opts.name);
-    const session = await HostSession.open({
-      transport,
-      host: { deviceId: deviceId(), name: opts.name },
-      theme: opts.theme,
-      kids: opts.kids,
-      getGame: networkGame,
-      dispatch: (e) => useWerewolf.getState().dispatch(e),
-      now: Date.now,
-      // After a relaunch mid-game, the same players get their seats back.
-      members: networkGame() ? (useWerewolf.getState().netMembers ?? undefined) : undefined,
-    });
-    const tick = setInterval(() => session.tick(), 1000);
-    const unsubscribe = useWerewolf.subscribe((s, prev) => {
-      if (s.game !== prev.game) session.sync();
-    });
-    stopHost = (goodbye) => {
-      clearInterval(tick);
-      unsubscribe();
-      session.close(goodbye);
-    };
-    host = session;
-    changed();
-    return session;
-  })().finally(() => {
-    opening = null;
+/** The room's view of this game, reading and updating the Werewolf store. */
+export function werewolfRoomGame(theme: Theme, kids: boolean): RoomGame {
+  return {
+    id: ROOM_GAME,
+    theme,
+    kids,
+    players: () => networkGame()?.players.length ?? null,
+    viewFor: (seat) => {
+      const g = networkGame();
+      return g ? viewFor(g, seat) : null;
+    },
+    act: (seat, raw) => {
+      const g = networkGame();
+      const intent = parseIntent(raw);
+      const e = g && intent ? eventFor(g, seat, intent) : null;
+      if (e) useWerewolf.getState().dispatch(e);
+    },
+  };
+}
+
+const watchStore = (onChange: () => void) =>
+  useWerewolf.subscribe((s, prev) => {
+    if (s.game !== prev.game) onChange();
   });
-  return opening;
-}
 
-/** Ends this phone's room and tells the phones in it (they stop trying to reconnect). */
-export function closeRoom() {
-  stopHost?.(true);
-  stopHost = null;
-  host = null;
-  changed();
+/** Opens (or returns) this phone's Werewolf/Mafia room. `name` is the host player's name. */
+export function openWerewolfRoom(opts: { name: string; theme: Theme; kids: boolean }) {
+  return openRoom({
+    name: opts.name,
+    game: werewolfRoomGame(opts.theme, opts.kids),
+    watch: watchStore,
+    // After a relaunch mid-game, the same players get their seats back.
+    members: networkGame() ? (useWerewolf.getState().netMembers ?? undefined) : undefined,
+  });
 }
-
-export const getRoom = () => host;
 
 /**
  * At app start: a network game saved mid-way gets its room back, so the phones find their
  * seats again without the host first opening the game.
  */
-export function resumeRoom() {
+export function resumeWerewolfRoom() {
   const game = networkGame();
   if (!game || game.phase.t === 'gameOver') return;
   const { netMembers } = useWerewolf.getState();
   const name = netMembers?.find((m) => m.isHost)?.name ?? useSettings.getState().myName;
-  void openRoom({ name, theme: game.theme, kids: game.kids }).catch(() => undefined);
+  void openWerewolfRoom({ name, theme: game.theme, kids: game.kids }).catch(() => undefined);
 }
 
-/** A background stay shorter than this keeps the connections (nothing to repair). */
-const BACKGROUND_REPAIR_MS = 3000;
-let backgroundSince: number | null = null;
-
-// iOS suspends an app's sockets in the background. Coming back, the host listens again and a
-// guest redials at once; everyone's seat is kept.
-AppState.addEventListener('change', (state) => {
-  if (state !== 'active') {
-    backgroundSince ??= Date.now();
-    return;
-  }
-  const away = backgroundSince == null ? 0 : Date.now() - backgroundSince;
-  backgroundSince = null;
-  if (away < BACKGROUND_REPAIR_MS) return;
-  void host?.relisten().catch(() => undefined);
-  guest?.wake();
-});
-
-export function joinRoom(address: string, name: string) {
-  leaveRoom();
-  const session = new GuestSession({
-    transport: {
-      // The guest never listens; only `connect` is used.
-      listen: () => Promise.reject(new Error('Guests do not host')),
-      connect: async (a, handlers) => (await makeTransport(name)).connect(a, handlers),
-    },
-    address,
-    deviceId: deviceId(),
-    name,
-    now: Date.now,
-    schedule: (fn, ms) => {
-      const id = setTimeout(fn, ms);
-      return () => clearTimeout(id);
-    },
-  });
-  guest = session;
-  changed();
-  return session;
-}
-
-export function leaveRoom() {
-  guest?.leave();
-  guest = null;
-  changed();
-}
-
-const noop = () => () => undefined;
-
-/** The host's room and what it looks like now, or nulls when this phone isn't hosting. */
-export function useHostRoom(): { room: HostSession | null; snapshot: HostSnapshot | null } {
-  const room = useSyncExternalStore(subscribe, () => host);
-  const snapshot = useSyncExternalStore(room?.subscribe ?? noop, () => room?.getSnapshot() ?? null);
-  return { room, snapshot };
-}
-
-/** This phone's guest session and its latest snapshot, or nulls when it hasn't joined a room. */
-export function useGuest(): { session: GuestSession | null; snapshot: GuestSnapshot | null } {
-  const session = useSyncExternalStore(subscribe, () => guest);
-  const snapshot = useSyncExternalStore(
-    session?.subscribe ?? noop,
-    () => session?.getSnapshot() ?? null,
-  );
-  return { session, snapshot };
-}
+/** This phone's Werewolf room (not another game's). */
+export const useWerewolfRoom = () => useHostRoom(ROOM_GAME);
+export const getWerewolfRoom = () => getRoom(ROOM_GAME);

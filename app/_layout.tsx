@@ -9,7 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAge } from '@/core/age';
 import { useAudioSettings } from '@/core/audio';
 import { configurePurchases } from '@/core/entitlements/purchases';
-import { resumeRoom } from '@/games/werewolf/net/room';
+import { resumeWerewolfRoom } from '@/games/werewolf/net/room';
 import { initI18n, syncLayoutDirection } from '@/core/i18n';
 import { useSettings } from '@/core/settings/store';
 import { fontAssets, ThemeProvider, useTheme } from '@/core/theme';
@@ -56,7 +56,7 @@ export default function RootLayout() {
     void useAge.getState().refreshSignal();
     configurePurchases();
     // A Werewolf/Mafia network game saved mid-way reopens its room for the other phones.
-    resumeRoom();
+    resumeWerewolfRoom();
   }, []);
 
   if (!ready) return null;

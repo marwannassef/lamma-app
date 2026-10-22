@@ -9,13 +9,13 @@ import { Button, Screen, Text } from '@/core/ui';
 
 import { useWerewolfT } from '../components/i18n';
 import { actingSeat, viewFor, type GameState, type PlayerId } from '../engine';
-import { useHostRoom } from '../net/room';
+import { useWerewolfRoom } from '../net/room';
 import { DeathEffects, MayorTieBreak } from './Day';
 import { ActionTurn, RevealTurn, TurnHandoff } from './NetTurn';
 
 /** Who still has to act, which of them are on this phone or offline, and how to act for them. */
 function useSeats(pending: readonly PlayerId[]) {
-  const { room, snapshot } = useHostRoom();
+  const { room, snapshot } = useWerewolfRoom();
   const hostSeat = room?.hostSeat ?? 0;
   const online = (seat: PlayerId) => snapshot?.members[seat]?.online ?? false;
   return {

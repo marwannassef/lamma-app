@@ -16,7 +16,7 @@ import {
   type Theme,
   type Tier,
 } from './engine';
-import type { Member } from './net/host';
+import type { Member } from '@/core/room';
 import { regionTheme } from './theme';
 
 export type SetupChoice =

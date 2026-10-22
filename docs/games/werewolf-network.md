@@ -131,10 +131,14 @@ both          ping / pong every 2 s
 
 ---
 
+## 4.1 Shared by every game
+
+The room is game-agnostic: `src/core/room` has the protocol (v2 carries the room's game id), the host and guest sessions, the room manager, and the shared screens (`HostLobby`, `JoinScreen`, `PhonesChoice`). A game plugs in a `RoomGame`: its id and theme, how many players are in the running game, `viewFor(seat)`, and `act(seat, intent)`. `act` gets untrusted input, so the game parses it and checks its rules. Werewolf's adapter is `src/games/werewolf/net/room.ts`; Spy and Blend In add theirs the same way. There is one **Join a game** on the home screen (`/join`), and the room tells the phone which game's screens to show.
+
 ## 5. UI entry points
 
 - **Setup → Play tab:** a "📶 Play on everyone's phone" button next to Start. On first use it explains: "Everyone needs Lamma and the same Wi-Fi, or join this phone's hotspot."
-- **Home and setup:** "Join a game" for guests. It lists nearby rooms and has a "Type a code" option.
+- **Home:** "📶 Join a game" for guests, for every game. It lists nearby rooms and has a "Type a code" option; the one-phone setup links to it too.
 - **Lobby (host):** room code in large type, joined players with drag-to-seat (reusing `ReorderList`), the setup summary, Start. Start is disabled with a visible reason (no unexplained disabled buttons) until the player count fits the setup.
 - **Help sheet:** "Can't see the room?" covers same Wi-Fi, turning on hotspot, and allowing Local Network on iPhone (Settings → Lamma → Local Network).
 

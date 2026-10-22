@@ -36,6 +36,13 @@ describe('Home', () => {
     expect(screen.getAllByText(/4–20 players/)).toHaveLength(2); // Werewolf and Mafia
   });
 
+  it('offers one "Join a game" for every game played on everyone\'s phone', () => {
+    const { router } = jest.requireMock('expo-router') as { router: { push: jest.Mock } };
+    render(<Home />);
+    fireEvent.press(screen.getByTestId('join-game'));
+    expect(router.push).toHaveBeenCalledWith('/join');
+  });
+
   it('sends installs without a PIN to the welcome screen first', () => {
     useAge.setState({ audience: 'teen', pin: null });
     render(<Home />);

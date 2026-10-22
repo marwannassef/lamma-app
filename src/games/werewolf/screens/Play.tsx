@@ -38,7 +38,7 @@ import GameOver from './GameOver';
 import { Glance, NightIntro } from './Night';
 import Pass from './Pass';
 import { HostActions, HostOwnChoice, HostReveal } from './NetHost';
-import { getRoom, openRoom } from '../net/room';
+import { getWerewolfRoom, openWerewolfRoom } from '../net/room';
 import { useWerewolfT } from '../components/i18n';
 
 const isSecret = (g: GameState) =>
@@ -161,9 +161,9 @@ export default function Play() {
   // A network game survives a relaunch: reopen the room so the phones find their seats again.
   const network = game?.mode === 'network';
   useEffect(() => {
-    if (!network || getRoom() || !game) return;
+    if (!network || getWerewolfRoom() || !game) return;
     const host = netMembers?.find((m) => m.isHost);
-    void openRoom({ name: host?.name ?? myName, theme: game.theme, kids: game.kids }).catch(
+    void openWerewolfRoom({ name: host?.name ?? myName, theme: game.theme, kids: game.kids }).catch(
       () => undefined,
     );
   }, [game, myName, netMembers, network]);

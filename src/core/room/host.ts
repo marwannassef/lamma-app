@@ -1,18 +1,10 @@
 // The host phone's side of a network game (docs/games/werewolf-network.md §3). It owns the
-// room: who joined, their seats, and which phone gets which view. The game itself stays in the
-// Werewolf store; this session only reads it and dispatches validated events.
+// room: who joined, their seats, and which phone gets which view. The game itself lives in its
+// own store; the room only asks the game (a RoomGame) for views and hands it intents.
 import type { Peer, Server, Transport } from '@/core/net';
+import { MAX_PLAYERS } from '@/core/players';
 
-import {
-  actingSeat,
-  MAX_PLAYERS,
-  viewFor,
-  type GameEvent,
-  type GameState,
-  type PlayerId,
-  type Theme,
-} from '../engine';
-import { encode, parseGuestMsg, PROTOCOL, type HostMsg, type Intent, type Lobby } from './protocol';
+import { encode, parseGuestMsg, PROTOCOL, type HostMsg, type Lobby } from './protocol';
 
 /** A guest that hasn't been heard from for this long is treated as gone (it pings every 2 s). */
 export const SILENCE_MS = 8000;
@@ -30,35 +22,32 @@ export interface HostSnapshot {
   started: boolean;
 }
 
+/** What the room needs from the game it runs. Seats are indices into the room's seating. */
+export interface RoomGame {
+  /** The game module's id, so a joining phone opens the right screens. */
+  id: string;
+  /** The game's theme, when it has one (Werewolf's 'werewolf' or 'mafia'). */
+  theme: string | null;
+  kids: boolean;
+  /** How many players the running game has, or null while still in the lobby. */
+  players(): number | null;
+  /** Everything this seat's phone may know (and nothing it may not). */
+  viewFor(seat: number): unknown;
+  /**
+   * One phone's request for its own seat. It's untrusted: the game checks the shape and its
+   * rules, and ignores anything that isn't that seat's to do.
+   */
+  act(seat: number, intent: Record<string, unknown>): void;
+}
+
 export interface HostOptions {
   transport: Transport;
   /** The host player, who also plays on this phone. */
   host: { deviceId: string; name: string };
-  theme: Theme;
-  kids: boolean;
-  /** The game in the store, or null while still in the lobby. */
-  getGame(): GameState | null;
-  /** Applies an event to the store's game. */
-  dispatch(e: GameEvent): void;
+  game: RoomGame;
   now(): number;
   /** Players from before a relaunch, so their phones can rejoin the same seats. */
   members?: Member[];
-}
-
-/** Turns a guest's intent into an event for their own seat, or null if it isn't theirs to send. */
-export function eventFor(game: GameState, seat: PlayerId, intent: Intent): GameEvent | null {
-  switch (intent.t) {
-    case 'seen':
-      return { t: 'seatSeen', seat };
-    case 'cupidLink':
-      return { t: 'cupidLink', lovers: intent.lovers, seat };
-    case 'seatAction':
-      return { t: 'seatAction', seat, action: intent.action };
-    case 'hunterShoot':
-    case 'passBadge':
-    case 'mayorDecide':
-      return actingSeat(game) === seat ? intent : null;
-  }
 }
 
 export class HostSession {
@@ -103,7 +92,7 @@ export class HostSession {
   getSnapshot = () => this.snapshot;
 
   /** The host player's seat in the current seating. */
-  get hostSeat(): PlayerId {
+  get hostSeat(): number {
     return this.members.findIndex((m) => m.isHost);
   }
 
@@ -133,10 +122,8 @@ export class HostSession {
   }
 
   /** Acts for a seat on this phone: the host's own seat, or an offline guest's (§3.5). */
-  actFor(seat: PlayerId, intent: Intent) {
-    const game = this.opts.getGame();
-    const e = game && eventFor(game, seat, intent);
-    if (e) this.opts.dispatch(e);
+  actFor(seat: number, intent: Record<string, unknown>) {
+    if (this.started) this.opts.game.act(seat, intent);
     this.sync();
   }
 
@@ -186,7 +173,7 @@ export class HostSession {
   // --- network ---
 
   private get started() {
-    return this.opts.getGame() != null;
+    return this.opts.game.players() != null;
   }
 
   private onOpen(peer: Peer) {
@@ -204,9 +191,7 @@ export class HostSession {
     if (!peer || !deviceId) return;
     if (msg.t === 'ping') return peer.send(encode({ t: 'pong' }));
     const seat = this.members.findIndex((m) => m.deviceId === deviceId);
-    const game = this.opts.getGame();
-    const e = game && seat >= 0 ? eventFor(game, seat, msg.intent) : null;
-    if (e) this.opts.dispatch(e);
+    if (this.started && seat >= 0) this.opts.game.act(seat, msg.intent);
     // Rejected or not, the phone gets its current view back so it can't get stuck.
     this.sent.delete(deviceId);
     this.sync();
@@ -257,8 +242,9 @@ export class HostSession {
 
   private lobby(): Lobby {
     return {
-      theme: this.opts.theme,
-      kids: this.opts.kids,
+      game: this.opts.game.id,
+      theme: this.opts.game.theme,
+      kids: this.opts.game.kids,
       names: this.members.map((m) => m.name),
       online: this.members.map((m) => m.isHost || this.peers.has(m.deviceId)),
       host: this.hostSeat,
@@ -267,14 +253,15 @@ export class HostSession {
 
   /** Sends each connected phone its lobby or game view, only when it changed. */
   private broadcast() {
-    const game = this.opts.getGame();
+    const { game } = this.opts;
+    const players = game.players();
     const names = this.members.map((m) => m.name);
     this.members.forEach((m, seat) => {
       const peer = this.peers.get(m.deviceId);
       if (!peer) return;
       const body: HostMsg =
-        game && seat < game.players.length
-          ? { t: 'view', rev: 0, names, view: viewFor(game, seat) }
+        players != null && seat < players
+          ? { t: 'view', rev: 0, game: game.id, seat, names, view: game.viewFor(seat) }
           : { t: 'lobby', lobby: this.lobby(), seat };
       const key = JSON.stringify(body);
       if (this.sent.get(m.deviceId) === key) return;

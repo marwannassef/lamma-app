@@ -60,8 +60,9 @@ import { mafia } from '../mafia';
 import { isTheme } from '../theme';
 import { firstLockedRole, roleUnlocked, setupUnlocked } from '../shop';
 import { useWerewolfT } from '../components/i18n';
-import { closeRoom, getRoom, useHostRoom } from '../net/room';
-import { HostLobby } from './Lobby';
+import { closeRoom } from '@/core/room';
+import { HostLobby, PhonesChoice } from '@/core/room/ui';
+import { getWerewolfRoom, openWerewolfRoom, ROOM_GAME, useWerewolfRoom } from '../net/room';
 
 /** Every role ships, core and expansion (W5). */
 const AVAILABLE = ALL_ROLES;
@@ -514,9 +515,9 @@ export default function Setup() {
   const { t, theme } = useWerewolfT(['common']);
   const { colors } = useTheme();
   const { count: rosterCount, names, setCount, setName, move } = usePlayers();
-  const { room, snapshot: lobby } = useHostRoom();
+  const { room, snapshot: lobby } = useWerewolfRoom();
   // One phone passed around, or everyone on their own phone (werewolf-network.md).
-  const [phones, setPhones] = useState<'one' | 'all'>(() => (getRoom() ? 'all' : 'one'));
+  const [phones, setPhones] = useState<'one' | 'all'>(() => (getWerewolfRoom() ? 'all' : 'one'));
   const network = phones === 'all';
   // In a network game the players are whoever joined the room, in the order the host seated them.
   const count = network ? (lobby?.members.length ?? 1) : rosterCount;
@@ -701,42 +702,25 @@ export default function Setup() {
             </Panel>
           ) : null}
 
-          <View style={styles.stack}>
-            <Text variant="label">{t('net.phones')}</Text>
-            <View style={styles.cardButtons} accessibilityRole="radiogroup">
-              {(['one', 'all'] as const).map((v) => (
-                <View key={v} style={styles.flex}>
-                  <Chip
-                    compact
-                    testID={`phones-${v}`}
-                    title={v === 'one' ? t('net.phonesOne') : t('net.phonesAll')}
-                    selected={phones === v}
-                    onPress={() => {
-                      setPhones(v);
-                      if (v === 'one') closeRoom();
-                    }}
-                  />
-                </View>
-              ))}
-            </View>
-            {network ? (
-              <Text variant="caption" tone="muted">
-                {t('net.phonesAllSub')}
-              </Text>
-            ) : null}
-          </View>
+          <PhonesChoice
+            value={phones}
+            onChange={(v) => {
+              setPhones(v);
+              if (v === 'one') closeRoom();
+            }}
+          />
 
           {network ? (
             <HostLobby
-              theme={store.theme}
-              kids={level === 'kids'}
-              game={
-                theme === 'mafia' ? t('common:games.mafia.title') : t('common:games.werewolf.title')
+              game={ROOM_GAME}
+              freeCap={free ? caps.players : null}
+              open={(name) =>
+                openWerewolfRoom({ name, theme: store.theme, kids: level === 'kids' })
               }
             />
           ) : null}
           {network && count < module.minPlayers && (room || showErrors) ? (
-            <Hint>{t('net.needPlayers', { n: module.minPlayers })}</Hint>
+            <Hint>{t('common:net.needPlayers', { n: module.minPlayers })}</Hint>
           ) : null}
 
           {network ? null : (
@@ -765,8 +749,8 @@ export default function Setup() {
               variant="ghost"
               size="md"
               icon="📶"
-              label={t('net.join')}
-              onPress={() => router.push('/games/werewolf/join' as Href)}
+              label={t('common:net.join')}
+              onPress={() => router.push('/join' as Href)}
             />
           )}
 

@@ -8,17 +8,20 @@ import { usePlayers } from '../src/core/players';
 import { useSettings } from '../src/core/settings/store';
 import { storage } from '../src/core/storage';
 import { gameReducer, newGame, type GameEvent, type RoleId } from '../src/games/werewolf/engine';
-import { GuestSession } from '../src/games/werewolf/net';
+import Join from '../app/join';
 import {
   closeRoom,
   getRoom,
+  GuestSession,
   leaveRoom,
-  openRoom,
-  resumeRoom,
+  openRoom as openAnyRoom,
   setRoomBrowser,
   setTransportFactory,
+} from '../src/core/room';
+import {
+  openWerewolfRoom as openRoom,
+  resumeWerewolfRoom as resumeRoom,
 } from '../src/games/werewolf/net/room';
-import Join from '../src/games/werewolf/screens/Guest';
 import Play from '../src/games/werewolf/screens/Play';
 import Setup from '../src/games/werewolf/screens/Setup';
 import { useWerewolf } from '../src/games/werewolf/store';
@@ -78,7 +81,7 @@ beforeEach(() => {
   storage.clear();
   net = createFakeNetwork();
   setTransportFactory(async () => net.transport);
-  setRoomBrowser((onChange) => {
+  setRoomBrowser((onChange: (rooms: { id: string; name: string; address: string }[]) => void) => {
     onChange([{ id: 'hana', name: 'Hana', address: '10.0.0.1:47777' }]);
     return () => undefined;
   });
@@ -177,7 +180,7 @@ describe('hosting on everyone’s phone', () => {
   it('offers to join someone else’s game from one-phone setup', () => {
     render(<Setup />);
     fireEvent.press(screen.getByTestId('join-game'));
-    expect(router.push).toHaveBeenCalledWith('/games/werewolf/join');
+    expect(router.push).toHaveBeenCalledWith('/join');
   });
 });
 
@@ -258,6 +261,7 @@ describe('a guest phone', () => {
     expect(screen.getByTestId('waiting-host')).toHaveTextContent(
       "You're in! Waiting for Hana to start.",
     );
+    expect(screen.getByTestId('room-game')).toHaveTextContent('Game: Mafia');
   });
 
   it('checks a typed room code', async () => {
@@ -322,6 +326,29 @@ describe('a guest phone', () => {
     expect(screen.getByTestId('turn-result', { includeHiddenElements: true })).toHaveTextContent(
       '🐺 Werewolf',
     );
+  });
+
+  it('says so when the room is a game this app version does not know', async () => {
+    await openRoom({ name: 'Hana', theme: 'werewolf', kids: false });
+    closeRoom();
+    await openAnyRoom({
+      name: 'Hana',
+      watch: () => () => undefined,
+      game: {
+        id: 'chess',
+        theme: null,
+        kids: false,
+        players: () => null,
+        viewFor: () => null,
+        act: () => undefined,
+      },
+    });
+    useSettings.setState({ myName: 'Omar' });
+    asGuestPhone();
+    render(<Join />);
+    fireEvent.press(screen.getByTestId('room-Hana'));
+    await settle();
+    expect(screen.getByText(/needs a newer Lamma/)).toBeTruthy();
   });
 
   it('is told when the host closes the room', async () => {

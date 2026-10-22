@@ -10,9 +10,41 @@ import {
   type SeatAction,
   type SeatView,
 } from '../../engine';
-import { GuestSession, PING_MS, RETRY_MS } from '../guest';
-import { eventFor, HostSession, SILENCE_MS, type Member } from '../host';
-import { encode, parseGuestMsg, PROTOCOL } from '../protocol';
+import {
+  encode,
+  GuestSession,
+  HostSession,
+  parseGuestMsg,
+  PING_MS,
+  PROTOCOL,
+  RETRY_MS,
+  SILENCE_MS,
+  type Member,
+  type RoomGame,
+} from '@/core/room';
+
+import { parseIntent } from '../intents';
+import { eventFor } from '../room';
+
+/** The room's view of a Werewolf game kept in a local variable (the store's job in the app). */
+function roomGame(get: () => GameState | null, set: (g: GameState) => void): RoomGame {
+  return {
+    id: 'werewolf',
+    theme: 'werewolf',
+    kids: false,
+    players: () => get()?.players.length ?? null,
+    viewFor: (seat) => {
+      const g = get();
+      return g ? viewFor(g, seat) : null;
+    },
+    act: (seat, raw) => {
+      const g = get();
+      const intent = parseIntent(raw);
+      const e = g && intent ? eventFor(g, seat, intent) : null;
+      if (g && e) set(gameReducer(g, e, { now: Date.now(), rng: seededRng(1) }));
+    },
+  };
+}
 
 const MIN_TURN = 4500;
 
@@ -55,11 +87,19 @@ async function table(guestNames: string[]) {
     HostSession.open({
       transport: net.transport,
       host: { deviceId: 'host-phone', name: 'Hana' },
-      theme: 'werewolf',
-      kids: false,
-      getGame: () => game,
-      dispatch: (e) => {
-        if (game) game = gameReducer(game, e, { now, rng });
+      game: {
+        ...roomGame(
+          () => game,
+          (g) => {
+            game = g;
+          },
+        ),
+        // The host checks timing with its own (fake) clock.
+        act: (seat, raw) => {
+          const intent = parseIntent(raw);
+          const e = game && intent ? eventFor(game, seat, intent) : null;
+          if (game && e) game = gameReducer(game, e, { now, rng });
+        },
       },
       now: () => now,
       members,
@@ -132,6 +172,7 @@ describe('lobby', () => {
       ['lobby', 3],
     ]);
     expect(t.guests[0]?.getSnapshot().lobby).toEqual({
+      game: 'werewolf',
       theme: 'werewolf',
       kids: false,
       names: ['Hana', 'Omar', 'Lina', 'Sam'],
@@ -259,11 +300,13 @@ describe('playing', () => {
     }
     await t.settle();
     expect(t.game.phase).toMatchObject({ t: 'actions', acted: [1, 2, 3, 4, 5] });
-    expect(t.guests[1]?.getSnapshot().view?.result).toMatchObject({ kind: 'seer' });
+    expect((t.guests[1]?.getSnapshot().view as SeatView | null)?.result).toMatchObject({
+      kind: 'seer',
+    });
     t.host.actFor(0, { t: 'seatAction', action: actionFrom(viewFor(t.game, 0)) });
     await t.settle();
     expect(t.game.phase.t).toBe('morning');
-    expect(t.guests[0]?.getSnapshot().view?.public.phase.t).toBe('morning');
+    expect((t.guests[0]?.getSnapshot().view as SeatView | null)?.public.phase.t).toBe('morning');
   });
 
   it("ignores a phone acting for another seat, or for the Hunter when it isn't one", async () => {
@@ -307,7 +350,7 @@ describe('playing', () => {
 
     await t.advance(RETRY_MS[0] as number);
     expect(t.guests[2]?.getSnapshot()).toMatchObject({ status: 'playing', seat: 3 });
-    expect(t.guests[2]?.getSnapshot().view?.task).toEqual({
+    expect((t.guests[2]?.getSnapshot().view as SeatView | null)?.task).toEqual({
       t: 'reveal',
       cupid: false,
       seen: true,
@@ -452,10 +495,14 @@ describe('guest edge cases', () => {
     const host = await HostSession.open({
       transport: net.transport,
       host: { deviceId: 'h', name: 'Hana' },
-      theme: 'mafia',
-      kids: true,
-      getGame: () => null,
-      dispatch: () => undefined,
+      game: {
+        ...roomGame(
+          () => null,
+          () => undefined,
+        ),
+        theme: 'mafia',
+        kids: true,
+      },
       now: () => 0,
     });
     timers.shift()?.();
@@ -499,8 +546,8 @@ describe('guest edge cases', () => {
     const view = wire(viewFor(newGame(ROLES, {}, { mode: 'network' }), 2));
     const send = sends[0] as (text: string) => void;
     send(encode({ t: 'welcome', v: PROTOCOL }));
-    send(encode({ t: 'view', rev: 5, names: ['a'], view }));
-    send(encode({ t: 'view', rev: 4, names: ['old'], view: { ...view, seat: 9 } }));
+    send(encode({ t: 'view', rev: 5, game: 'werewolf', seat: 2, names: ['a'], view }));
+    send(encode({ t: 'view', rev: 4, game: 'werewolf', seat: 9, names: ['old'], view }));
     send('not json');
     send('42');
     send(encode({ t: 'pong' }));
@@ -553,7 +600,13 @@ describe('protocol', () => {
     expect(ok(['hello'])).toBeNull();
     expect(parseGuestMsg('{')).toBeNull();
 
-    const intent = (i: unknown) => ok({ t: 'intent', intent: i })?.t === 'intent';
+    // The room passes any object through; Werewolf's own parser decides.
+    expect(ok({ t: 'intent', intent: 'seen' })).toBeNull();
+    expect(ok({ t: 'intent', intent: { t: 'anything' } })).toEqual({
+      t: 'intent',
+      intent: { t: 'anything' },
+    });
+    const intent = (i: unknown) => parseIntent(i) != null;
     for (const good of [
       { t: 'seen' },
       { t: 'cupidLink', lovers: [1, 2] },

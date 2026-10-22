@@ -1,22 +1,19 @@
-// A guest phone in a network game (werewolf-network.md §2): join a room, wait in the lobby, then
-// play: your card, your night action, your Hunter or Mayor choice, and the public outcome.
-// The host's phone narrates; this phone stays quiet.
+// A guest phone in a Werewolf/Mafia network game (werewolf-network.md §2): your card, your night
+// action, your Hunter or Mayor choice, and the public outcome. Joining and the lobby are shared
+// by every game (src/core/room/ui/JoinScreen). The host's phone narrates; this phone stays quiet.
 import * as Haptics from 'expo-haptics';
 import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState, type ReactNode } from 'react';
-import { BackHandler, StyleSheet, TextInput, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 
-import { parseRoomCode } from '@/core/net/roomCode';
-import { MAX_NAME_LENGTH, PlayerNamesContext, usePlayerName } from '@/core/players';
+import { PlayerNamesContext, usePlayerName } from '@/core/players';
 import { useSettings } from '@/core/settings/store';
-import { fontFamilyFor, radius, space, STEALTH, ThemeProvider, useTheme } from '@/core/theme';
+import { radius, space, STEALTH, ThemeProvider, useTheme } from '@/core/theme';
 import {
   Avatar,
-  BackHeader,
   Button,
   ConfirmInline,
-  Hint,
   Panel,
   PlayerPicker,
   Pressable,
@@ -24,18 +21,14 @@ import {
   ScreenBackground,
   SecretGuard,
   Text,
-  useStayAwake,
 } from '@/core/ui';
 
-import { werewolf as module } from '..';
 import { GameLookContext, useWerewolfT } from '../components/i18n';
 import { MoonlitBackground } from '../components/MoonlitBackground';
 import { RoleCard } from '../components/RoleCard';
 import { RoleIcon } from '../components/RoleIcon';
 import type { PlayerId, SeatView } from '../engine';
-import { joinRoom, leaveRoom, useGuest, useNearbyRooms } from '../net/room';
-import type { GuestSnapshot } from '../net';
-import type { Room } from '@/core/net/native';
+import { leaveRoom, useGuest, type GuestSnapshot } from '@/core/room';
 import { ActionTurn, RevealTurn, useViewExtras } from './NetTurn';
 
 const OUTCOME_EMOJI = {
@@ -46,153 +39,6 @@ const OUTCOME_EMOJI = {
   lovers: '❤️',
   draw: '🕯️',
 } as const;
-
-/** Name, games nearby, or a typed room code. */
-function JoinForm({ rooms }: { rooms: readonly Room[] }) {
-  const { t } = useWerewolfT(['common']);
-  const { colors } = useTheme();
-  const myName = useSettings((s) => s.myName);
-  const setMyName = useSettings((s) => s.setMyName);
-  const [code, setCode] = useState('');
-  const [problem, setProblem] = useState<'name' | 'code' | null>(null);
-  const name = myName.trim();
-
-  const join = (address: string | null) => {
-    if (!name) return setProblem('name');
-    if (!address) return setProblem('code');
-    setProblem(null);
-    joinRoom(address, name);
-  };
-  const input = [
-    styles.input,
-    { color: colors.text, borderColor: colors.border, backgroundColor: colors.surfaceRaised },
-  ];
-
-  return (
-    <Screen>
-      <BackHeader title={t('net.joinTitle')} image={module.icon} />
-      <Panel title={t('net.yourName')} icon="🙋">
-        <TextInput
-          testID="my-name"
-          value={myName}
-          onChangeText={(v) => setMyName(v.slice(0, MAX_NAME_LENGTH))}
-          placeholder={t('net.namePlaceholder')}
-          placeholderTextColor={colors.textMuted}
-          accessibilityLabel={t('net.yourName')}
-          autoCorrect={false}
-          maxFontSizeMultiplier={2}
-          style={[...input, { fontFamily: fontFamilyFor(myName || 'a', 'body', 'bold') }]}
-        />
-        <Text variant="caption" tone="muted">
-          {t('net.nameHint')}
-        </Text>
-        {problem === 'name' ? <Hint>{t('net.needName')}</Hint> : null}
-      </Panel>
-
-      <Panel title={t('net.nearby')} icon="📶">
-        {rooms.length === 0 ? (
-          <Text variant="body" tone="muted" accessibilityLiveRegion="polite">
-            {t('net.searching')}
-          </Text>
-        ) : (
-          rooms.map((r) => (
-            <Button
-              key={r.id}
-              testID={`room-${r.name}`}
-              variant="secondary"
-              size="md"
-              icon="🎲"
-              label={r.name}
-              onPress={() => join(r.address)}
-            />
-          ))
-        )}
-      </Panel>
-
-      <Panel title={t('net.code')} icon="🔢">
-        <TextInput
-          testID="room-code"
-          value={code}
-          onChangeText={setCode}
-          placeholder={t('net.codePlaceholder')}
-          placeholderTextColor={colors.textMuted}
-          accessibilityLabel={t('net.code')}
-          autoCapitalize="characters"
-          autoCorrect={false}
-          maxFontSizeMultiplier={2}
-          style={[...input, styles.code]}
-        />
-        {problem === 'code' ? <Hint>{t('net.codeInvalid')}</Hint> : null}
-        <Button
-          testID="join-code"
-          size="md"
-          label={t('net.joinCode')}
-          onPress={() => join(parseRoomCode(code))}
-        />
-      </Panel>
-
-      <Text variant="caption" tone="muted" align="center">
-        {t('net.help')}
-      </Text>
-    </Screen>
-  );
-}
-
-/** Connecting, rejected, or waiting for the host to start. */
-function Waiting({ snapshot }: { snapshot: GuestSnapshot }) {
-  const { t } = useWerewolfT(['common']);
-  const { colors } = useTheme();
-  const { status, lobby, seat, reason } = snapshot;
-  const back = () => leaveRoom();
-  return (
-    <Screen
-      footer={
-        <Button
-          testID="leave-room"
-          variant="ghost"
-          size="md"
-          label={t('net.leave')}
-          onPress={back}
-        />
-      }
-    >
-      <BackHeader title={t('net.joinTitle')} image={module.icon} />
-      {status === 'rejected' && reason ? (
-        <Hint>{t(`net.rejected.${reason}`)}</Hint>
-      ) : status === 'lobby' && lobby ? (
-        <>
-          <Text variant="heading" align="center" testID="waiting-host">
-            {t('net.waitingHost', { host: lobby.names[lobby.host] ?? '' })}
-          </Text>
-          <Panel title={t('net.players', { n: lobby.names.length })} icon="👥">
-            {lobby.names.map((n, i) => (
-              <View key={i} style={styles.row}>
-                <Avatar player={i} size={36} />
-                <Text variant="label" style={styles.flex} numberOfLines={1}>
-                  {n}
-                </Text>
-                <Text
-                  variant="caption"
-                  style={{ color: i === seat ? colors.secondary : colors.textMuted }}
-                >
-                  {i === seat
-                    ? t('net.you')
-                    : lobby.online[i]
-                      ? t('net.seat', { n: i + 1 })
-                      : t('net.offline')}
-                </Text>
-              </View>
-            ))}
-          </Panel>
-        </>
-      ) : (
-        <Text variant="heading" align="center" accessibilityLiveRegion="polite">
-          {status === 'reconnecting' ? t('net.reconnecting') : t('net.connecting')}
-        </Text>
-      )}
-    </Screen>
-  );
-}
 
 /** Quiet dark screen while the host narrates the night. */
 function EyesClosed({ text }: { text: string }) {
@@ -499,10 +345,10 @@ function useTaskBuzz(view: SeatView | null) {
 }
 
 /** The game on a guest phone, in the host's theme, names and Kids mode. */
-function GuestGame({ snapshot }: { snapshot: GuestSnapshot }) {
+export function WerewolfGuest({ snapshot }: { snapshot: GuestSnapshot }) {
   const { t } = useWerewolfT(['common']);
   const [askLeave, setAskLeave] = useState(false);
-  const view = snapshot.view;
+  const view = snapshot.view as SeatView | null;
   useTaskBuzz(view);
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
@@ -521,7 +367,7 @@ function GuestGame({ snapshot }: { snapshot: GuestSnapshot }) {
             {snapshot.status === 'reconnecting' ? (
               <View style={styles.banner}>
                 <Text variant="caption" align="center" accessibilityLiveRegion="polite">
-                  {t('net.reconnecting')}
+                  {t('common:net.reconnecting')}
                 </Text>
               </View>
             ) : null}
@@ -532,7 +378,7 @@ function GuestGame({ snapshot }: { snapshot: GuestSnapshot }) {
                   <ConfirmInline
                     testID="leave-confirm"
                     question={t('host.quitConfirm')}
-                    confirmLabel={t('net.leave')}
+                    confirmLabel={t('common:net.leave')}
                     cancelLabel={t('common:actions.cancel')}
                     onConfirm={() => {
                       leaveRoom();
@@ -545,7 +391,7 @@ function GuestGame({ snapshot }: { snapshot: GuestSnapshot }) {
                     testID="guest-leave"
                     variant="ghost"
                     size="md"
-                    label={t('net.leave')}
+                    label={t('common:net.leave')}
                     onPress={() => setAskLeave(true)}
                   />
                 )}
@@ -556,19 +402,6 @@ function GuestGame({ snapshot }: { snapshot: GuestSnapshot }) {
       </GameLookContext.Provider>
     </PlayerNamesContext.Provider>
   );
-}
-
-/** Route: Werewolf/Mafia → "Join someone's game". */
-export default function Join() {
-  useStayAwake();
-  const { snapshot } = useGuest();
-  const joining = !snapshot || snapshot.status === 'closed' || snapshot.status === 'connecting';
-  const rooms = useNearbyRooms(joining);
-  if (!snapshot || snapshot.status === 'closed') return <JoinForm rooms={rooms} />;
-  if (snapshot.status === 'playing' || (snapshot.view && snapshot.status === 'reconnecting')) {
-    return <GuestGame snapshot={snapshot} />;
-  }
-  return <Waiting snapshot={snapshot} />;
 }
 
 const styles = StyleSheet.create({

@@ -1,19 +1,16 @@
-// The host's room in setup (werewolf-network.md §5): open it, show the room code, and seat the
-// players who joined.
+// The host's room in a game's setup (werewolf-network.md §5), for any game: open it, show the
+// room code, and seat the players who joined.
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { roomCode } from '@/core/net/roomCode';
 import { MAX_NAME_LENGTH } from '@/core/players';
 import { useSettings } from '@/core/settings/store';
 import { fontFamilyFor, radius, space, useTheme } from '@/core/theme';
-import { useTier } from '@/core/entitlements';
-import { useRemoteConfig } from '@/core/remoteConfig';
 import { Avatar, Button, Hint, Panel, Pressable, ReorderList, Text, useStayAwake } from '@/core/ui';
 
-import { useWerewolfT } from '../components/i18n';
-import type { Theme } from '../engine';
-import { openRoom, useHostRoom } from '../net/room';
+import { useHostRoom } from '../manager';
 
 /** A sleeping host phone drops every connection, so it stays awake while the room is open. */
 function StayAwake() {
@@ -28,14 +25,23 @@ function codeOf(address: string) {
   return roomCode(address.slice(0, colon), Number(address.slice(colon + 1)));
 }
 
-export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; game: string }) {
-  const { t } = useWerewolfT(['common']);
+export function HostLobby({
+  game,
+  open: openFor,
+  freeCap,
+}: {
+  /** The room's game id: the lobby shows this game's room only. */
+  game: string;
+  /** Opens this game's room as `name` (the host player). */
+  open(name: string): Promise<unknown>;
+  /** The free tier's player limit, shown when the host doesn't have Premium. */
+  freeCap: number | null;
+}) {
+  const { t } = useTranslation('common');
   const { colors } = useTheme();
   const myName = useSettings((s) => s.myName);
   const setMyName = useSettings((s) => s.setMyName);
-  const { room, snapshot } = useHostRoom();
-  const free = useTier() === 'free';
-  const cap = useRemoteConfig().caps.werewolf.players;
+  const { room, snapshot } = useHostRoom(game);
   const [state, setState] = useState<'idle' | 'opening' | 'failed' | 'needName'>('idle');
 
   if (!room || !snapshot) {
@@ -43,7 +49,7 @@ export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; 
       const name = myName.trim();
       if (!name) return setState('needName');
       setState('opening');
-      openRoom({ name, theme, kids }).then(
+      openFor(name).then(
         () => setState('idle'),
         () => setState('failed'),
       );
@@ -100,12 +106,12 @@ export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; 
         <Hint>{t('net.noAddress')}</Hint>
       )}
       <Text variant="caption" tone="muted" align="center">
-        {t('net.howToJoin', { game })}
+        {t('net.howToJoin')}
       </Text>
       <Text variant="label">{t('net.players', { n: members.length })}</Text>
-      {free ? (
+      {freeCap != null ? (
         <Text variant="caption" tone="muted" testID="free-cap">
-          {t('common:premium.freeCap', { n: cap })}
+          {t('premium.freeCap', { n: freeCap })}
         </Text>
       ) : null}
       <Text variant="caption" tone="muted">
@@ -114,9 +120,9 @@ export function HostLobby({ theme, kids, game }: { theme: Theme; kids: boolean; 
       <ReorderList
         count={members.length}
         onMove={(from, to) => room.move(from, to)}
-        handleLabel={(i) => t('setup.dragSeat', { name: members[i]?.name ?? '' })}
-        moveUpLabel={(i) => t('setup.moveUp', { name: members[i]?.name ?? '' })}
-        moveDownLabel={(i) => t('setup.moveDown', { name: members[i]?.name ?? '' })}
+        handleLabel={(i) => t('net.dragSeat', { name: members[i]?.name ?? '' })}
+        moveUpLabel={(i) => t('net.moveUp', { name: members[i]?.name ?? '' })}
+        moveDownLabel={(i) => t('net.moveDown', { name: members[i]?.name ?? '' })}
         renderRow={(i) => {
           const m = members[i];
           if (!m) return null;

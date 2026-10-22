@@ -12,7 +12,7 @@ import { RoleIcon } from '../components/RoleIcon';
 import { ROLES, scoreGame, type GameState, type WinResult } from '../engine';
 import { useWerewolf } from '../store';
 import { useWerewolfT } from '../components/i18n';
-import { closeRoom } from '../net/room';
+import { closeRoom } from '@/core/room';
 
 const EMOJI: Record<WinResult['outcome'], string> = {
   village: '🏡',

@@ -491,7 +491,11 @@ describe('guest edge cases', () => {
     const net = createFakeNetwork();
     const { guest, timers } = manualGuest(net.transport, '10.0.0.1:47777');
     await Promise.resolve();
-    expect(guest.getSnapshot().status).toBe('connecting');
+    expect(guest.getSnapshot()).toMatchObject({
+      status: 'connecting',
+      failures: 1,
+      error: 'Nothing listening at 10.0.0.1:47777',
+    });
     const host = await HostSession.open({
       transport: net.transport,
       host: { deviceId: 'h', name: 'Hana' },
@@ -510,7 +514,12 @@ describe('guest edge cases', () => {
       await Promise.resolve();
       net.flush();
     }
-    expect(guest.getSnapshot()).toMatchObject({ status: 'lobby', seat: 1 });
+    expect(guest.getSnapshot()).toMatchObject({
+      status: 'lobby',
+      seat: 1,
+      failures: 0,
+      error: null,
+    });
     expect(guest.getSnapshot().lobby).toMatchObject({ theme: 'mafia', kids: true });
     host.close();
   });

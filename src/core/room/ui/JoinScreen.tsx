@@ -167,9 +167,19 @@ function Waiting({
           </Panel>
         </>
       ) : (
-        <Text variant="heading" align="center" accessibilityLiveRegion="polite">
-          {status === 'reconnecting' ? t('net.reconnecting') : t('net.connecting')}
-        </Text>
+        <>
+          <Text variant="heading" align="center" accessibilityLiveRegion="polite">
+            {status === 'reconnecting' ? t('net.reconnecting') : t('net.connecting')}
+          </Text>
+          {/* Still trying: say what usually fixes it, and the technical reason for us. */}
+          {snapshot.failures >= 2 ? (
+            <Hint testID="cant-reach">
+              {snapshot.error
+                ? `${t('net.cantReach')}\n${t('net.details', { detail: snapshot.error })}`
+                : t('net.cantReach')}
+            </Hint>
+          ) : null}
+        </>
       )}
     </Screen>
   );

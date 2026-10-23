@@ -272,7 +272,7 @@
     "codePlaceholder": "e.g. 3QX-41KD",
     "codeInvalid": "That code doesn't look right. It's 7 letters and numbers, like 3QX-41KD.",
     "joinCode": "Join",
-    "help": "Can't see the game? Be on the same Wi-Fi or the host's hotspot. On iPhone, allow Local Network in Settings → Lamma.",
+    "help": "Can't see the game? Be on the same Wi-Fi or the host's hotspot. Public Wi-Fi (cafés, hotels) usually blocks phones from seeing each other, so use a phone's hotspot there. On iPhone, allow Local Network in Settings → Lamma.",
     "connecting": "Connecting…",
     "reconnecting": "Lost the host. Reconnecting…",
     "waitingHost": "You're in! Waiting for {{host}} to start.",
@@ -289,6 +289,8 @@
     "moveUp": "Move {{name}} up",
     "moveDown": "Move {{name}} down",
     "playing": "Game: {{game}}",
-    "unknownGame": "This phone needs a newer Lamma to play that game. Update Lamma and join again."
+    "unknownGame": "This phone needs a newer Lamma to play that game. Update Lamma and join again.",
+    "cantReach": "Can't reach that game yet. Make sure this phone is on the same Wi-Fi or hotspot as the host. If it keeps failing, turn off mobile data on this phone and try again.",
+    "details": "Details: {{detail}}"
   }
 }

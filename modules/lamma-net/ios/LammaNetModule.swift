@@ -160,7 +160,9 @@ public class LammaNetModule: Module {
     }, onFail: { promise.reject("ERR_CONNECT", $0) })
   }
 
-  private func endpoint(for address: String) -> NWEndpoint? {
+  private func endpoint(for raw: String) -> NWEndpoint? {
+    // Android lists several addresses ("a:port,b:port"); iOS dials the first.
+    let address = raw.split(separator: ",").first.map(String.init) ?? raw
     if address.hasPrefix("svc:") { return rooms[String(address.dropFirst(4))] }
     guard let colon = address.lastIndex(of: ":"),
           let port = NWEndpoint.Port(String(address[address.index(after: colon)...])) else { return nil }

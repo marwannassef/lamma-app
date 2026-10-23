@@ -351,6 +351,22 @@ describe('a guest phone', () => {
     expect(screen.getByText(/needs a newer Lamma/)).toBeTruthy();
   });
 
+  it('explains what to check when it keeps failing to connect', async () => {
+    useSettings.setState({ myName: 'Omar' });
+    asGuestPhone();
+    render(<Join />);
+    fireEvent.changeText(screen.getByTestId('room-code'), roomCode('10.0.0.9') as string);
+    fireEvent.press(screen.getByTestId('join-code'));
+    await settle();
+    expect(screen.queryByTestId('cant-reach')).toBeNull(); // one failure: still just "Connecting…"
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 700)); // the first retry
+    });
+    await settle();
+    expect(screen.getByTestId('cant-reach')).toHaveTextContent(/turn off mobile data/);
+    expect(screen.getByTestId('cant-reach')).toHaveTextContent(/Nothing listening at 10.0.0.9/);
+  });
+
   it('is told when the host closes the room', async () => {
     await openRoom({ name: 'Hana', theme: 'werewolf', kids: false });
     useSettings.setState({ myName: 'Omar' });

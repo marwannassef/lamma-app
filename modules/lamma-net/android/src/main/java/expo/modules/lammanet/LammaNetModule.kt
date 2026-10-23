@@ -1,6 +1,9 @@
 package expo.modules.lammanet
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
@@ -22,7 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
 private const val SERVICE_TYPE = "_lamma._tcp"
-private const val CONNECT_TIMEOUT_MS = 5000
+/** Per address tried; a room may list a few. */
+private const val CONNECT_TIMEOUT_MS = 4000
 
 /**
  * Local-network game connections (docs/games/werewolf-network.md §4): a TCP server advertised
@@ -77,21 +81,38 @@ class LammaNetModule : Module() {
     AsyncFunction("stopServer") { stopServer() }
 
     AsyncFunction("connect") { address: String ->
-      val colon = address.lastIndexOf(':')
-      val host = address.substring(0, maxOf(colon, 0)).trim('[', ']')
-      val port = address.substring(colon + 1).toIntOrNull()
-      if (colon <= 0 || host.isEmpty() || port == null) {
-        throw CodedException("ERR_ADDRESS", "Can't read address $address", null)
+      // A room found nearby may list several addresses ("a:port,b:port"); try them in order.
+      val candidates = address.split(',').map { it.trim() }.filter { it.isNotEmpty() }
+      val errors = mutableListOf<String>()
+      for (candidate in candidates) {
+        val colon = candidate.lastIndexOf(':')
+        val host = candidate.substring(0, maxOf(colon, 0)).trim('[', ']')
+        val port = candidate.substring(colon + 1).toIntOrNull()
+        if (colon <= 0 || host.isEmpty() || port == null) {
+          errors += "$candidate: can't read it"
+          continue
+        }
+        // Over Wi-Fi, even when Android prefers mobile data because this Wi-Fi (a phone's
+        // hotspot, a network without internet) isn't "validated": the host is on the Wi-Fi.
+        val socket = wifiNetwork()?.socketFactory?.createSocket() ?: Socket()
+        try {
+          socket.connect(InetSocketAddress(host, port), CONNECT_TIMEOUT_MS)
+        } catch (e: IOException) {
+          runCatching { socket.close() }
+          errors += "$candidate: ${e.message ?: e.javaClass.simpleName}"
+          continue
+        }
+        val id = adopt(socket) {}
+        return@AsyncFunction mapOf(
+          "connId" to id,
+          "remote" to "${socket.inetAddress.hostAddress}:${socket.port}",
+        )
       }
-      val socket = Socket()
-      try {
-        socket.connect(InetSocketAddress(host, port), CONNECT_TIMEOUT_MS)
-      } catch (e: IOException) {
-        socket.close()
-        throw CodedException("ERR_CONNECT", e.message ?: "Can't connect to $address", e)
-      }
-      val id = adopt(socket) {}
-      mapOf("connId" to id, "remote" to "${socket.inetAddress.hostAddress}:${socket.port}")
+      throw CodedException(
+        "ERR_CONNECT",
+        errors.joinToString("; ").ifEmpty { "Can't read address $address" },
+        null,
+      )
     }
 
     Function("send") { connId: String, text: String ->
@@ -234,16 +255,35 @@ class LammaNetModule : Module() {
     val addresses =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) info.hostAddresses
       else listOfNotNull(info.host)
-    // Prefer IPv4: it works on every hotspot and is easy to type as a room code.
-    val host = (addresses.firstOrNull { it is Inet4Address } ?: addresses.firstOrNull()) ?: return
+    if (addresses.isEmpty()) return
+    // A phone announces every address it has (Wi-Fi, hotspot, mobile data, IPv6). Try the ones
+    // on this phone's own network first, then other IPv4, then IPv6.
+    val mine = localIPv4Addresses().map { it.substringBeforeLast('.') }
+    val ordered = addresses.sortedBy { a ->
+      when {
+        a is Inet4Address && a.hostAddress?.substringBeforeLast('.') in mine -> 0
+        a is Inet4Address -> 1
+        else -> 2
+      }
+    }
+    val address = ordered.joinToString(",") { a ->
+      val host = a.hostAddress ?: ""
+      if (a is Inet4Address) "$host:${info.port}" else "[$host]:${info.port}"
+    }
     sendEvent(
       "onRoomFound",
-      mapOf(
-        "id" to info.serviceName,
-        "name" to info.serviceName,
-        "address" to "${host.hostAddress}:${info.port}",
-      ),
+      mapOf("id" to info.serviceName, "name" to info.serviceName, "address" to address),
     )
+  }
+
+  /** The Wi-Fi network (also a phone's hotspot), so game traffic doesn't go out over mobile data. */
+  private fun wifiNetwork(): Network? {
+    val cm = requireNotNull(appContext.reactContext)
+      .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    @Suppress("DEPRECATION")
+    return cm.allNetworks.firstOrNull { n ->
+      cm.getNetworkCapabilities(n)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+    }
   }
 
   /** Older Android resolves one service at a time, so resolves wait their turn. */

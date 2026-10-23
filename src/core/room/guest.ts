@@ -39,6 +39,9 @@ export interface GuestSnapshot {
   /** The running game's id, and this seat's view of it (the game's own type). */
   game: string | null;
   view: unknown;
+  /** Connection attempts that failed in a row, and the last reason (shown to help fix it). */
+  failures: number;
+  error: string | null;
 }
 
 export interface GuestOptions {
@@ -68,6 +71,8 @@ export class GuestSession {
     names: [],
     game: null,
     view: null,
+    failures: 0,
+    error: null,
   };
 
   constructor(private readonly opts: GuestOptions) {
@@ -122,7 +127,11 @@ export class GuestSession {
         onMessage: (text) => this.onMessage(client, text),
         onClose: () => this.onClose(client),
       });
-    } catch {
+    } catch (e) {
+      this.update({
+        failures: this.snapshot.failures + 1,
+        error: e instanceof Error ? e.message : String(e),
+      });
       return this.retry();
     }
     if (this.done) return client.close();
@@ -167,6 +176,7 @@ export class GuestSession {
     if (!m) return;
     switch (m.t) {
       case 'welcome':
+        if (this.snapshot.failures) this.update({ failures: 0, error: null });
         // A new connection (maybe to a relaunched host) numbers its views from scratch.
         this.attempt = 0;
         this.rev = 0;
